@@ -1,0 +1,26 @@
+{
+  "name": "placemate",
+  "version": "1.0.0",
+  "description": "PlaceMate - Unified portfolio generator, job scraper, resume builder, and AI application assistant",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install && npm install --prefix client && npm install --prefix server",
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [
+    "job-scraper",
+    "portfolio-generator",
+    "resume-builder",
+    "ai-matching",
+    "express",
+    "react",
+    "vite"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
