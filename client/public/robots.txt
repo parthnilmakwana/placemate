@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /portfolio/
+Disallow: /dashboard/
+Disallow: /onboarding/
+
+Sitemap: https://placemate.com/api/seo/sitemap.xml

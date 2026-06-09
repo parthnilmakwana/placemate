@@ -185,3 +185,78 @@ When building each micro-task, developers should adhere to the following workflo
 ```
 
 This prevents debug loops from compounding, allowing you to move with velocity and stability.
+
+---
+
+## 5. Solve Dummy Data Problem
+
+**Background:** An audit of the codebase revealed that several files use hardcoded dummy/mock data instead of real data. This phase systematically replaces every instance of fake data with real, production-ready integrations.
+
+**Files affected:**
+- `client/src/features/jobs/JobDashboardTab.jsx` — pads job lists with fabricated cards
+- `server/utils/scrapers/internshalaScraper.js` — falls back to 3 hardcoded mock internships
+- `server/utils/scrapers/indeedScraper.js` — falls back to 3 hardcoded mock jobs
+- `server/controllers/paymentController.js` — simulates payments without a real gateway
+- `server/utils/mailer.js` — writes emails to local file instead of sending them
+
+### Phase 9A: Remove Fake Job Padding from Dashboard (Priority: CRITICAL)
+
+**Why this is first:** Users currently see fabricated job cards (fake companies, dead links, random scores) mixed with real matches. This is the most user-facing problem.
+
+**Level 1 explanation:** Right now the code says "always show exactly 5 jobs per day". If you only have 2 real matches, it invents 3 fake ones to fill the list. We need to remove this and just show whatever real jobs exist.
+
+**Level 2 explanation:** The `padWithJobs()` function clones existing job objects or creates fabricated `{ title: 'Fullstack Software Engineer', company: 'Tech Innovations' }` entries with `applyLink: '#'`. This corrupts UX because users click on dead links. The fix is to remove the padding logic entirely and let the UI gracefully handle 0 jobs with an empty-state message.
+
+| Task ID | Micro-Task Description | Est. Time | Definition of Done (DoD) |
+| :--- | :--- | :--- | :--- |
+| **9A.1** | Remove the entire `padWithJobs()` helper function from `JobDashboardTab.jsx`. Replace `getGroupedJobs()` to return raw arrays (today/yesterday/older) without any padding or cloning. | 30min | Each tab shows only the real matched jobs from the database. No cloned or dummy entries exist. |
+| **9A.2** | Add an empty-state UI component for each tab when 0 jobs exist (e.g. "No matches found for today. Your agent will check again tomorrow."). | 30min | When a day has 0 matches, a friendly message with an icon is displayed instead of blank space. |
+| **9A.3** | Remove the 3-day-only filter limitation. Allow the "Last 3 Days" tab to show ALL older jobs instead of filtering to exactly 2 days ago. | 20min | Older tab shows all jobs older than yesterday, not just jobs from exactly 2 days ago. |
+| **9A.4** | Verify the analytics panel (Total Matches, Avg Score, Applied Rate) still displays correct statistics using only real job data. | 15min | Stats reflect real database data. Manual test: create a job via agent, verify count increments. |
+
+---
+
+### Phase 9B: Replace Web Scrapers with a Real Job API (Priority: HIGH)
+
+**Why this is second:** Both Puppeteer scrapers (Internshala + Indeed) are blocked by anti-bot protections 90%+ of the time, so they almost always return hardcoded mock jobs with fake URLs like `mock-1`, `mock-2`.
+
+**Level 1 explanation:** Instead of trying to open a hidden browser and copy job listings from websites (which those websites block), we will use a proper Job Search API that gives us real job data legally and reliably.
+
+**Level 2 explanation:** Puppeteer-based scraping is fragile — sites change their HTML structure, add CAPTCHAs, and block headless browsers. A proper API (like JSearch via RapidAPI, Adzuna, or Arbeitnow) returns structured JSON with real apply links. We keep the same `Job` model and `ingestor.js` pipeline, but swap the data source from scrapers to API calls.
+
+| Task ID | Micro-Task Description | Est. Time | Definition of Done (DoD) |
+| :--- | :--- | :--- | :--- |
+| **9B.1** | Research and select a free/affordable Job Search API. Evaluate: Adzuna API (free tier), JSearch on RapidAPI (free tier 500 req/month), or Arbeitnow (fully free, no key). Document pros/cons and pick one. | 1h | Decision documented with API name, pricing, rate limits, and sample response format. |
+| **9B.2** | Create a new utility file `server/utils/scrapers/jobApiClient.js` that calls the chosen API, fetches software/web developer jobs, and returns an array of normalized job objects. | 1.5h | Running the utility logs 5-10 real job listings with real titles, companies, and apply links. |
+| **9B.3** | Update `server/utils/scrapers/normalize.js` to handle the new API response format alongside (or replacing) the old scraper format. | 30min | `normalizeJob()` correctly maps API fields (title, company, location, description, applyLink) to the `Job` schema. |
+| **9B.4** | Update `server/utils/ingestor.js` to call the new API client instead of (or alongside) the old Puppeteer scrapers. Keep the old scrapers as a commented-out fallback. | 30min | `ingestJobs()` populates the database with real job listings from the API. |
+| **9B.5** | Remove the `mockInternships` and `mockIndeedJobs` hardcoded arrays from both scraper files. Instead, if the API fails, return an empty array `[]` (no silent fake data). | 20min | When the API is down, `ingestJobs()` logs a warning and returns `{ totalProcessed: 0 }`. No fake jobs are inserted. |
+| **9B.6** | Add the API key/config to `.env` and `.env.example`. Run full ingestion test and verify jobs appear in MongoDB. | 30min | `node -e "require('./utils/ingestor').ingestJobs()"` inserts real jobs. Verified via MongoDB shell. |
+| **9B.7** | Run the full agent pipeline (`runDailyMatchingAgent`) end-to-end with real API jobs and verify real matches appear on the Job Dashboard. | 30min | Dashboard shows real job cards with real company names, real apply links, and real AI-generated match scores. |
+
+---
+
+### Phase 9C: Replace Mock Payments with Real Razorpay Integration (SHELVED)
+
+**Status:** Shelved (Pivoted to Freemium model; matching is free for all onboarded candidates).
+
+---
+
+### Phase 9D: Configure Real Email Delivery (SHELVED)
+
+**Status:** Shelved (Pivoted to in-app matches dashboard only; matches appear on the Job Hunting dashboard page and will not be dispatched to user email).
+
+---
+
+### Execution Order Summary
+
+```
+Status       Phase    What It Fixes                        Outcome
+─────────────────────────────────────────────────────────────────────
+✓ COMPLETED   9A      Remove fake job cards from dashboard    Successful
+✓ COMPLETED   9B      Replace scrapers with real job API      Successful (JSearch API)
+✗ SHELVED     9C      Add real Razorpay payments              Pivoted to Freemium
+✗ SHELVED     9D      Send real emails                        Pivoted to In-App Only
+```
+
+> **Rule:** Complete each phase fully (all sub-tasks) before moving to the next. Phase 9A must be done first because it's the most visible user-facing bug.

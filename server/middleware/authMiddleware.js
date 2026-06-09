@@ -20,7 +20,7 @@ exports.protect = async (req, res, next) => {
       // Decode and verify the token signature
       const decoded = jwt.verify(
         token, 
-        process.env.JWT_SECRET || 'super_secret_dev_key_for_placemate_app_12345'
+        process.env.JWT_SECRET
       );
 
       // Fetch user from DB, omit password, and attach to the request object
@@ -34,7 +34,7 @@ exports.protect = async (req, res, next) => {
       }
 
       // Call next middleware in pipeline
-      next();
+      return next();
     } catch (error) {
       console.error('JWT Verification Error:', error.message);
       return res.status(401).json({
@@ -42,10 +42,8 @@ exports.protect = async (req, res, next) => {
         message: 'Not authorized, token validation failed'
       });
     }
-  }
-
-  // If no token was found in headers
-  if (!token) {
+  } else {
+    // If no token was found in headers
     return res.status(401).json({
       status: 'error',
       message: 'Not authorized, no token provided'

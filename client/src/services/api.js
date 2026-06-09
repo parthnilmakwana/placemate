@@ -3,7 +3,7 @@
  * Automatically injects the JWT token from localStorage into headers.
  */
 
-const BASE_URL = ''; // Emits relative requests which Vite proxy forwards to localhost:5000
+export const BASE_URL = import.meta.env.VITE_API_URL || '';
 
 const getHeaders = () => {
   const headers = {
@@ -61,6 +61,15 @@ export const api = {
   put: async (url, body) => {
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(body),
+    });
+    return handleResponse(response);
+  },
+
+  patch: async (url, body) => {
+    const response = await fetch(`${BASE_URL}${url}`, {
+      method: 'PATCH',
       headers: getHeaders(),
       body: JSON.stringify(body),
     });

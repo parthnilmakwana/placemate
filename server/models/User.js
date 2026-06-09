@@ -38,9 +38,22 @@ const UserSchema = new mongoose.Schema({
     enum: ['free', 'pro'],
     default: 'free'
   },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   hasCompletedOnboarding: {
     type: Boolean,
     default: false
+  },
+  loginAttempts: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  lockUntil: {
+    type: Number
   },
   // Unified profile nested state which feeds Portfolio, Resume, and Job Matching systems
   profile: {
@@ -48,7 +61,7 @@ const UserSchema = new mongoose.Schema({
     title: { type: String, default: '' },
     githubUrl: { type: String, default: '' },
     linkedinUrl: { type: String, default: '' },
-    theme: { type: String, enum: ['minimal', 'dark', 'bold'], default: 'minimal' },
+    theme: { type: String, enum: ['minimal', 'dark', 'bold', 'developer', 'professional', 'creative', 'startup', 'corporate', 'futuristic', 'personal', 'student', 'pm', 'agency'], default: 'minimal' },
     isPublic: { type: Boolean, default: true },
     skills: { type: [String], default: [] },
     education: [{
@@ -79,7 +92,27 @@ const UserSchema = new mongoose.Schema({
       targetRoles: { type: [String], default: [] },
       targetLocations: { type: [String], default: [] },
       minimumSalary: { type: Number, default: 0 },
-      jobType: { type: String, enum: ['Full-time', 'Part-time', 'Internship', 'Contract', 'Any'], default: 'Any' }
+      jobType: { type: String, enum: ['Full-time', 'Part-time', 'Internship', 'Contract', 'Any'], default: 'Any' },
+      // Technologies the user knows or wants to work with (e.g. ['React', 'Node.js'])
+      preferredSkills: { type: [String], default: [] },
+      // Which job families they're interested in — maps to Job.category
+      preferredCategories: {
+        type: [String],
+        enum: ['Frontend', 'Backend', 'Full Stack', 'Android', 'Data Science', 'DevOps', 'Other'],
+        default: []
+      },
+      // Work location preference
+      remotePreference: {
+        type: String,
+        enum: ['remote', 'onsite', 'hybrid', 'any'],
+        default: 'any'
+      },
+      // Career stage — helps filter entry-level vs senior roles
+      experienceLevel: {
+        type: String,
+        enum: ['fresher', 'junior', 'mid', 'senior', 'any'],
+        default: 'any'
+      }
     }
   },
   createdAt: {

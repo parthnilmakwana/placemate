@@ -2,16 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const helmet = require('helmet');
 
 // Load environment variables
 dotenv.config();
 
-// Connect to database
-connectDB();
+// Fail-fast if critical environment variables are missing
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
+  process.exit(1);
+}
+
+// Connect to database only if not in test mode (tests use in-memory DB)
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 const app = express();
+const { globalLimiter } = require('./middleware/rateLimiter');
 
 // Middlewares
+app.use(helmet()); // Secure HTTP headers
+app.use(globalLimiter); // Apply rate limiter to all API requests
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
@@ -42,6 +54,19 @@ app.use('/api/portfolio', portfolioRoutes);
 const resumeRoutes = require('./routes/resumeRoutes');
 app.use('/api/resume', resumeRoutes);
 
+const jobRoutes = require('./routes/jobRoutes');
+app.use('/api/jobs', jobRoutes);
+
+const paymentRoutes = require('./routes/paymentRoutes');
+app.use('/api/payments', paymentRoutes);
+
+const feedbackRoutes = require('./routes/feedbackRoutes');
+app.use('/api/feedback', feedbackRoutes);
+
+const seoRoutes = require('./routes/seoRoutes');
+app.use('/api/seo', seoRoutes);
+
+
 // Centralized error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -52,15 +77,50 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
+const path = require('path');
+const seoBotMiddleware = require('./middleware/seoBotMiddleware');
+
+// Start Server only if not in test environment
+let server;
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+const { initScheduler } = require('./utils/scheduler');
+
+// Production Front-end serving with Bot Interception
+const fs = require('fs');
+const clientBuildPath = path.join(__dirname, '../client/dist');
+
+if (process.env.NODE_ENV === 'production' && fs.existsSync(clientBuildPath)) {
+  // Use our bot middleware to serve static HTML to crawlers
+  app.use(seoBotMiddleware);
+  
+  // Serve static React build files
+  app.use(express.static(clientBuildPath));
+  
+  // Wildcard handler for SPA routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(clientBuildPath, 'index.html'));
+  });
+}
+
+
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    // Initialize background automated cron scheduler
+    initScheduler();
+  });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error(`Unhandled Rejection Error: ${err.message}`);
   // Close server & exit process
-  server.close(() => process.exit(1));
+  if (server) {
+    server.close(() => process.exit(1));
+  } else {
+    process.exit(1);
+  }
 });
+
+// Export app for testing
+module.exports = app;

@@ -46,7 +46,28 @@ function generateResumePDF(user, options = {}) {
     bufferPages: true
   });
 
-  const profile = user.profile || {};
+  let profile = user.profile || {};
+  
+  if (options.tailoredProfile) {
+    profile = {
+      ...profile,
+      bio: options.tailoredProfile.bio || profile.bio,
+      experience: profile.experience ? profile.experience.map(exp => {
+        const tailoredExp = options.tailoredProfile.experience?.find(
+          te => te.company.toLowerCase() === exp.company.toLowerCase() &&
+                te.position.toLowerCase() === exp.position.toLowerCase()
+        );
+        return tailoredExp ? { ...exp, description: tailoredExp.description } : exp;
+      }) : [],
+      projects: profile.projects ? profile.projects.map(proj => {
+        const tailoredProj = options.tailoredProfile.projects?.find(
+          tp => tp.title.toLowerCase() === proj.title.toLowerCase()
+        );
+        return tailoredProj ? { ...proj, description: tailoredProj.description } : proj;
+      }) : []
+    };
+  }
+
   const optimize = options.optimize === true;
 
   // Color Palette Definitions (Slate Theme)

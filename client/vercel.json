@@ -1,0 +1,23 @@
+{
+  "rewrites": [
+    {
+      "source": "/portfolio/:username",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i)(googlebot|bingbot|yandexbot|duckduckbot|slurp|twitterbot|facebookexternalhit|linkedinbot|embedly|baiduspider|pinterest|slackbot|vkshare|facebot|whatsapp)"
+        }
+      ],
+      "destination": "https://placemate-backend.onrender.com/portfolio/:username"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://placemate-backend.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -26,9 +26,18 @@ exports.updateProfile = async (req, res, next) => {
     }
 
     // Merge/Assign new profile details (bio, title, socials, edu, work, projects, preferences)
+    // Sanitization: Only pick allowed fields to prevent injection
+    const allowedFields = ['bio', 'title', 'githubUrl', 'linkedinUrl', 'skills', 'education', 'experience', 'projects', 'preferences'];
+    const sanitizedProfile = {};
+    for (const key of allowedFields) {
+      if (profile[key] !== undefined) {
+        sanitizedProfile[key] = profile[key];
+      }
+    }
+
     user.profile = {
-      ...user.profile.toObject(),
-      ...profile
+      ...(user.profile ? user.profile.toObject() : {}),
+      ...sanitizedProfile
     };
 
     // Update onboarding completion flag if explicitly submitted

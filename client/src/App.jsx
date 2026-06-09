@@ -1,305 +1,151 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import React, { useState, Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Login from './features/auth/Login';
-import Register from './features/auth/Register';
-import OnboardingWizard from './features/onboarding/OnboardingWizard';
-import PortfolioPage from './features/portfolio/PortfolioPage';
-import PortfolioTab from './features/portfolio/PortfolioTab';
-import ProfileTab from './features/profile/ProfileTab';
-import ResumeTab from './features/resume/ResumeTab';
-import { ShieldCheck, Server, AlertCircle, ArrowRight, Compass, Sparkles, Code, Cpu, LogOut, User, LayoutGrid, FileText } from 'lucide-react';
+import Sidebar from './components/Sidebar';
+import SkeletonLoader from './components/SkeletonLoader';
+import { Menu } from 'lucide-react';
+// Lazy load feature components for performance code-splitting
+const LandingPage = lazy(() => import('./features/landing/LandingPage'));
+const Login = lazy(() => import('./features/auth/Login'));
+const Register = lazy(() => import('./features/auth/Register'));
+const OnboardingWizard = lazy(() => import('./features/onboarding/OnboardingWizard'));
+const PortfolioPage = lazy(() => import('./features/portfolio/PortfolioPage'));
 
+// Lazy load Dashboard tab views
+const DashboardHome = lazy(() => import('./features/dashboard/DashboardHome'));
+const ProfileTab = lazy(() => import('./features/profile/ProfileTab'));
+const PortfolioTab = lazy(() => import('./features/portfolio/PortfolioTab'));
+const ResumeTab = lazy(() => import('./features/resume/ResumeTab'));
+const JobDashboardTab = lazy(() => import('./features/jobs/JobDashboardTab'));
+const FeedbackTab = lazy(() => import('./features/feedback/FeedbackTab'));
+
+// Loader spinner shown when loading main JS files
+function GlobalLoading() {
+  return (
+    <div className="min-h-screen bg-[#090d16] flex flex-col items-center justify-center text-slate-100 p-8">
+      <div className="relative w-12 h-12 mb-4">
+        <div className="absolute inset-0 rounded-full border-4 border-brand-primary/20 animate-ping"></div>
+        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-primary border-r-brand-primary/60 animate-spin"></div>
+      </div>
+      <span className="font-heading text-xs text-slate-500 font-bold tracking-widest uppercase animate-pulse">
+        Loading PlaceMate...
+      </span>
+    </div>
+  );
+}
+
+// Master private layout wrapper containing left Sidebar and scrollable Content panel
 function Dashboard() {
-  const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('diagnostics'); // 'diagnostics' or 'portfolio'
-  
-  const [healthStatus, setHealthStatus] = useState({ loading: true, data: null, error: null });
-  const navigate = useNavigate();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
-  const checkBackendHealth = async () => {
-    setHealthStatus({ loading: true, data: null, error: null });
-    try {
-      const response = await fetch('/api/health');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      setHealthStatus({ loading: false, data, error: null });
-    } catch (err) {
-      console.error('Error fetching health status:', err);
-      setHealthStatus({
-        loading: false,
-        data: null,
-        error: 'Unable to connect to backend server. Make sure the server is running on port 5000.'
-      });
-    }
+  // Helper mapping current URL to tab ID for loading spinner and sidebar state logic
+  const getActiveTab = () => {
+    const path = location.pathname;
+    if (path === '/dashboard' || path === '/dashboard/') return 'home';
+    return path.split('/')[2] || 'home';
   };
-
-  useEffect(() => {
-    if (activeTab === 'diagnostics') {
-      checkBackendHealth();
-    }
-  }, [activeTab]);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const activeTab = getActiveTab();
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between p-6 md:p-8 overflow-hidden z-10">
+    <div className="min-h-screen flex bg-brand-bg relative overflow-hidden">
       
       {/* Background ambient glowing shapes */}
-      <div className="absolute top-[-100px] right-[-50px] w-[500px] h-[500px] rounded-full bg-brand-primary/10 blur-[140px] pointer-events-none z-[-1] animate-glow-float"></div>
-      <div className="absolute bottom-[50px] left-[-50px] w-[400px] h-[400px] rounded-full bg-brand-secondary/10 blur-[140px] pointer-events-none z-[-1] animate-glow-float-reverse"></div>
+      <div className="absolute top-[-100px] right-[-50px] w-[500px] h-[500px] rounded-full bg-brand-primary/5 blur-[140px] pointer-events-none z-0"></div>
+      <div className="absolute bottom-[50px] left-[-50px] w-[400px] h-[400px] rounded-full bg-brand-secondary/5 blur-[140px] pointer-events-none z-0"></div>
 
-      {/* Header / Navbar */}
-      <header className="flex justify-between items-center mb-10 pb-4 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="text-3xl select-none">💼</div>
-          <span className="font-heading text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-            PlaceMate
-          </span>
-        </div>
+      {/* Persistent Left Sidebar Navigation */}
+      <Sidebar 
+        sidebarCollapsed={sidebarCollapsed} 
+        setSidebarCollapsed={setSidebarCollapsed} 
+        mobileOpen={mobileOpen} 
+        setMobileOpen={setMobileOpen} 
+      />
+
+      {/* Main Content Area Container */}
+      <div className="flex-grow flex flex-col h-screen overflow-hidden z-10 w-full pb-[30px]">
         
-        {/* User Info & Logout */}
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-300">
-            <User size={12} className="text-brand-secondary" />
-            <span>{user?.name} ({user?.email})</span>
+        {/* Mobile Header Bar */}
+        <header className="md:hidden flex items-center justify-between bg-[#0c101d] border-b border-white/5 px-6 py-4 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="PlaceMate" width="40" height="40" className="w-10 h-10 object-contain" />
+            <span className="font-heading text-lg font-black text-white tracking-tight">PlaceMate</span>
           </div>
           <button 
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-error/10 hover:bg-brand-error/20 border border-brand-error/25 text-brand-error cursor-pointer transition-colors duration-150 active:scale-[0.98]"
+            onClick={() => setMobileOpen(true)}
+            className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg focus:outline-none"
           >
-            <LogOut size={12} />
-            <span>Sign Out</span>
+            <Menu size={20} />
           </button>
-        </div>
-      </header>
+        </header>
 
-      {/* Nav Tabs Bar */}
-      <nav className="flex gap-2 max-w-6xl mx-auto w-full mb-8">
-        <button
-          onClick={() => setActiveTab('diagnostics')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border transition-all duration-150 cursor-pointer
-            ${activeTab === 'diagnostics' 
-              ? 'bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20' 
-              : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/8'}`}
-        >
-          <Cpu size={14} />
-          <span>System Diagnostics</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border transition-all duration-150 cursor-pointer
-            ${activeTab === 'profile' 
-              ? 'bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20' 
-              : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/8'}`}
-        >
-          <User size={14} />
-          <span>Edit Profile</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('portfolio')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border transition-all duration-150 cursor-pointer
-            ${activeTab === 'portfolio' 
-              ? 'bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20' 
-              : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/8'}`}
-        >
-          <LayoutGrid size={14} />
-          <span>Public Portfolio</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('resume')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border transition-all duration-150 cursor-pointer
-            ${activeTab === 'resume' 
-              ? 'bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20' 
-              : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/8'}`}
-        >
-          <FileText size={14} />
-          <span>ATS Resume</span>
-        </button>
-      </nav>
-
-      {/* Main Container */}
-      <main className="flex-grow max-w-6xl mx-auto w-full flex items-center justify-center">
-        
-        {/* Render Tab: System Diagnostics */}
-        {activeTab === 'diagnostics' && (
-          <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] items-center gap-16 w-full">
-            {/* Left column: Hero Welcome */}
-            <section className="flex flex-col items-start text-left">
-              <div className="inline-flex items-center gap-2 bg-brand-primary/10 border border-brand-primary/25 text-violet-300 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6">
-                <Cpu size={14} />
-                <span>Secure Dev Dashboard Active</span>
-              </div>
-              
-              <h1 className="font-heading text-5xl md:text-6xl font-extrabold leading-none tracking-tight mb-6">
-                Welcome back, <br />
-                <span className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
-                  {user?.name || 'Developer'}
-                </span>
-              </h1>
-              
-              <p className="text-lg leading-relaxed text-slate-400 mb-8 max-w-lg">
-                Your credentials have been successfully authenticated with Mongoose & JWT. You are currently on the <strong>{user?.plan || 'free'}</strong> tier.
-              </p>
-
-              <div className="flex gap-4 flex-wrap">
-                <button 
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm cursor-pointer transition-all duration-200 bg-brand-primary hover:bg-brand-primary-hover text-white shadow-lg shadow-brand-primary/30 hover:shadow-brand-primary/40 active:scale-[0.97]"
-                  onClick={checkBackendHealth}
-                >
-                  <span>Refresh Backend API</span>
-                  <ArrowRight size={16} />
-                </button>
-                
-                <a 
-                  href="file:///c:/placeMate/roadmap.md" 
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm border border-white/10 bg-white/5 hover:bg-white/8 text-white transition-all duration-200 active:scale-[0.97]"
-                  target="_blank" 
-                  rel="noreferrer"
-                >
-                  <span>Explore Roadmap</span>
-                </a>
-              </div>
-            </section>
-
-            {/* Right column: System Diagnostics Panel */}
-            <section className="w-full max-w-[480px]">
-              <div className="glass-panel rounded-2xl p-8 shadow-2xl hover:border-brand-primary/20 transition-all duration-300">
-                
-                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                  <Server size={18} className="text-brand-primary" />
-                  <h3 className="font-heading text-lg font-semibold tracking-wide text-slate-200">System Integrations Check</h3>
-                </div>
-                
-                {/* Health Check Block */}
-                <div className="bg-black/20 rounded-xl p-5 mb-6 border border-white/5">
-                  {healthStatus.loading ? (
-                    <div className="flex items-center gap-3 text-slate-400">
-                      <div className="custom-spinner"></div>
-                      <span className="text-sm">Pinging API server...</span>
-                    </div>
-                  ) : healthStatus.error ? (
-                    <div className="flex items-start gap-4 text-brand-error animate-shake">
-                      <AlertCircle size={20} className="mt-0.5 shrink-0" />
-                      <div>
-                        <h4 className="font-semibold text-sm text-slate-100">Connection Failed</h4>
-                        <p className="text-xs text-brand-error mt-1">{healthStatus.error}</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-start gap-4 text-brand-success">
-                      <ShieldCheck size={24} className="shrink-0 animate-bounce-slow" />
-                      <div className="w-full">
-                        <h4 className="font-semibold text-sm text-slate-100">Express Server Connected</h4>
-                        <p className="text-xs text-slate-400 mt-1">
-                          API responds: <code>"{healthStatus.data.message}"</code>
-                        </p>
-                        <div className="flex gap-2 items-center text-[10px] text-slate-500 mt-3 pt-2 border-t border-white/5">
-                          <span><strong>Env:</strong> {healthStatus.data.environment}</span>
-                          <span>•</span>
-                          <span><strong>Time:</strong> {new Date(healthStatus.data.timestamp).toLocaleTimeString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Features Info list */}
-                <div className="flex flex-col gap-5">
-                  <div className="flex gap-4 items-start">
-                    <Compass className="shrink-0 w-[18px] h-[18px] text-brand-secondary mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-200">Protected Client Router</h4>
-                      <p className="text-xs text-slate-400 mt-0.5 leading-normal">
-                        Dashboard wrapped by <code>&lt;ProtectedRoute&gt;</code> checking session tokens.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-4 items-start">
-                    <Code className="shrink-0 w-[18px] h-[18px] text-brand-secondary mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-200">Tailwind CSS v4 Configuration</h4>
-                      <p className="text-xs text-slate-400 mt-0.5 leading-normal">
-                        CSS-first theme compiling. Responsive layouts, hover transitions, and animations.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </section>
+        {/* Scrollable Work Viewport */}
+        <main className="flex-grow overflow-y-auto px-6 pt-8 md:px-10 md:pt-10 custom-scrollbar flex justify-center text-left">
+          <div className="w-full max-w-5xl flex flex-col pb-[25px]">
+            <Suspense fallback={<SkeletonLoader type={activeTab === 'jobs' ? 'jobs' : 'dashboard'} />}>
+              <Outlet />
+            </Suspense>
           </div>
-        )}
-
-        {/* Render Tab: Edit Profile */}
-        {activeTab === 'profile' && (
-          <div className="w-full flex justify-center">
-            <ProfileTab />
-          </div>
-        )}
-
-        {/* Render Tab: Portfolio management settings */}
-        {activeTab === 'portfolio' && (
-          <div className="w-full flex justify-center">
-            <PortfolioTab />
-          </div>
-        )}
-
-        {/* Render Tab: ATS Resume */}
-        {activeTab === 'resume' && (
-          <div className="w-full flex justify-center">
-            <ResumeTab />
-          </div>
-        )}
-
-      </main>
-
-      {/* Footer */}
-      <footer className="mt-12 text-center text-xs text-slate-500 border-t border-white/10 pt-6">
-        <p>© 2026 PlaceMate Team. Pair programmed with Antigravity AI.</p>
-      </footer>
+        </main>
+      </div>
     </div>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route 
-            path="/onboarding" 
-            element={
-              <ProtectedRoute requireOnboarded={false}>
-                <OnboardingWizard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute requireOnboarded={true}>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          {/* Public standalone portfolio pages */}
-          <Route path="/portfolio/:username" element={<PortfolioPage />} />
-          
-          {/* Default fallback redirects */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+    <HelmetProvider>
+      <BrowserRouter>
+        <AuthProvider>
+        <Suspense fallback={<GlobalLoading />}>
+          <Routes>
+            {/* Public Marketing Portal */}
+            <Route path="/" element={<LandingPage />} />
+            
+            {/* Authentication routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Protected candidate onboarding wizard */}
+            <Route 
+              path="/onboarding" 
+              element={
+                <ProtectedRoute requireOnboarded={false}>
+                  <OnboardingWizard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Private user dashboard command center */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute requireOnboarded={true}>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            >
+              <Route index element={<DashboardHome />} />
+              <Route path="profile" element={<ProfileTab />} />
+              <Route path="portfolio" element={<PortfolioTab />} />
+              <Route path="resume" element={<ResumeTab />} />
+              <Route path="jobs" element={<JobDashboardTab />} />
+              <Route path="feedback" element={<FeedbackTab />} />
+            </Route>
+            
+            {/* Public live portfolio web templates */}
+            <Route path="/portfolio/:username" element={<PortfolioPage />} />
+            
+            {/* Unresolved path fallback redirects */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

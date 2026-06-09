@@ -1,298 +1,228 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  FileText, Download, CheckCircle, AlertCircle, 
-  Sparkles, Settings, ArrowRight, BookOpen, Briefcase, Code, User, Compass
-} from 'lucide-react';
+import { CheckCircle, AlertCircle, Sparkles, User, Code, BookOpen, Briefcase, Compass, Loader2, Wand2, Save } from 'lucide-react';
+import ResumeCustomizer from './components/ResumeCustomizer';
+import { api } from '../../services/api';
+
+// Lazy load the PDF components because @react-pdf/renderer is heavy
+const ResumePreview = lazy(() => import('./components/ResumePreview'));
 
 function ResumeTab() {
-  const { user } = useAuth();
+  const { user, checkUserSession } = useAuth();
   
   const [optimize, setOptimize] = useState(true);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [error, setError] = useState('');
-  
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [draftProfile, setDraftProfile] = useState(null);
+  const [settings, setSettings] = useState({
+    themeId: 'modern',
+    fontFamily: 'Inter',
+    primaryColor: '#1e293b',
+    secondaryColor: '#4f46e5',
+    fontSize: 10,
+  });
+
   // Calculate profile completeness and checklist
-  const profile = user?.profile || {};
+  const profile = draftProfile || user?.profile || {};
   
   const checklist = {
     bio: !!profile.bio,
-    skills: profile.skills && profile.skills.length > 0,
-    education: profile.education && profile.education.length > 0,
-    experience: profile.experience && profile.experience.length > 0,
-    projects: profile.projects && profile.projects.length > 0,
+    skills: !!(profile.skills && profile.skills.length > 0),
+    education: !!(profile.education && profile.education.length > 0),
+    experience: !!(profile.experience && profile.experience.length > 0),
+    projects: !!(profile.projects && profile.projects.length > 0),
   };
 
   const completedCount = Object.values(checklist).filter(Boolean).length;
   const totalCount = Object.keys(checklist).length;
   const readinessScore = Math.round((completedCount / totalCount) * 100);
 
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true);
-    setError('');
-    
-    try {
-      const response = await fetch(`/api/resume/download?optimize=${optimize}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server returned status code ${response.status}`);
-      }
-
-      // Convert response stream to binary blob
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      
-      // Create hidden link to trigger native browser download save dialog
-      const link = document.createElement('a');
-      link.href = url;
-      
-      const safeName = user?.name ? user.name.replace(/\s+/g, '_') : 'My';
-      link.download = `${safeName}_Resume.pdf`;
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up DOM objects
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Resume download failure:', err);
-      setError('Could not download PDF resume. Please verify your profile fields and try again.');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   return (
-    <div className="flex flex-col gap-8 w-full max-w-4xl">
+    <div className="flex flex-col gap-6 md:gap-8 w-full animate-fade-in text-left">
       
-      <div className="flex flex-col gap-2">
-        <h2 className="font-heading text-2xl font-bold text-white">ATS-Optimized Resume</h2>
-        <p className="text-sm text-slate-400">
-          Generate and download a professional, single-page PDF resume optimized for Applicant Tracking Systems (ATS).
+      {/* Header bar */}
+      <div className="flex flex-col gap-1.5 border-b border-white/5 pb-4 shrink-0">
+        <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-white">Resume Studio</h2>
+        <p className="text-xs md:text-sm text-slate-400">
+          Design and download pixel-perfect, ATS-optimized developer resumes. Live rendering outputs matches your selection immediately.
         </p>
       </div>
 
-      {/* Error alert banner */}
-      {error && (
-        <div className="flex items-start gap-3 p-4 rounded-lg text-xs bg-brand-error/10 border border-brand-error/25 text-brand-error animate-shake">
-          <AlertCircle size={16} className="shrink-0 mt-0.5" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-8 items-start">
+      {/* Workspace Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 items-start relative">
         
-        {/* Left Column: Stats, Checklist, Options */}
-        <div className="flex flex-col gap-6 w-full">
+        {/* Left Column: Configuration Panels */}
+        <div className="flex flex-col gap-6 w-full lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto pr-1.5 pb-20 custom-scrollbar">
           
-          {/* Readiness Card */}
-          <div className="glass-panel rounded-2xl p-6 border border-white/5 flex items-center gap-6 shadow-xl relative overflow-hidden">
-            <div className="relative shrink-0 flex items-center justify-center">
-              {/* Circular progress bar */}
-              <svg className="w-20 h-20 transform -rotate-90">
-                <circle 
-                  cx="40" 
-                  cy="40" 
-                  r="34" 
-                  className="stroke-slate-800" 
-                  strokeWidth="6" 
-                  fill="transparent" 
-                />
-                <circle 
-                  cx="40" 
-                  cy="40" 
-                  r="34" 
-                  className="stroke-brand-secondary transition-all duration-500" 
-                  strokeWidth="6" 
-                  fill="transparent"
-                  strokeDasharray={2 * Math.PI * 34}
-                  strokeDashoffset={2 * Math.PI * 34 * (1 - readinessScore / 100)}
-                />
-              </svg>
-              <span className="absolute text-sm font-bold text-white">{readinessScore}%</span>
-            </div>
-            
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-bold text-brand-secondary uppercase tracking-wider">ATS Score Estimation</span>
-              <h4 className="text-sm font-bold text-white">Resume Completeness</h4>
-              <p className="text-xs text-slate-400 leading-normal">
-                {readinessScore === 100 
-                  ? 'Your profile is fully completed and ready for professional applications.'
-                  : 'Fill in missing sections to maximize matching relevance for recruiters.'}
-              </p>
-            </div>
-          </div>
+          {/* Customizer */}
+          <ResumeCustomizer settings={settings} setSettings={setSettings} />
 
-          {/* Checklist Card */}
-          <div className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col gap-4 shadow-xl">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <CheckCircle size={14} className="text-brand-secondary" />
-              <span>Profile Integrity Checklist</span>
+          {/* AI Enhancement Section */}
+          <div className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col gap-4 shadow-xl bg-purple-500/2">
+            <h3 className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-white/5 pb-3">
+              <Wand2 size={13} className="text-purple-400" />
+              <span>Gemini AI Writing Assistant</span>
             </h3>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Analyze your bio summaries and project logs. Gemini will rewrite your descriptions using high-impact professional phrasing.
+            </p>
+            
+            <div className="flex flex-col gap-3 mt-1.5">
+              <button
+                onClick={async () => {
+                  try {
+                    setIsEnhancing(true);
+                    const res = await api.post('/api/resume/enhance');
+                    setDraftProfile(res.draft);
+                  } catch (err) {
+                    console.error('Enhancement failed:', err);
+                    alert(err.message || 'Failed to enhance resume');
+                  } finally {
+                    setIsEnhancing(false);
+                  }
+                }}
+                disabled={isEnhancing || !!draftProfile}
+                className="w-full py-2.5 rounded-xl bg-purple-600/10 hover:bg-purple-600/20 border border-purple-500/25 text-purple-300 text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {isEnhancing ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                {isEnhancing ? 'Thinking...' : (draftProfile ? 'AI Draft Applied' : 'Polish Resume Draft')}
+              </button>
 
-            <div className="flex flex-col gap-3.5 mt-2">
-              <div className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2.5">
-                  <User size={14} className="text-slate-500" />
-                  <span className="text-slate-300">Personal Title & Bio</span>
+              {draftProfile && (
+                <div className="flex gap-2.5 animate-slide-up">
+                  <button
+                    onClick={() => setDraftProfile(null)}
+                    className="flex-1 py-2 rounded-xl bg-black/40 hover:bg-black/60 border border-white/10 text-slate-400 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    Discard
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await api.put('/api/profile', { profile: draftProfile });
+                        await checkUserSession();
+                        setDraftProfile(null);
+                      } catch (err) {
+                        console.error('Save failed:', err);
+                        alert('Failed to save profile');
+                      }
+                    }}
+                    className="flex-grow inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold transition-all cursor-pointer shadow-lg shadow-brand-primary/10"
+                  >
+                    <Save size={12} />
+                    <span>Save Profile</span>
+                  </button>
                 </div>
-                {checklist.bio 
-                  ? <span className="text-brand-secondary font-bold">Passed</span> 
-                  : <span className="text-slate-500 italic">Empty</span>}
-              </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2.5">
-                  <Code size={14} className="text-slate-500" />
-                  <span className="text-slate-300">Core Expertise Skills</span>
-                </div>
-                {checklist.skills 
-                  ? <span className="text-brand-secondary font-bold">Passed</span> 
-                  : <span className="text-slate-500 italic">Empty</span>}
-              </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2.5">
-                  <BookOpen size={14} className="text-slate-500" />
-                  <span className="text-slate-300">Education Details</span>
-                </div>
-                {checklist.education 
-                  ? <span className="text-brand-secondary font-bold">Passed</span> 
-                  : <span className="text-slate-500 italic">Empty</span>}
-              </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2.5">
-                  <Briefcase size={14} className="text-slate-500" />
-                  <span className="text-slate-300">Work Experience Logs</span>
-                </div>
-                {checklist.experience 
-                  ? <span className="text-brand-secondary font-bold">Passed</span> 
-                  : <span className="text-amber-500/80 font-medium">Missing</span>}
-              </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2.5">
-                  <Compass size={14} className="text-slate-500" />
-                  <span className="text-slate-300">Portfolio Projects</span>
-                </div>
-                {checklist.projects 
-                  ? <span className="text-brand-secondary font-bold">Passed</span> 
-                  : <span className="text-slate-500 italic">Empty</span>}
-              </div>
+              )}
             </div>
           </div>
 
           {/* Phrasing Optimization Config */}
           <div className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col gap-4 shadow-xl">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles size={14} className="text-brand-secondary" />
-              <span>AI Formatting Engines</span>
+            <h3 className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-white/5 pb-3">
+              <CheckCircle size={13} className="text-brand-secondary" />
+              <span>ATS Optimizers</span>
             </h3>
 
-            <div className="flex items-start justify-between gap-4 mt-2">
-              <div className="flex flex-col gap-1">
-                <h4 className="text-xs font-bold text-slate-300">ATS Verbs Enhancer</h4>
+            <div className="flex items-start justify-between gap-4 mt-1">
+              <div className="flex flex-col gap-1 text-left">
+                <h4 className="text-xs font-bold text-slate-200">Active Verb Enhancer</h4>
                 <p className="text-[10px] text-slate-500 leading-normal">
-                  Polishes bullet points to use strong action verbs (e.g. replaces "worked on" with "Architected and engineered").
+                  Renders standard action verbs (e.g. replacing "worked on" with "designed and deployed") automatically.
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setOptimize(!optimize)}
-                className={`w-9 h-5 rounded-full p-0.5 cursor-pointer transition-colors duration-200 ease-in-out shrink-0 outline-none
+                className={`w-9 h-5 rounded-full p-0.5 cursor-pointer transition-colors duration-250 ease-in-out shrink-0 outline-none
                   ${optimize ? 'bg-brand-secondary' : 'bg-slate-700'}`}
               >
                 <div 
-                  className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out
+                  className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-250 ease-in-out
                     ${optimize ? 'translate-x-4' : 'translate-x-0'}`}
                 ></div>
               </button>
             </div>
           </div>
 
-          {/* Trigger Download */}
-          <button
-            onClick={handleDownloadPDF}
-            disabled={isDownloading}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-bold text-sm cursor-pointer transition-all duration-200 bg-brand-primary hover:bg-brand-primary-hover text-white shadow-lg shadow-brand-primary/20 disabled:opacity-75 active:scale-[0.98] mt-2"
-          >
-            {isDownloading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
-                <span>Generating PDF...</span>
-              </>
-            ) : (
-              <>
-                <Download size={16} />
-                <span>Download ATS Resume (PDF)</span>
-              </>
-            )}
-          </button>
+          {/* Integrity Checklist Card */}
+          <div className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col gap-4 shadow-xl">
+            <h3 className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-white/5 pb-3">
+              <CheckCircle size={13} className="text-brand-primary" />
+              <span>Document Integrity Checklist</span>
+            </h3>
+
+            <div className="flex flex-col gap-3 mt-1 text-xs font-semibold">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <User size={13} />
+                  <span>Personal Bio</span>
+                </div>
+                {checklist.bio 
+                  ? <span className="text-emerald-400">PASSED</span> 
+                  : <span className="text-slate-550 italic font-medium">EMPTY</span>}
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Code size={13} />
+                  <span>Expertise Skills</span>
+                </div>
+                {checklist.skills 
+                  ? <span className="text-emerald-400">PASSED</span> 
+                  : <span className="text-slate-550 italic font-medium">EMPTY</span>}
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <BookOpen size={13} />
+                  <span>Education Logs</span>
+                </div>
+                {checklist.education 
+                  ? <span className="text-emerald-400">PASSED</span> 
+                  : <span className="text-slate-550 italic font-medium">EMPTY</span>}
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Briefcase size={13} />
+                  <span>Work Experiences</span>
+                </div>
+                {checklist.experience 
+                  ? <span className="text-emerald-400">PASSED</span> 
+                  : <span className="text-amber-500/80 font-bold">MISSING</span>}
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Compass size={13} />
+                  <span>Project Portfolios</span>
+                </div>
+                {checklist.projects 
+                  ? <span className="text-emerald-400">PASSED</span> 
+                  : <span className="text-slate-550 italic font-medium">EMPTY</span>}
+              </div>
+            </div>
+          </div>
 
         </div>
 
-        {/* Right Column: Visual Layout Mockup Outline */}
-        <div className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col gap-4 shadow-xl max-w-[480px] w-full bg-slate-950/20 pointer-events-none select-none">
-          <div className="flex justify-between items-center border-b border-white/5 pb-3">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Visual Resume Preview Template</span>
-            <FileText size={14} className="text-slate-500" />
-          </div>
-
-          {/* Styled resume structure mockup */}
-          <div className="border border-white/5 rounded-xl p-4 bg-black/30 flex flex-col gap-4">
-            
-            {/* Header Block */}
-            <div className="flex flex-col items-center gap-1.5 border-b border-white/5 pb-3">
-              <div className="h-3 w-28 bg-slate-700 rounded"></div>
-              <div className="h-2 w-36 bg-brand-secondary/40 rounded"></div>
-              <div className="h-1.5 w-44 bg-slate-800 rounded"></div>
-            </div>
-
-            {/* Summary Block */}
-            <div className="flex flex-col gap-2">
-              <div className="h-2.5 w-20 bg-slate-700 rounded"></div>
-              <div className="h-1.5 w-full bg-slate-800 rounded"></div>
-              <div className="h-1.5 w-5/6 bg-slate-800 rounded"></div>
-            </div>
-
-            {/* Skills Block */}
-            <div className="flex flex-col gap-2">
-              <div className="h-2.5 w-16 bg-slate-700 rounded"></div>
-              <div className="flex flex-wrap gap-1.5">
-                <div className="h-4 w-12 bg-slate-800/80 rounded border border-white/5"></div>
-                <div className="h-4 w-16 bg-slate-800/80 rounded border border-white/5"></div>
-                <div className="h-4 w-14 bg-slate-800/80 rounded border border-white/5"></div>
-                <div className="h-4 w-10 bg-slate-800/80 rounded border border-white/5"></div>
+        {/* Right Column: PDF Preview Document Panel */}
+        <div className="flex justify-center w-full lg:sticky lg:top-0 lg:h-[calc(100vh-10rem)] bg-slate-950/20 rounded-2xl border border-white/5 overflow-hidden shadow-2xl relative">
+          <Suspense fallback={
+            <div className="flex items-center justify-center w-full h-full min-h-[500px]">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
+                <span className="text-xs text-slate-500 font-bold tracking-widest uppercase animate-pulse">Loading Document Canvas...</span>
               </div>
             </div>
-
-            {/* Experience Block */}
-            <div className="flex flex-col gap-2">
-              <div className="h-2.5 w-24 bg-slate-700 rounded"></div>
-              <div className="flex justify-between">
-                <div className="h-2 w-28 bg-slate-800 rounded"></div>
-                <div className="h-2 w-16 bg-slate-800 rounded"></div>
-              </div>
-              <div className="h-1.5 w-11/12 bg-slate-900 rounded"></div>
-              <div className="h-1.5 w-5/6 bg-slate-900 rounded"></div>
-            </div>
-
-            {/* Education Block */}
-            <div className="flex flex-col gap-2">
-              <div className="h-2.5 w-16 bg-slate-700 rounded"></div>
-              <div className="flex justify-between">
-                <div className="h-2 w-24 bg-slate-800 rounded"></div>
-                <div className="h-2 w-12 bg-slate-800 rounded"></div>
-              </div>
-            </div>
-
-          </div>
+          }>
+            <ResumePreview 
+              user={user} 
+              profile={profile} 
+              settings={settings} 
+              optimize={optimize} 
+            />
+          </Suspense>
         </div>
 
       </div>

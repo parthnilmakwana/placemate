@@ -67,6 +67,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Google OAuth handler
+  const loginWithGoogle = async (idToken) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post('/api/auth/google', { idToken });
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
+      return response.user;
+    } catch (err) {
+      setError(err.message || 'Failed to sign in with Google.');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   // Sign out handler
   const logout = () => {
     localStorage.removeItem('token');
@@ -83,6 +101,7 @@ export const AuthProvider = ({ children }) => {
         setError,
         login,
         register,
+        loginWithGoogle,
         logout,
         checkUserSession
       }}

@@ -24,7 +24,7 @@ const runTests = async () => {
 
     // 2. Test Registration & Hashing
     console.log('Test 1: User Registration and Hashing...');
-    const plainPassword = 'securepassword123';
+    const plainPassword = 'SecurePass123!';
     const testUserObj = {
       name: 'Auth Test Runner',
       email: testEmail,

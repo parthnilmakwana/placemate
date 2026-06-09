@@ -313,7 +313,7 @@ function OnboardingWizard() {
 
       <header className="max-w-4xl mx-auto w-full flex justify-between items-center z-10 mb-8 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="text-3xl">💼</div>
+          <img src="/logo.png" alt="PlaceMate" className="w-11 h-11 object-contain" />
           <span className="font-heading text-xl font-extrabold text-white">PlaceMate Onboarding</span>
         </div>
         
