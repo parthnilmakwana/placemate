@@ -44,17 +44,17 @@ function LandingPage() {
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": "https://placemate.com/#website",
-        "url": "https://placemate.com/",
+        "@id": "https://www.placemate.me/#website",
+        "url": "https://www.placemate.me/",
         "name": "PlaceMate",
         "description": "AI Resume Builder & Developer Portfolio Generator"
       },
       {
         "@type": "Organization",
-        "@id": "https://placemate.com/#organization",
+        "@id": "https://www.placemate.me/#organization",
         "name": "PlaceMate",
-        "url": "https://placemate.com",
-        "logo": "https://placemate.com/logo.png"
+        "url": "https://www.placemate.me",
+        "logo": "https://www.placemate.me/logo.png"
       }
     ]
   };

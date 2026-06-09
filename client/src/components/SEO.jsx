@@ -6,8 +6,8 @@ export default function SEO({
   description, 
   name = "PlaceMate", 
   type = "website",
-  url = "https://placemate.com",
-  image = "https://placemate.com/og-image.png",
+  url = "https://www.placemate.me",
+  image = "https://www.placemate.me/og-image.png",
   schema
 }) {
   return (

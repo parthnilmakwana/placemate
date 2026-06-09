@@ -935,7 +935,7 @@ function PortfolioPage() {
       "name": name,
       "jobTitle": title,
       "description": bio,
-      "url": `https://placemate.com/portfolio/${username}`,
+      "url": `https://www.placemate.me/portfolio/${username}`,
       "sameAs": [githubUrl, linkedinUrl].filter(Boolean)
     }
   };

@@ -34,7 +34,7 @@ const seoBotMiddleware = async (req, res, next) => {
         if (user && user.profile.isPublic) {
           const title = `${user.name} | ${user.profile.title || 'Developer'}`;
           const description = user.profile.bio || `View the professional portfolio of ${user.name}.`;
-          const url = `${process.env.CLIENT_URL || 'https://placemate.com'}/portfolio/${username}`;
+          const url = `${process.env.CLIENT_URL || 'https://www.placemate.me'}/portfolio/${username}`;
           
           // Generate raw HTML for the bot to parse instantly
           const html = `

@@ -9,11 +9,11 @@
           "value": "(?i)(googlebot|bingbot|yandexbot|duckduckbot|slurp|twitterbot|facebookexternalhit|linkedinbot|embedly|baiduspider|pinterest|slackbot|vkshare|facebot|whatsapp)"
         }
       ],
-      "destination": "https://placemate-backend.onrender.com/portfolio/:username"
+      "destination": "https://placemate-pynm.onrender.com/portfolio/:username"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://placemate-backend.onrender.com/api/:path*"
+      "destination": "https://placemate-pynm.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

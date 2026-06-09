@@ -12,7 +12,7 @@ router.get('/sitemap.xml', async (req, res) => {
       'profile.isPublic': true 
     }).select('username profile.updatedAt');
 
-    const baseUrl = process.env.CLIENT_URL || 'https://placemate.com';
+    const baseUrl = process.env.CLIENT_URL || 'https://www.placemate.me';
     
     // Start XML string
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
