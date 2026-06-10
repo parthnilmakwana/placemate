@@ -24,8 +24,32 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 // Middlewares
 app.use(helmet()); // Secure HTTP headers
 app.use(globalLimiter); // Apply rate limiter to all API requests
+const allowedOrigins = [
+  'https://placemate.me',
+  'https://www.placemate.me',
+  'http://localhost:5173'
+];
+
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Incoming request Origin:', origin);
+    }
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
