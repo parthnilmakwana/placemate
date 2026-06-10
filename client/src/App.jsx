@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import SkeletonLoader from './components/SkeletonLoader';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Menu } from 'lucide-react';
 // Lazy load feature components for performance code-splitting
 const LandingPage = lazy(() => import('./features/landing/LandingPage'));
@@ -100,8 +101,9 @@ function App() {
     <HelmetProvider>
       <BrowserRouter>
         <AuthProvider>
-        <Suspense fallback={<GlobalLoading />}>
-          <Routes>
+          <ErrorBoundary>
+            <Suspense fallback={<GlobalLoading />}>
+              <Routes>
             {/* Public Marketing Portal */}
             <Route path="/" element={<LandingPage />} />
             
@@ -141,9 +143,10 @@ function App() {
             
             {/* Unresolved path fallback redirects */}
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </AuthProvider>
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </AuthProvider>
       </BrowserRouter>
     </HelmetProvider>
   );
