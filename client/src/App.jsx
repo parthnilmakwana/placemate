@@ -14,12 +14,18 @@ const Register = lazy(() => import('./features/auth/Register'));
 const OnboardingWizard = lazy(() => import('./features/onboarding/OnboardingWizard'));
 const PortfolioPage = lazy(() => import('./features/portfolio/PortfolioPage'));
 
+// Lazy load SEO and Tool components
+const ProgrammaticSEOPage = lazy(() => import('./features/seo/ProgrammaticSEOPage'));
+const ResumeBuilderLanding = lazy(() => import('./features/landing/seo-pages/ResumeBuilderLanding'));
+const PortfolioBuilderLanding = lazy(() => import('./features/landing/seo-pages/PortfolioBuilderLanding'));
+
 // Lazy load Dashboard tab views
 const DashboardHome = lazy(() => import('./features/dashboard/DashboardHome'));
 const ProfileTab = lazy(() => import('./features/profile/ProfileTab'));
 const PortfolioTab = lazy(() => import('./features/portfolio/PortfolioTab'));
 const ResumeTab = lazy(() => import('./features/resume/ResumeTab'));
 const JobDashboardTab = lazy(() => import('./features/jobs/JobDashboardTab'));
+const PricingTab = lazy(() => import('./features/pricing/PricingTab'));
 const FeedbackTab = lazy(() => import('./features/feedback/FeedbackTab'));
 
 // Loader spinner shown when loading main JS files
@@ -107,6 +113,12 @@ function App() {
             {/* Public Marketing Portal */}
             <Route path="/" element={<LandingPage />} />
             
+            {/* SEO Landing Pages & Tools */}
+            <Route path="/resume-builder" element={<ResumeBuilderLanding />} />
+            <Route path="/portfolio-builder" element={<PortfolioBuilderLanding />} />
+            <Route path="/roles/:role" element={<ProgrammaticSEOPage type="role" />} />
+            <Route path="/tech/:tech" element={<ProgrammaticSEOPage type="tech" />} />
+            
             {/* Authentication routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -135,6 +147,7 @@ function App() {
               <Route path="portfolio" element={<PortfolioTab />} />
               <Route path="resume" element={<ResumeTab />} />
               <Route path="jobs" element={<JobDashboardTab />} />
+              <Route path="pricing" element={<PricingTab />} />
               <Route path="feedback" element={<FeedbackTab />} />
             </Route>
             

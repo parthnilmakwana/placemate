@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, User, Globe, FileText, Briefcase, 
   MessageSquare, LogOut, Settings, ChevronLeft, ChevronRight, 
-  Menu, X, Server 
+  Menu, X, Server, CreditCard 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -26,6 +26,7 @@ function Sidebar({ sidebarCollapsed, setSidebarCollapsed, mobileOpen, setMobileO
     { id: 'portfolio', label: 'Public Portfolio', icon: Globe },
     { id: 'resume', label: 'ATS Resume', icon: FileText },
     { id: 'jobs', label: 'Job Hunting', icon: Briefcase, badge: 'Beta' },
+    { id: 'pricing', label: 'Pricing', icon: CreditCard },
     { id: 'feedback', label: 'Feedback', icon: MessageSquare }
   ];
 

@@ -31,6 +31,16 @@ router.get('/sitemap.xml', async (req, res) => {
     <loc>${baseUrl}/register</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/resume-builder</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/portfolio-builder</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>`;
 
     // Add portfolio links dynamically
@@ -43,6 +53,28 @@ router.get('/sitemap.xml', async (req, res) => {
     <priority>0.9</priority>
   </url>`;
       }
+    });
+
+    // Add Programmatic SEO routes
+    const seoRoles = ['front-end-developer', 'back-end-developer', 'data-scientist', 'devops-engineer', 'full-stack-developer'];
+    const seoTech = ['react', 'node-js', 'python', 'java', 'typescript'];
+
+    seoRoles.forEach(role => {
+      xml += `
+  <url>
+    <loc>${baseUrl}/roles/${role}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    });
+
+    seoTech.forEach(tech => {
+      xml += `
+  <url>
+    <loc>${baseUrl}/tech/${tech}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
     });
 
     xml += '\n</urlset>';

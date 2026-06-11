@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { CheckCircle, AlertCircle, Sparkles, User, Code, BookOpen, Briefcase, Compass, Loader2, Wand2, Save } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CheckCircle, AlertCircle, Sparkles, User, Code, BookOpen, Briefcase, Compass, Loader2, Wand2, Save, Activity, ArrowRight } from 'lucide-react';
 import ResumeCustomizer from './components/ResumeCustomizer';
 import { api } from '../../services/api';
 
@@ -203,6 +204,7 @@ function ResumeTab() {
               </div>
             </div>
           </div>
+
 
         </div>
 

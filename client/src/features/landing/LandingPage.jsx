@@ -4,8 +4,10 @@ import { useAuth } from '../../context/AuthContext';
 import SEO from '../../components/SEO';
 import { 
   Briefcase, Sparkles, ShieldCheck, FileText, 
-  LayoutGrid, Wand2, TrendingUp, Menu, X, ArrowRight, Check 
+  LayoutGrid, Wand2, TrendingUp, Menu, X, ArrowRight, Check, Activity 
 } from 'lucide-react';
+import DemoSection from '../tools/DemoSection';
+import ResumeScanner from '../tools/ResumeScanner';
 
 function LandingPage() {
   const { user } = useAuth();
@@ -55,6 +57,27 @@ function LandingPage() {
         "name": "PlaceMate",
         "url": "https://www.placemate.me",
         "logo": "https://www.placemate.me/logo.png"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is PlaceMate's ATS Resume Builder free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, PlaceMate offers a free tier that allows students and developers to create ATS-optimized resumes and track applications."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the Kanban Job Tracker work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our integrated Kanban board lets you visually track applications from Saved, to Applied, Interviewing, and Offer stages in one unified dashboard."
+            }
+          }
+        ]
       }
     ]
   };
@@ -89,6 +112,7 @@ function LandingPage() {
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-400">
             <button onClick={() => scrollToSection('home')} className="hover:text-white transition-colors cursor-pointer">Home</button>
             <button onClick={() => scrollToSection('features')} className="hover:text-white transition-colors cursor-pointer">Features</button>
+            <button onClick={() => scrollToSection('demos')} className="hover:text-brand-secondary transition-colors cursor-pointer flex items-center gap-1.5"><Activity size={14} /> Live Demos</button>
             <button onClick={() => scrollToSection('pricing')} className="hover:text-white transition-colors cursor-pointer">Pricing</button>
           </div>
 
@@ -135,6 +159,10 @@ function LandingPage() {
             <div className="flex flex-col gap-4 text-left font-semibold text-lg text-slate-300">
               <button onClick={() => scrollToSection('home')} className="py-2 hover:text-white border-b border-white/5 text-left">Home</button>
               <button onClick={() => scrollToSection('features')} className="py-2 hover:text-white border-b border-white/5 text-left">Features</button>
+              <button onClick={() => scrollToSection('demos')} className="py-2 hover:text-brand-secondary border-b border-white/5 text-left flex items-center justify-between">
+                <span>Live Demos</span>
+                <span className="text-[10px] font-black tracking-widest bg-brand-secondary/10 text-brand-secondary px-2 py-0.5 rounded uppercase">Try It</span>
+              </button>
               <button onClick={() => scrollToSection('pricing')} className="py-2 hover:text-white border-b border-white/5 text-left">Pricing</button>
             </div>
             
@@ -180,9 +208,9 @@ function LandingPage() {
         {/* Hero Title */}
         <div className="max-w-4xl flex flex-col gap-4 md:gap-6">
           <h1 className="font-heading text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
-            Supercharge your job search with <br className="hidden md:inline" />
+            Supercharge your job search with our <br className="hidden md:inline" />
             <span className="bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent">
-              Unified Placement Readiness
+              ATS Resume Builder & Portfolio Platform
             </span>
           </h1>
           <p className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
@@ -219,67 +247,9 @@ function LandingPage() {
           )}
         </div>
 
-        {/* Interactive Dashboard Preview Mockup */}
-        <div className="w-full max-w-5xl rounded-2xl border border-white/5 bg-slate-950/45 p-3 md:p-4 shadow-2xl relative group overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-tr from-brand-primary/5 via-transparent to-transparent pointer-events-none"></div>
-          {/* Mockup Title bar */}
-          <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-3 px-2">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
-              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
-            </div>
-            <span className="text-[10px] text-slate-600 font-mono tracking-wider">placemate.tech/dashboard</span>
-            <div className="w-8"></div>
-          </div>
-          {/* Simulated App Screen */}
-          <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] md:grid-cols-[200px_1fr] h-[280px] md:h-[400px] bg-brand-bg rounded-xl overflow-hidden border border-white/5 select-none text-left">
-            {/* Sidebar Mock */}
-            <div className="hidden sm:flex border-r border-white/5 bg-[#0b0e1a]/80 p-4 flex-col gap-6">
-              <span className="font-heading text-xs font-black text-slate-400 tracking-wider">PlaceMate</span>
-              <div className="flex flex-col gap-2.5">
-                <div className="h-6 w-full rounded bg-brand-primary/10 border border-brand-primary/15 text-[10px] font-bold text-indigo-300 flex items-center px-2 gap-1.5"><span>🏠</span>Dashboard</div>
-                <div className="h-6 w-full rounded hover:bg-white/5 text-[10px] font-medium text-slate-500 flex items-center px-2 gap-1.5"><span>👤</span>Edit Profile</div>
-                <div className="h-6 w-full rounded hover:bg-white/5 text-[10px] font-medium text-slate-500 flex items-center px-2 gap-1.5"><span>🌐</span>Public Portfolio</div>
-                <div className="h-6 w-full rounded hover:bg-white/5 text-[10px] font-medium text-slate-500 flex items-center px-2 gap-1.5"><span>📄</span>ATS Resume</div>
-                <div className="h-6 w-full rounded hover:bg-white/5 text-[10px] font-medium text-slate-500 flex items-center px-2 gap-1.5"><span>💼</span>Job Hunting</div>
-              </div>
-            </div>
-            {/* Main Area Mock */}
-            <div className="p-5 md:p-8 flex flex-col gap-6 overflow-hidden">
-              <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <div className="flex flex-col gap-1">
-                  <span className="text-lg md:text-xl font-bold text-white font-heading">Command Center</span>
-                  <span className="text-[10px] text-slate-500">Live placement indicators & active tracking</span>
-                </div>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-black border border-emerald-500/20 uppercase">Connected</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl border border-white/5 bg-slate-900/40 flex flex-col gap-2">
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Profile Status</span>
-                  <span className="text-lg font-extrabold text-white font-heading">85% Complete</span>
-                  <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden"><div className="w-[85%] bg-indigo-500 h-full rounded-full"></div></div>
-                </div>
-                <div className="p-4 rounded-xl border border-white/5 bg-slate-900/40 flex flex-col gap-2">
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Portfolio Template</span>
-                  <span className="text-lg font-extrabold text-white font-heading">Minimal Slate</span>
-                  <span className="text-[9px] text-emerald-400 font-bold flex items-center gap-1"><span>●</span> Live Public Link</span>
-                </div>
-                <div className="p-4 rounded-xl border border-white/5 bg-slate-900/40 flex flex-col gap-2">
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Job Tracker</span>
-                  <span className="text-lg font-extrabold text-white font-heading">12 Applications</span>
-                  <span className="text-[9px] text-slate-500">5 Interviews Active</span>
-                </div>
-              </div>
-              <div className="border border-brand-primary/15 bg-brand-primary/5 rounded-xl p-4 flex justify-between items-center gap-4">
-                <div className="flex flex-col gap-1 text-[10px]">
-                  <span className="font-bold text-indigo-300">Ready to boost your placement rate?</span>
-                  <span className="text-slate-400 leading-normal">Our system has processed 8 new jobs matching your target stack this morning.</span>
-                </div>
-                <div className="px-3 py-1.5 rounded-lg bg-brand-primary text-white text-[9px] font-bold shrink-0">Review Matches</div>
-              </div>
-            </div>
-          </div>
+        {/* Interactive Resume Scanner Hook */}
+        <div className="w-full max-w-5xl relative group z-20">
+          <ResumeScanner />
         </div>
 
         {/* Trust Indicators / Stats */}
@@ -389,6 +359,9 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Embedded Live Demos Section */}
+      <DemoSection />
+
       {/* Pricing Section */}
       <section id="pricing" className="max-w-6xl mx-auto w-full px-6 py-24 border-t border-white/5 z-10 text-center flex flex-col items-center gap-16">
         
@@ -492,9 +465,9 @@ function LandingPage() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-white/5 bg-[#05080f]/90 py-12 z-10">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 text-left text-sm text-slate-500">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-8 text-left text-sm text-slate-500">
           
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:col-span-2">
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="PlaceMate" width="40" height="40" loading="lazy" className="w-10 h-10 object-contain" />
               <span className="font-heading text-lg font-bold text-white tracking-tight">PlaceMate</span>
@@ -502,6 +475,11 @@ function LandingPage() {
             <p className="text-xs text-slate-600 leading-relaxed">
               Supercharging student developers by integrating portfolios, resume builders, and job boards.
             </p>
+            <div className="mt-4">
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-widest block mb-2">Connect</span>
+              <p className="text-xs text-slate-600 mb-1">Have inquiries or recommendations?</p>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=parthnilmakwana@gmail.com" target="_blank" rel="noopener noreferrer" className="hover:text-white text-xs text-brand-secondary transition-colors font-semibold">parthnilmakwana@gmail.com</a>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -512,23 +490,28 @@ function LandingPage() {
           </div>
 
           <div className="flex flex-col gap-3">
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">By Role</h4>
+            <a href="/roles/front-end-developer" className="hover:text-white text-xs transition-colors">Front-End Developer</a>
+            <a href="/roles/back-end-developer" className="hover:text-white text-xs transition-colors">Back-End Developer</a>
+            <a href="/roles/full-stack-developer" className="hover:text-white text-xs transition-colors">Full-Stack Developer</a>
+            <a href="/roles/data-scientist" className="hover:text-white text-xs transition-colors">Data Scientist</a>
+            <a href="/roles/devops-engineer" className="hover:text-white text-xs transition-colors">DevOps Engineer</a>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">By Tech</h4>
+            <a href="/tech/react" className="hover:text-white text-xs transition-colors">React Portfolios</a>
+            <a href="/tech/node-js" className="hover:text-white text-xs transition-colors">Node.js Portfolios</a>
+            <a href="/tech/python" className="hover:text-white text-xs transition-colors">Python Portfolios</a>
+            <a href="/tech/java" className="hover:text-white text-xs transition-colors">Java Portfolios</a>
+            <a href="/tech/typescript" className="hover:text-white text-xs transition-colors">TypeScript Portfolios</a>
+          </div>
+
+          <div className="flex flex-col gap-3">
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Legal</h4>
             <a href="#" className="hover:text-white text-xs transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white text-xs transition-colors">Terms of Service</a>
             <a href="#" className="hover:text-white text-xs transition-colors">Candidate Honor Code</a>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Connect</h4>
-            <span className="text-xs text-slate-600 leading-normal">Have inquiries or recommendations? Send us a line.</span>
-            <a 
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=parthnilmakwana@gmail.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-white text-xs text-brand-secondary transition-colors font-semibold"
-            >
-              parthnilmakwana@gmail.com
-            </a>
           </div>
         </div>
         

@@ -89,6 +89,8 @@ app.use('/api/feedback', feedbackRoutes);
 
 const seoRoutes = require('./routes/seoRoutes');
 app.use('/api/seo', seoRoutes);
+// Expose sitemap.xml at the root level for Googlebot
+app.use('/', seoRoutes);
 
 
 // Centralized error handling middleware

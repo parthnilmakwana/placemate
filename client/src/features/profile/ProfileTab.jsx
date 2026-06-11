@@ -135,11 +135,12 @@ function ProfileTab() {
   };
 
   const handleAddProj = () => {
+    const baseGit = profileData.githubUrl ? (profileData.githubUrl.endsWith('/') ? profileData.githubUrl : profileData.githubUrl + '/') : '';
     setProfileData(prev => ({
       ...prev,
       projects: [
         ...prev.projects,
-        { title: '', description: '', technologies: [], githubLink: '', liveLink: '' }
+        { title: '', description: '', technologies: [], githubLink: baseGit, liveLink: '' }
       ]
     }));
   };
@@ -233,20 +234,26 @@ function ProfileTab() {
                   <label className={labelClass}>GitHub Profile URL</label>
                   <input
                     type="url"
-                    placeholder="https://github.com/your-username"
+                    placeholder="https://github.com/username"
                     className={inputClass}
                     value={profileData.githubUrl}
                     onChange={(e) => handleInputChange('githubUrl', e.target.value)}
+                    onFocus={() => {
+                      if (!profileData.githubUrl) handleInputChange('githubUrl', 'https://github.com/');
+                    }}
                   />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className={labelClass}>LinkedIn Profile URL</label>
                   <input
                     type="url"
-                    placeholder="https://linkedin.com/in/your-username"
+                    placeholder="https://linkedin.com/in/username"
                     className={inputClass}
                     value={profileData.linkedinUrl}
                     onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
+                    onFocus={() => {
+                      if (!profileData.linkedinUrl) handleInputChange('linkedinUrl', 'https://linkedin.com/in/');
+                    }}
                   />
                 </div>
               </div>
@@ -621,20 +628,29 @@ function ProfileTab() {
                           <label className={labelClass}>Repository Link (GitHub)</label>
                           <input
                             type="url"
-                            placeholder="https://github.com/..."
+                            placeholder="https://github.com/username/repo"
                             className={inputClass}
                             value={proj.githubLink}
                             onChange={(e) => handleProjChange(index, 'githubLink', e.target.value)}
+                            onFocus={() => {
+                              if (!proj.githubLink) {
+                                const baseGit = profileData.githubUrl ? (profileData.githubUrl.endsWith('/') ? profileData.githubUrl : profileData.githubUrl + '/') : 'https://github.com/';
+                                handleProjChange(index, 'githubLink', baseGit);
+                              }
+                            }}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
                           <label className={labelClass}>Live Preview Link</label>
                           <input
                             type="url"
-                            placeholder="https://..."
+                            placeholder="https://your-site.com"
                             className={inputClass}
                             value={proj.liveLink}
                             onChange={(e) => handleProjChange(index, 'liveLink', e.target.value)}
+                            onFocus={() => {
+                              if (!proj.liveLink) handleProjChange(index, 'liveLink', 'https://');
+                            }}
                           />
                         </div>
                       </div>
