@@ -37,7 +37,7 @@
     },
     {
       "source": "/sitemap.xml",
-      "destination": "https://placemate-pynm.onrender.com/sitemap.xml"
+      "destination": "https://placemate-pynm.onrender.com/api/seo/sitemap.xml"
     },
     {
       "source": "/(.*)",
