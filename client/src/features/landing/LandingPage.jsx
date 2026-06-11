@@ -7,7 +7,6 @@ import {
   LayoutGrid, Wand2, TrendingUp, Menu, X, ArrowRight, Check, Activity 
 } from 'lucide-react';
 import DemoSection from '../tools/DemoSection';
-import ResumeScanner from '../tools/ResumeScanner';
 
 function LandingPage() {
   const { user } = useAuth();
@@ -247,10 +246,7 @@ function LandingPage() {
           )}
         </div>
 
-        {/* Interactive Resume Scanner Hook */}
-        <div className="w-full max-w-5xl relative group z-20">
-          <ResumeScanner />
-        </div>
+
 
         {/* Trust Indicators / Stats */}
         <div className="w-full max-w-4xl border-t border-white/5 pt-12 mt-6">
