@@ -17,6 +17,7 @@ function ProfileTab() {
   
   // Local profile states
   const [profileData, setProfileData] = useState({
+    name: '',
     bio: '',
     title: '',
     githubUrl: '',
@@ -33,6 +34,7 @@ function ProfileTab() {
   useEffect(() => {
     if (user && user.profile) {
       setProfileData({
+        name: user.name || '',
         bio: user.profile.bio || '',
         title: user.profile.title || '',
         githubUrl: user.profile.githubUrl || '',
@@ -60,6 +62,7 @@ function ProfileTab() {
 
     try {
       await api.put('/api/profile', {
+        name: profileData.name,
         profile: profileData
       });
       await checkUserSession(); // Refresh session values in context
@@ -209,6 +212,16 @@ function ProfileTab() {
             <div className="p-6 flex flex-col gap-6 bg-brand-bg animate-fade-in">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
+                  <label className={labelClass}>Full Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Jane Doe"
+                    className={inputClass}
+                    value={profileData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
                   <label className={labelClass}>Professional Title</label>
                   <input
                     type="text"
@@ -218,6 +231,9 @@ function ProfileTab() {
                     onChange={(e) => handleInputChange('title', e.target.value)}
                   />
                 </div>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-5">
                 <div className="flex flex-col gap-2">
                   <label className={labelClass}>Bio Summary</label>
                   <textarea

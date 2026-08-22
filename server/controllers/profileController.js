@@ -7,12 +7,12 @@ const User = require('../models/User');
  */
 exports.updateProfile = async (req, res, next) => {
   try {
-    const { profile, hasCompletedOnboarding } = req.body;
+    const { profile, hasCompletedOnboarding, name } = req.body;
 
-    if (!profile) {
+    if (!profile && name === undefined && hasCompletedOnboarding === undefined) {
       return res.status(400).json({
         status: 'error',
-        message: 'Please provide profile details to update'
+        message: 'Please provide details to update'
       });
     }
 
@@ -26,19 +26,24 @@ exports.updateProfile = async (req, res, next) => {
     }
 
     // Merge/Assign new profile details (bio, title, socials, edu, work, projects, preferences)
-    // Sanitization: Only pick allowed fields to prevent injection
-    const allowedFields = ['bio', 'title', 'githubUrl', 'linkedinUrl', 'skills', 'education', 'experience', 'projects', 'preferences'];
-    const sanitizedProfile = {};
-    for (const key of allowedFields) {
-      if (profile[key] !== undefined) {
-        sanitizedProfile[key] = profile[key];
+    if (profile) {
+      const allowedFields = ['bio', 'title', 'githubUrl', 'linkedinUrl', 'skills', 'education', 'experience', 'projects', 'preferences'];
+      const sanitizedProfile = {};
+      for (const key of allowedFields) {
+        if (profile[key] !== undefined) {
+          sanitizedProfile[key] = profile[key];
+        }
       }
+
+      user.profile = {
+        ...(user.profile ? user.profile.toObject() : {}),
+        ...sanitizedProfile
+      };
     }
 
-    user.profile = {
-      ...(user.profile ? user.profile.toObject() : {}),
-      ...sanitizedProfile
-    };
+    if (name && typeof name === 'string' && name.trim().length > 0) {
+      user.name = name.trim();
+    }
 
     // Update onboarding completion flag if explicitly submitted
     if (typeof hasCompletedOnboarding === 'boolean') {

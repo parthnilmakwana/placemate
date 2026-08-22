@@ -212,11 +212,11 @@ function PortfolioTab() {
   useEffect(() => {
     if (location.hash === "#portfolio-settings") {
       setTimeout(() => {
-        const element = document.getElementById("portfolio-settings");
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: "smooth"
+        });
+      }, 300);
     }
   }, [location.hash]);
 
