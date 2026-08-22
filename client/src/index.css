@@ -1,69 +1,91 @@
 @import "tailwindcss";
 
+/* =====================================================
+   PlaceMate Design System — "Quiet Confidence"
+   =====================================================
+   Single source of truth for colors, typography, spacing,
+   and component-level utilities.
+   ===================================================== */
+
 /* Tailwind v4 Theme Extension */
 @theme {
-  /* Custom Responsiveness Breakpoints */
+  /* Breakpoints */
   --breakpoint-xs: 320px;
-  --breakpoint-sm: 768px;
+  --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1440px;
 
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Typography */
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Custom PlaceMate Brand Colors (SaaS Grade Dark Theme) */
-  --color-brand-bg: #090d16;
-  --color-brand-sidebar: #0f1322;
-  --color-brand-card: rgba(15, 20, 35, 0.7);
-  --color-brand-primary: #6366f1; /* Premium Indigo */
-  --color-brand-primary-hover: #818cf8;
-  --color-brand-secondary: #0d9488; /* Premium Teal */
-  --color-brand-success: #10b981;
-  --color-brand-error: #ef4444;
+  /* -----------------------------------------------
+     Canonical Color Tokens
+     All Tailwind classes (bg-*, text-*, border-*)
+     resolve through these tokens.
+     ----------------------------------------------- */
 
-  /* Custom Animations */
-  --animate-shake: shake 0.5s ease-in-out;
-  --animate-bounce-slow: bounce-slow 3s infinite ease-in-out;
-  --animate-glow-float: glow-float 20s infinite alternate;
-  --animate-glow-float-reverse: glow-float 15s infinite alternate-reverse;
-  --animate-fade-in: fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-slide-up: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-slide-in-left: slide-in-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Backgrounds */
+  --color-bg-base: #0B0D0F;
+  --color-bg-sidebar: #101318;
+
+  /* Surfaces */
+  --color-surface-primary: #15191E;
+  --color-surface-elevated: #1B2026;
+
+  /* Borders */
+  --color-border-subtle: #252A31;
+  --color-border-strong: #303640;
+
+  /* Text */
+  --color-text-main: #F2F4F7;
+  --color-text-secondary: #A7AFBA;
+  --color-text-muted: #727B87;
+  --color-text-disabled: #555D68;
+
+  /* Brand */
+  --color-brand-primary: #3B82F6;
+  --color-brand-hover: #2563EB;
+  --color-brand-subtle: rgba(59, 130, 246, 0.10);
+
+  /* Status */
+  --color-status-success: #22A06B;
+  --color-status-warning: #D99A2B;
+  --color-status-error: #E25555;
+
+  /* Backward Compatibility Aliases
+     These map the old --color-brand-* names so existing
+     classes like bg-brand-bg, bg-brand-surface etc.
+     continue to work without breaking any component. */
+  --color-brand-bg: #0B0D0F;
+  --color-brand-sidebar: #101318;
+  --color-brand-surface: #15191E;
+  --color-brand-surface-hover: #1B2026;
+  --color-brand-border: #252A31;
+  --color-brand-accent: #3B82F6;
+  --color-brand-error: #E25555;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.15s ease-out;
+  --animate-slide-up: slide-up 0.2s ease-out;
 
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
   }
   @keyframes slide-up {
-    from { transform: translateY(12px); opacity: 0; }
+    from { transform: translateY(4px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
-  @keyframes slide-in-left {
-    from { transform: translateX(-16px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
 }
 
-/* Keyframes for Custom Animations */
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-4px); }
-  40%, 80% { transform: translateX(4px); }
-}
 
-@keyframes bounce-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
+/* ===================
+   Base Layer
+   =================== */
 
-@keyframes glow-float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, 40px) scale(1.15); }
-}
-
-/* Custom Base Layer Overrides */
 @layer base {
   html, body {
     width: 100%;
@@ -72,50 +94,79 @@
   }
 
   body {
-    background-color: var(--color-brand-bg);
-    color: #f3f4f6;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-main);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
   }
-  
-  /* Smooth input focus states */
+
+  /* Remove default outline but restore visible focus for keyboard users */
   input, select, textarea {
+    outline: none;
+  }
+
+  /* Accessible focus ring — only appears for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Suppress focus ring on mouse interaction */
+  :focus:not(:focus-visible) {
     outline: none;
   }
 }
 
-/* Reusable Glassmorphism Card Style Utility */
-.glass-panel {
-  background: var(--color-brand-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+
+/* ===================
+   Structured Panels
+   =================== */
+
+/* Default card/panel — 6px radius, subtle border, no shadow */
+.structured-panel {
+  background-color: var(--color-surface-primary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
 }
 
-/* Custom Loader Spinner Utility */
+/* Elevated card variant — stronger border, slightly lighter surface */
+.structured-panel-elevated {
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+}
+
+
+/* ===================
+   Loading Utilities
+   =================== */
+
+/* Standard spinner */
 .custom-spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--color-border-subtle);
   border-top-color: var(--color-brand-primary);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Custom Shimmer Loading Skeleton */
+/* Skeleton shimmer */
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.02) 25%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.02) 75%
+    var(--color-surface-primary) 25%,
+    var(--color-surface-elevated) 50%,
+    var(--color-surface-primary) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
@@ -126,41 +177,56 @@
   100% { background-position: -200% 0; }
 }
 
-/* Custom Scrollbar Utility with smooth scrolling */
+
+/* ===================
+   Scrollbar Utilities
+   =================== */
+
+/* Thin custom scrollbar for content areas */
 .custom-scrollbar {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: rgba(99, 102, 241, 0.25) rgba(0, 0, 0, 0.15);
+  scrollbar-color: var(--color-border-subtle) transparent;
 }
 
-/* WebKit-based browser scrollbar design */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.25);
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  transition: background 0.2s ease-in-out;
+  background: var(--color-border-subtle);
+  border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.5);
+  background: var(--color-border-strong);
 }
 
-/* Hide scrollbar helper */
+/* Hide scrollbar entirely */
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
+}
+
+/* Theme gallery scrollbar (was inline in PortfolioTab) */
+.theme-grid-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.theme-grid-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.theme-grid-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border-subtle);
+  border-radius: 9999px;
+}
+.theme-grid-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
 }

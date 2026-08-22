@@ -108,7 +108,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
       <div className="flex items-center justify-center w-full h-full bg-slate-950/20 rounded-2xl border border-white/5 shadow-xl min-h-[600px]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-brand-secondary animate-spin" />
-          <span className="text-sm text-slate-400 font-medium">Loading document renderer...</span>
+          <span className="text-sm text-text-muted font-medium">Loading document renderer...</span>
         </div>
       </div>
     );
@@ -117,31 +117,31 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
   const fileName = `${user?.name ? user.name.replace(/\s+/g, '_') : 'My'}_Resume.pdf`;
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
+    <div className="flex flex-col w-full h-full bg-bg-sidebar rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
       
       {/* Sticky Toolbar */}
       <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-slate-800/90 backdrop-blur-md border-b border-white/10 shadow-sm">
         
         <div className="flex items-center gap-1 bg-slate-900/50 p-1 rounded-lg border border-white/5">
-          <button onClick={zoomOut} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors" title="Zoom Out">
+          <button onClick={zoomOut} className="p-1.5 text-text-muted hover:text-text-main hover:bg-white/10 rounded-md transition-colors" title="Zoom Out">
             <ZoomOut size={16} />
           </button>
-          <div className="px-2 text-xs font-medium text-slate-300 min-w-[3rem] text-center">
+          <div className="px-2 text-xs font-medium text-text-secondary min-w-[3rem] text-center">
             {Math.round(scale * 100)}%
           </div>
-          <button onClick={zoomIn} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors" title="Zoom In">
+          <button onClick={zoomIn} className="p-1.5 text-text-muted hover:text-text-main hover:bg-white/10 rounded-md transition-colors" title="Zoom In">
             <ZoomIn size={16} />
           </button>
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={resetZoom} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium" title="100% Zoom">
+          <button onClick={resetZoom} className="p-2 text-text-muted hover:text-text-main hover:bg-white/10 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium" title="100% Zoom">
             <RefreshCcw size={14} /> <span className="hidden sm:inline">100%</span>
           </button>
-          <button onClick={handleFitWidth} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium" title="Fit Width">
+          <button onClick={handleFitWidth} className="p-2 text-text-muted hover:text-text-main hover:bg-white/10 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium" title="Fit Width">
             <Maximize size={14} /> <span className="hidden sm:inline">Width</span>
           </button>
-          <button onClick={handleFitPage} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium" title="Fit Page">
+          <button onClick={handleFitPage} className="p-2 text-text-muted hover:text-text-main hover:bg-white/10 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium" title="Fit Page">
             <Expand size={14} /> <span className="hidden sm:inline">Page</span>
           </button>
           <div className="w-px h-4 bg-white/10 mx-1"></div>
@@ -150,7 +150,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
             {({ loading }) => (
               <button
                 disabled={loading}
-                className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-md font-bold text-xs cursor-pointer transition-all duration-200 bg-brand-primary hover:bg-brand-primary-hover text-white disabled:opacity-75"
+                className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-md font-bold text-xs cursor-pointer transition-all duration-200 bg-brand-primary hover:bg-brand-hover text-text-main disabled:opacity-75"
               >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
                 <span className="hidden sm:inline">{loading ? 'Generating...' : 'Download'}</span>
@@ -174,7 +174,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
               return (
                 <div className="m-auto flex flex-col items-center gap-3">
                   <Loader2 className="w-8 h-8 text-brand-secondary animate-spin" />
-                  <span className="text-sm text-slate-400 font-medium">Generating Exact PDF Preview...</span>
+                  <span className="text-sm text-text-muted font-medium">Generating Exact PDF Preview...</span>
                 </div>
               );
             }
@@ -182,7 +182,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
             if (pdfError) {
               return (
                 <div className="w-full h-full flex flex-col bg-white rounded-2xl overflow-hidden shadow-2xl">
-                  <div className="bg-amber-500/10 text-amber-500 p-2 text-[10px] text-center border-b border-amber-500/20 font-medium">
+                  <div className="bg-amber-500/10 text-status-warning p-2 text-[10px] text-center border-b border-amber-500/20 font-medium">
                     Viewer fallback active: {pdfError}
                   </div>
                   <iframe src={`${url}#toolbar=0&view=FitH`} className="w-full flex-1 border-none bg-white" title="Resume Preview" />
@@ -205,7 +205,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
                 loading={
                   <div className="m-auto flex flex-col items-center gap-3 pt-10">
                     <Loader2 className="w-6 h-6 text-brand-secondary animate-spin" />
-                    <span className="text-sm text-slate-400">Rendering pages...</span>
+                    <span className="text-sm text-text-muted">Rendering pages...</span>
                   </div>
                 }
                 className="flex flex-col gap-6 mx-auto w-fit"

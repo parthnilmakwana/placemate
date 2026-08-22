@@ -1,94 +1,99 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout, Palette, ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
+import { Layout, Palette, ArrowRight, Github, Linkedin, Mail, Code2, Terminal, ExternalLink } from 'lucide-react';
+import Button from '../../components/Button';
 
 function PortfolioDemo() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('Alex Developer');
   const [jobTitle, setJobTitle] = useState('Full Stack Engineer');
-  const [theme, setTheme] = useState('minimalist'); // 'minimalist' or 'legacy'
+  const [theme, setTheme] = useState('developer'); // 'developer' or 'professional'
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col md:flex-row gap-8 items-start animate-fade-in">
+    <div className="w-full max-w-5xl mx-auto flex flex-col md:flex-row gap-8 items-start animate-fade-in text-left">
       
       {/* Left Column: Controls */}
       <div className="w-full md:w-80 flex flex-col gap-6 shrink-0">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col gap-5">
-          <div className="flex flex-col gap-1.5 border-b border-white/5 pb-4">
-            <h3 className="font-heading text-lg font-bold text-white flex items-center gap-2">
+        <div className="structured-panel p-6 flex flex-col gap-5">
+          <div className="flex flex-col gap-1.5 border-b border-border-subtle pb-4">
+            <h3 className="font-heading text-lg font-bold text-text-main flex items-center gap-2">
               <Layout size={18} className="text-brand-primary" />
               Live Editor
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed">
               Edit the fields below to see your portfolio update instantly.
             </p>
           </div>
 
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Your Name</label>
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">Your Name</label>
               <input 
                 type="text" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. John Doe"
-                className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-primary transition-colors"
+                className="w-full bg-surface-elevated border border-border-subtle rounded-md px-3 py-2 text-sm text-text-main placeholder-text-disabled focus:outline-none focus:border-brand-primary transition-colors"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Job Title</label>
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">Job Title</label>
               <input 
                 type="text" 
                 value={jobTitle}
                 onChange={(e) => setJobTitle(e.target.value)}
                 placeholder="e.g. Frontend Developer"
-                className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-primary transition-colors"
+                className="w-full bg-surface-elevated border border-border-subtle rounded-md px-3 py-2 text-sm text-text-main placeholder-text-disabled focus:outline-none focus:border-brand-primary transition-colors"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-2 border-t border-white/5">
-            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Palette size={14} className="text-brand-secondary" />
-              Select Theme
+          <div className="flex flex-col gap-3 pt-2 border-t border-border-subtle">
+            <label className="text-xs font-semibold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+              <Palette size={14} className="text-brand-primary" />
+              Select Template
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <button 
-                onClick={() => setTheme('minimalist')}
-                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${theme === 'minimalist' ? 'bg-slate-800 text-white border-slate-600' : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'}`}
+              <Button 
+                onClick={() => setTheme('developer')}
+                variant={theme === 'developer' ? 'primary' : 'secondary'}
+                size="sm"
               >
-                Minimalist Clean
-              </button>
-              <button 
-                onClick={() => setTheme('legacy')}
-                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${theme === 'legacy' ? 'bg-gradient-to-r from-violet-600/30 to-teal-600/30 text-white border-violet-500/50' : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'}`}
+                Modern Developer
+              </Button>
+              <Button 
+                onClick={() => setTheme('professional')}
+                variant={theme === 'professional' ? 'primary' : 'secondary'}
+                size="sm"
               >
-                Legacy Bold
-              </button>
+                Premium Professional
+              </Button>
             </div>
           </div>
         </div>
 
-        <button 
+        <Button 
           onClick={() => navigate('/register')}
-          className="w-full py-3.5 rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-bold shadow-lg shadow-brand-primary/20 transition-all flex items-center justify-center gap-2"
+          variant="primary"
+          fullWidth
+          className="py-3.5 shadow-sm"
         >
-          Build Full Portfolio Free
-          <ArrowRight size={16} />
-        </button>
+          <span>Build Full Portfolio Free</span>
+          <ArrowRight size={16} className="ml-1" />
+        </Button>
       </div>
 
       {/* Right Column: Live Preview */}
-      <div className="flex-grow w-full border border-white/10 rounded-2xl overflow-hidden bg-[#0c101d] shadow-2xl relative flex flex-col h-[500px]">
+      <div className="flex-grow w-full border border-border-strong rounded-lg overflow-hidden bg-bg-base shadow-2xl relative flex flex-col h-[520px]">
         {/* Mock Browser Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-[#090d16] shrink-0">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border-subtle bg-bg-sidebar shrink-0">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500/80"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-status-error/80"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-status-warning/80"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-status-success/80"></span>
           </div>
           <div className="flex-grow flex justify-center">
-            <div className="bg-white/5 border border-white/5 rounded-md px-3 py-1 text-[10px] text-slate-500 font-mono flex items-center justify-center min-w-[200px] overflow-hidden truncate">
+            <div className="bg-surface-primary border border-border-subtle rounded px-3 py-1 text-[10px] text-text-muted font-mono flex items-center justify-center min-w-[220px] overflow-hidden truncate">
               {username.toLowerCase().replace(/\s+/g, '') || 'username'}.placemate.me
             </div>
           </div>
@@ -97,65 +102,127 @@ function PortfolioDemo() {
         {/* Live Preview Container */}
         <div className="flex-grow overflow-hidden relative">
           
-          {/* Theme: Minimalist Clean */}
-          {theme === 'minimalist' && (
-            <div className="absolute inset-0 bg-white text-slate-900 flex flex-col items-center justify-center p-8 text-center animate-fade-in font-sans">
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 mb-3">
-                {username || 'Your Name'}
-              </h1>
-              <h2 className="text-sm md:text-base text-slate-500 font-medium tracking-widest uppercase mb-8">
-                {jobTitle || 'Your Job Title'}
-              </h2>
-              <div className="w-12 h-1 bg-slate-900 mb-8 mx-auto"></div>
-              <p className="text-sm md:text-base text-slate-600 max-w-md mx-auto leading-relaxed mb-10">
-                I build pixel-perfect, engaging, and accessible digital experiences. Passionate about clean architecture and minimalist design.
-              </p>
-              <div className="flex items-center gap-6">
-                <div className="text-slate-900 hover:text-slate-500 transition-colors cursor-pointer"><Github size={20} /></div>
-                <div className="text-slate-900 hover:text-slate-500 transition-colors cursor-pointer"><Linkedin size={20} /></div>
-                <div className="text-slate-900 hover:text-slate-500 transition-colors cursor-pointer"><Mail size={20} /></div>
+          {/* Theme 1: Modern Developer (Code-inspired Grid Layout) */}
+          {theme === 'developer' && (
+            <div className="absolute inset-0 bg-bg-base text-text-main flex flex-col p-6 animate-fade-in font-body overflow-y-auto custom-scrollbar gap-6">
+              {/* Header block */}
+              <div className="structured-panel p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-md bg-surface-elevated border border-border-subtle flex items-center justify-center text-brand-primary shrink-0">
+                    <Terminal size={26} />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-xl font-bold text-text-main tracking-tight font-heading">
+                        {username || 'Your Name'}
+                      </h1>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-brand-primary/10 text-brand-primary border border-brand-primary/20 font-mono font-semibold">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-xs text-text-muted font-mono">
+                      {jobTitle || 'Full Stack Engineer'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-text-muted hover:text-text-main cursor-pointer p-1.5 bg-surface-elevated rounded border border-border-subtle"><Github size={16} /></span>
+                  <span className="text-xs text-text-muted hover:text-text-main cursor-pointer p-1.5 bg-surface-elevated rounded border border-border-subtle"><Linkedin size={16} /></span>
+                  <span className="text-xs text-text-muted hover:text-text-main cursor-pointer p-1.5 bg-surface-elevated rounded border border-border-subtle"><Mail size={16} /></span>
+                </div>
+              </div>
+
+              {/* Technical Bio Card */}
+              <div className="structured-panel p-6 flex flex-col gap-3">
+                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider font-mono">
+                  // About & Background
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Specializing in clean software architecture, scalable frontend systems, and high-performance backend APIs. Passionate about product engineer workflows and minimal UI design.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <span className="text-[11px] px-2.5 py-1 rounded bg-surface-elevated text-text-secondary border border-border-subtle font-mono">React</span>
+                  <span className="text-[11px] px-2.5 py-1 rounded bg-surface-elevated text-text-secondary border border-border-subtle font-mono">TypeScript</span>
+                  <span className="text-[11px] px-2.5 py-1 rounded bg-surface-elevated text-text-secondary border border-border-subtle font-mono">Node.js</span>
+                  <span className="text-[11px] px-2.5 py-1 rounded bg-surface-elevated text-text-secondary border border-border-subtle font-mono">TailwindCSS</span>
+                </div>
+              </div>
+
+              {/* Sample Project Showcase */}
+              <div className="structured-panel p-6 flex flex-col gap-4">
+                <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
+                  <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider font-mono">
+                    // Featured Repositories
+                  </h3>
+                  <span className="text-[11px] text-brand-primary font-medium flex items-center gap-1">
+                    View GitHub <ExternalLink size={12} />
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-4 bg-surface-elevated border border-border-subtle rounded-md flex flex-col gap-2">
+                    <h4 className="text-xs font-bold text-text-main">distributed-cache</h4>
+                    <p className="text-[11px] text-text-muted">In-memory key-value cache engine built with Rust and Raft consensus.</p>
+                  </div>
+                  <div className="p-4 bg-surface-elevated border border-border-subtle rounded-md flex flex-col gap-2">
+                    <h4 className="text-xs font-bold text-text-main">placemate-ui-system</h4>
+                    <p className="text-[11px] text-text-muted">Editorial design system & accessible component primitives.</p>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Theme: Legacy Bold (Radial Panel, Violet/Teal) */}
-          {theme === 'legacy' && (
-            <div className="absolute inset-0 bg-[#0f111a] text-white flex flex-col items-center justify-center p-6 animate-fade-in font-sans overflow-hidden">
-              {/* Radial Gradients */}
-              <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-violet-600/20 blur-[80px]"></div>
-              <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-teal-500/20 blur-[80px]"></div>
+          {/* Theme 2: Premium Professional (Executive Structured Layout) */}
+          {theme === 'professional' && (
+            <div className="absolute inset-0 bg-surface-primary text-text-main flex flex-col p-6 animate-fade-in font-body overflow-y-auto custom-scrollbar gap-6">
               
-              {/* Modular Card */}
-              <div className="relative z-10 w-full max-w-sm bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col items-center text-center shadow-2xl">
-                <div className="w-20 h-20 bg-gradient-to-tr from-violet-500 to-teal-400 rounded-full mb-6 p-1">
-                  <div className="w-full h-full bg-[#0f111a] rounded-full flex items-center justify-center">
-                    <span className="text-2xl font-black bg-gradient-to-br from-violet-400 to-teal-300 bg-clip-text text-transparent">
-                      {(username || 'YN').substring(0, 2).toUpperCase()}
-                    </span>
+              {/* Profile Overview Banner */}
+              <div className="structured-panel p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-elevated border-border-strong">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary text-lg font-bold font-heading shrink-0">
+                    {(username || 'AD').substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-extrabold text-text-main tracking-tight font-heading">
+                      {username || 'Your Name'}
+                    </h1>
+                    <p className="text-xs text-text-secondary font-medium">
+                      {jobTitle || 'Full Stack Engineer'}
+                    </p>
                   </div>
                 </div>
                 
-                <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1 tracking-tight">
-                  {username || 'Your Name'}
-                </h1>
-                
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-bold mb-6">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
-                  {jobTitle || 'Your Job Title'}
+                <Button variant="primary" size="sm">
+                  <span>Contact Candidate</span>
+                  <Mail size={14} className="ml-1.5" />
+                </Button>
+              </div>
+
+              {/* Core Competencies & Experience Highlights */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="structured-panel p-4 flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Experience Level</span>
+                  <span className="text-sm font-bold text-text-main">Senior Engineer</span>
                 </div>
-                
-                <p className="text-xs text-slate-400 leading-relaxed mb-8">
-                  Specializing in colorful dark layouts, soft radial background gradients, and engineering robust rounded modular cards.
+                <div className="structured-panel p-4 flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Primary Stack</span>
+                  <span className="text-sm font-bold text-text-main">Full-Stack / Cloud</span>
+                </div>
+                <div className="structured-panel p-4 flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Location</span>
+                  <span className="text-sm font-bold text-text-main">San Francisco / Remote</span>
+                </div>
+              </div>
+
+              {/* Career Highlights */}
+              <div className="structured-panel p-6 flex flex-col gap-3">
+                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+                  Executive Summary
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Engineering leader focused on building resilient distributed systems, driving high-impact product features, and mentoring engineering teams. Proven track record in rapid product iterations.
                 </p>
-                
-                <div className="flex items-center gap-3 w-full">
-                  <button className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-teal-500 hover:opacity-90 text-white text-xs font-bold shadow-lg transition-all">
-                    View Work
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all">
-                    <Github size={16} />
-                  </button>
-                </div>
               </div>
             </div>
           )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CreditCard, Check, Sparkles, Loader2, ArrowDownCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
+import Button from '../../components/Button';
 
 export default function PricingTab() {
   const { user, checkUserSession } = useAuth();
@@ -47,10 +48,10 @@ export default function PricingTab() {
     <div className="flex flex-col gap-8 animate-fade-in pb-10">
       {/* Header Section */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl md:text-4xl font-heading font-black text-white tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-heading font-black text-text-main tracking-tight">
           Designed for developer growth
         </h1>
-        <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+        <p className="text-text-muted text-sm md:text-base max-w-2xl">
           Get started for free and build your readiness profile. Unlock premium automation tools as you scale your search.
         </p>
       </div>
@@ -66,15 +67,15 @@ export default function PricingTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mt-4">
         
         {/* Free Tier Card */}
-        <div className="glass-panel rounded-2xl p-6 md:p-8 border border-white/5 flex flex-col hover:border-white/10 transition-colors">
+        <div className="structured-panel rounded-lg p-6 md:p-8 border border-brand-border bg-brand-surface flex flex-col">
           <div className="mb-4">
-            <h2 className="text-xl font-bold text-white mb-1">Free Candidate</h2>
-            <p className="text-slate-500 text-xs">Core placement tools for student candidates</p>
+            <h2 className="text-xl font-bold text-text-main mb-1">Free Candidate</h2>
+            <p className="text-text-disabled text-xs">Core placement tools for student candidates</p>
           </div>
           
           <div className="mb-6 flex items-baseline gap-1">
-            <span className="text-4xl font-black text-white">$0</span>
-            <span className="text-slate-500 text-sm font-medium">/ forever</span>
+            <span className="text-4xl font-bold text-text-main font-heading">$0</span>
+            <span className="text-text-disabled text-sm font-medium">/ forever</span>
           </div>
           
           <ul className="flex flex-col gap-3 mb-8 flex-grow">
@@ -84,65 +85,62 @@ export default function PricingTab() {
               'Standard Job Discovery search access',
               'Kanban Application Tracker board'
             ].map((feature, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-300">
-                <Check size={16} className="text-brand-secondary shrink-0 mt-0.5" />
+              <li key={idx} className="flex items-start gap-2.5 text-sm text-text-secondary">
+                <Check size={16} className="text-text-muted shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
             ))}
           </ul>
           
           {isPro ? (
-            <button 
+            <Button 
               onClick={handleDowngrade}
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-brand-error/10 hover:bg-brand-error/20 text-brand-error border border-brand-error/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              variant="danger"
+              fullWidth
             >
-              {isLoading ? <Loader2 size={16} className="animate-spin" /> : <ArrowDownCircle size={16} />}
+              {isLoading ? <Loader2 size={16} className="animate-spin mr-2" /> : <ArrowDownCircle size={16} className="mr-2" />}
               Downgrade to Free
-            </button>
+            </Button>
           ) : (
-            <button 
+            <Button 
               disabled={true}
-              className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-white/5 text-slate-400 border border-white/5 cursor-not-allowed"
+              variant="secondary"
+              fullWidth
             >
               Current Plan
-            </button>
+            </Button>
           )}
         </div>
 
         {/* Pro Tier Card */}
-        <div className={`glass-panel rounded-2xl p-6 md:p-8 border relative overflow-hidden flex flex-col group transition-all duration-300 ${isPro ? 'border-brand-primary' : 'border-brand-primary/30'}`}>
-          {/* Subtle background glow for premium effect */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-full blur-3xl group-hover:bg-brand-primary/20 transition-all pointer-events-none"></div>
-          
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-primary"></div>
-          
+        <div className={`structured-panel-elevated rounded-lg p-6 md:p-8 border flex flex-col relative overflow-hidden ${isPro ? 'border-brand-primary' : 'border-brand-primary/50'}`}>
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-text-main mb-1 flex items-center gap-2">
                 Premium Pro <Sparkles size={16} className="text-brand-primary" />
               </h2>
-              <p className="text-brand-primary/80 text-xs">Complete AI automated placement suite</p>
+              <p className="text-text-muted text-xs">Complete automated placement suite</p>
             </div>
             {!isPro && (
-              <span className="px-2.5 py-1 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-black uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/30 text-brand-primary text-[10px] font-bold uppercase tracking-wider">
                 RECOMMENDED
               </span>
             )}
             {isPro && (
-              <span className="px-2.5 py-1 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 text-brand-secondary text-[10px] font-black uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-status-success text-[10px] font-bold uppercase tracking-wider">
                 ACTIVE
               </span>
             )}
           </div>
           
           <div className="mb-6 flex items-baseline gap-1">
-            <span className="text-4xl font-black text-white">$19</span>
-            <span className="text-slate-500 text-sm font-medium">/ month</span>
+            <span className="text-4xl font-bold text-text-main font-heading">$19</span>
+            <span className="text-text-disabled text-sm font-medium">/ month</span>
           </div>
           
-          <ul className="flex flex-col gap-3 mb-8 flex-grow relative z-10">
-            <li className="flex items-start gap-2.5 text-sm text-slate-200">
+          <ul className="flex flex-col gap-3 mb-8 flex-grow">
+            <li className="flex items-start gap-2.5 text-sm text-text-main">
               <Check size={16} className="text-brand-primary shrink-0 mt-0.5" />
               <strong>All Free features included</strong>
             </li>
@@ -153,7 +151,7 @@ export default function PricingTab() {
               'Gemini AI powered phrasing polishing',
               'Daily tailored resumes matching jobs'
             ].map((feature, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-200">
+              <li key={idx} className="flex items-start gap-2.5 text-sm text-text-secondary">
                 <Check size={16} className="text-brand-primary shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
@@ -161,26 +159,28 @@ export default function PricingTab() {
           </ul>
           
           {isPro ? (
-            <button 
+            <Button 
               disabled={true}
-              className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-brand-primary/20 text-brand-primary border border-brand-primary/30 relative z-10 flex items-center justify-center gap-2 cursor-not-allowed"
+              variant="primary"
+              fullWidth
             >
-              <Check size={16} />
+              <Check size={16} className="mr-2" />
               Current Plan
-            </button>
+            </Button>
           ) : (
-            <button 
+            <Button 
               onClick={handleUpgrade}
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-brand-primary hover:bg-brand-primary/90 text-[#090d16] shadow-lg shadow-brand-primary/20 transition-all relative z-10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              variant="primary"
+              fullWidth
             >
               {isLoading ? (
-                <Loader2 size={16} className="animate-spin" />
+                <Loader2 size={16} className="animate-spin mr-2" />
               ) : (
-                <CreditCard size={16} />
+                <CreditCard size={16} className="mr-2" />
               )}
               Upgrade to Premium
-            </button>
+            </Button>
           )}
         </div>
 

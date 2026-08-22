@@ -25,7 +25,7 @@ const ProgrammaticSEOPage = ({ type }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-brand-bg text-slate-200">
+    <div className="min-h-screen bg-brand-bg text-text-main">
       {/* 
         Helmet manages the <head> of our document dynamically. 
         This is crucial for SEO because Google's crawlers look here first.
@@ -47,18 +47,18 @@ const ProgrammaticSEOPage = ({ type }) => {
           </div>
           
           {/* Target keyword is placed inside the H1 tag for maximum SEO weight */}
-          <h1 className="font-heading text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
+          <h1 className="font-heading text-4xl md:text-6xl font-black text-text-main mb-6 tracking-tight">
             Top 10 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">{formattedKeyword}</span> Portfolio Templates for 2026
           </h1>
           
-          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-text-muted mb-10 max-w-2xl mx-auto">
             {description} Stand out to recruiters and land your dream job faster.
           </p>
           
           {/* Strong Call-To-Action (CTA) */}
           <Link 
             to="/register" 
-            className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white px-8 py-4 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg shadow-brand-primary/20"
+            className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-hover text-text-main px-8 py-4 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg shadow-brand-primary/20"
           >
             Build your {formattedKeyword} portfolio in 2 minutes with AI
             <ArrowRight size={20} />
@@ -69,8 +69,8 @@ const ProgrammaticSEOPage = ({ type }) => {
       {/* Template Gallery */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="font-heading text-3xl font-bold text-white mb-4">Choose Your {formattedKeyword} Style</h2>
-          <p className="text-slate-400">All templates are fully responsive, ATS-friendly, and optimized for conversions.</p>
+          <h2 className="font-heading text-3xl font-bold text-text-main mb-4">Choose Your {formattedKeyword} Style</h2>
+          <p className="text-text-muted">All templates are fully responsive, ATS-friendly, and optimized for conversions.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -82,10 +82,10 @@ const ProgrammaticSEOPage = ({ type }) => {
               </div>
               
               <div className="p-6">
-                <h3 className="font-heading text-xl font-bold text-white mb-2">{template.name}</h3>
-                <p className="text-slate-400 text-sm mb-6">Perfect for highlighting {formattedKeyword.toLowerCase()} skills and projects.</p>
+                <h3 className="font-heading text-xl font-bold text-text-main mb-2">{template.name}</h3>
+                <p className="text-text-muted text-sm mb-6">Perfect for highlighting {formattedKeyword.toLowerCase()} skills and projects.</p>
                 
-                <Link to="/register" className="w-full inline-flex justify-center items-center gap-2 bg-white/10 hover:bg-brand-primary/20 text-white py-3 rounded-lg font-medium transition-colors">
+                <Link to="/register" className="w-full inline-flex justify-center items-center gap-2 bg-white/10 hover:bg-brand-primary/20 text-text-main py-3 rounded-lg font-medium transition-colors">
                   Use This Template
                 </Link>
               </div>

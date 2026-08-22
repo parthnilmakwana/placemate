@@ -3,8 +3,9 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { 
   User, BookOpen, Briefcase, Code, Compass, 
-  Save, Plus, Trash2, ChevronDown, ChevronUp, AlertCircle, X 
+  Save, Plus, Trash2, ChevronDown, ChevronUp, AlertCircle, X, Loader 
 } from 'lucide-react';
+import Button from '../../components/Button';
 
 function ProfileTab() {
   const { user, checkUserSession } = useAuth();
@@ -163,24 +164,24 @@ function ProfileTab() {
   };
 
   // Reusable styling classes
-  const inputClass = "w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/50 transition-all duration-250";
-  const labelClass = "text-xs font-bold text-slate-400 tracking-wider uppercase";
+  const inputClass = "w-full px-4 py-3 rounded-md bg-brand-bg border border-brand-border text-text-main placeholder-slate-600 text-sm focus:border-white focus:outline-none transition-colors";
+  const labelClass = "text-xs font-semibold text-text-secondary uppercase tracking-widest";
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 w-full max-w-3xl animate-fade-in text-left">
-      <div className="flex flex-col gap-1.5 border-b border-white/5 pb-4">
-        <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-white">Edit Profile Details</h2>
-        <p className="text-xs md:text-sm text-slate-400">
+      <div className="flex flex-col gap-1.5 border-b border-brand-border pb-4">
+        <h2 className="font-heading text-2xl md:text-3xl font-bold text-text-main">Edit Profile Details</h2>
+        <p className="text-xs md:text-sm text-text-muted">
           Your master candidate profile dynamically powers your ATS resumes, portfolio, and daily job recommendations.
         </p>
       </div>
 
       {/* Success/Error Alerts */}
       {message.text && (
-        <div className={`flex items-start gap-3 p-4 rounded-xl text-xs animate-shake
+        <div className={`flex items-start gap-3 p-4 rounded-md text-xs
           ${message.type === 'success' 
-            ? 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-400' 
-            : 'bg-brand-error/10 border border-brand-error/25 text-brand-error'}`}
+            ? 'bg-emerald-500/10 border border-emerald-500/30 text-status-success' 
+            : 'bg-red-500/10 border border-red-500/30 text-red-400'}`}
         >
           <AlertCircle size={16} className="shrink-0 mt-0.5" />
           <span>{message.text}</span>
@@ -190,22 +191,22 @@ function ProfileTab() {
       <form onSubmit={handleSaveProfile} className="flex flex-col gap-5">
         
         {/* SECTION 1: Bio & Socials */}
-        <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 shadow-md">
+        <div className="structured-panel rounded-lg overflow-hidden border border-brand-border">
           <button
             type="button"
             onClick={() => toggleSection('bio')}
-            className={`w-full flex justify-between items-center px-6 py-4.5 text-left text-sm font-bold transition-all duration-200 cursor-pointer
-              ${activeSection === 'bio' ? 'bg-white/4 text-brand-primary' : 'bg-transparent text-slate-200 hover:bg-white/2 hover:text-white'}`}
+            className={`w-full flex justify-between items-center px-6 py-4 text-left text-sm font-bold transition-all duration-200 cursor-pointer border-b
+              ${activeSection === 'bio' ? 'bg-brand-surface border-brand-border text-text-main' : 'bg-brand-bg border-transparent text-text-secondary hover:bg-brand-surface'}`}
           >
             <div className="flex items-center gap-3">
-              <User size={16} className={activeSection === 'bio' ? 'text-brand-primary' : 'text-slate-400'} />
+              <User size={16} className={activeSection === 'bio' ? 'text-text-main' : 'text-text-muted'} />
               <span>Personal Bio & Social Links</span>
             </div>
             {activeSection === 'bio' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           
           {activeSection === 'bio' && (
-            <div className="p-6 border-t border-white/5 flex flex-col gap-5 bg-black/5 animate-fade-in">
+            <div className="p-6 flex flex-col gap-6 bg-brand-bg animate-fade-in">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
                   <label className={labelClass}>Professional Title</label>
@@ -220,11 +221,21 @@ function ProfileTab() {
                 <div className="flex flex-col gap-2">
                   <label className={labelClass}>Bio Summary</label>
                   <textarea
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = 'auto';
+                        el.style.height = `${el.scrollHeight}px`;
+                      }
+                    }}
                     placeholder="Tell recruiters about your key achievements..."
                     rows={1}
-                    className={`${inputClass} resize-y min-h-[46px]`}
+                    className={`${inputClass} resize-none overflow-hidden min-h-[46px]`}
                     value={profileData.bio}
-                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    onChange={(e) => {
+                      handleInputChange('bio', e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
                   />
                 </div>
               </div>
@@ -262,22 +273,22 @@ function ProfileTab() {
         </div>
 
         {/* SECTION 2: Skills */}
-        <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 shadow-md">
+        <div className="structured-panel rounded-lg overflow-hidden border border-brand-border">
           <button
             type="button"
             onClick={() => toggleSection('skills')}
-            className={`w-full flex justify-between items-center px-6 py-4.5 text-left text-sm font-bold transition-all duration-200 cursor-pointer
-              ${activeSection === 'skills' ? 'bg-white/4 text-brand-primary' : 'bg-transparent text-slate-200 hover:bg-white/2 hover:text-white'}`}
+            className={`w-full flex justify-between items-center px-6 py-4 text-left text-sm font-bold transition-all duration-200 cursor-pointer border-b
+              ${activeSection === 'skills' ? 'bg-brand-surface border-brand-border text-text-main' : 'bg-brand-bg border-transparent text-text-secondary hover:bg-brand-surface'}`}
           >
             <div className="flex items-center gap-3">
-              <Code size={16} className={activeSection === 'skills' ? 'text-brand-primary' : 'text-slate-400'} />
+              <Code size={16} className={activeSection === 'skills' ? 'text-text-main' : 'text-text-muted'} />
               <span>Core Expertise Skills</span>
             </div>
             {activeSection === 'skills' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
 
           {activeSection === 'skills' && (
-            <div className="p-6 border-t border-white/5 flex flex-col gap-4 bg-black/5 animate-fade-in">
+            <div className="p-6 flex flex-col gap-4 bg-brand-bg animate-fade-in">
               <div className="flex gap-3">
                 <input
                   type="text"
@@ -287,33 +298,36 @@ function ProfileTab() {
                   onChange={(e) => setSkillInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddSkill(e)}
                 />
-                <button
+                <Button
                   type="button"
                   onClick={handleAddSkill}
-                  className="px-5 py-3 rounded-xl bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary border border-brand-primary/20 font-bold text-xs cursor-pointer shrink-0 transition-colors"
+                  variant="secondary"
+                  className="py-3 px-5 shrink-0"
                 >
-                  Add Pill
-                </button>
+                  Add Skill
+                </Button>
               </div>
               
               <div className="flex flex-wrap gap-2.5 mt-2">
                 {profileData.skills.length === 0 ? (
-                  <span className="text-xs text-slate-500 italic py-1">No skill tags registered. Add some above.</span>
+                  <span className="text-xs text-text-disabled italic py-1">No skill tags registered. Add some above.</span>
                 ) : (
                   profileData.skills.map((skill, idx) => (
                     <span 
                       key={idx} 
-                      className="inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold group hover:bg-white/8 hover:text-white transition-all duration-150"
+                      className="inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-md bg-brand-surface border border-brand-border text-text-secondary text-xs font-semibold group hover:text-text-main transition-colors"
                     >
                       <span>{skill}</span>
-                      <button 
+                      <Button 
                         type="button" 
                         onClick={() => handleRemoveSkill(skill)} 
-                        className="p-0.5 rounded-full text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="p-0.5! hover:text-red-400 hover:bg-red-500/10"
                         title={`Remove ${skill}`}
                       >
-                        <X size={10} />
-                      </button>
+                        <X size={12} />
+                      </Button>
                     </span>
                   ))
                 )}
@@ -323,51 +337,54 @@ function ProfileTab() {
         </div>
 
         {/* SECTION 3: Education */}
-        <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 shadow-md">
+        <div className="structured-panel rounded-lg overflow-hidden border border-brand-border">
           <button
             type="button"
             onClick={() => toggleSection('education')}
-            className={`w-full flex justify-between items-center px-6 py-4.5 text-left text-sm font-bold transition-all duration-200 cursor-pointer
-              ${activeSection === 'education' ? 'bg-white/4 text-brand-primary' : 'bg-transparent text-slate-200 hover:bg-white/2 hover:text-white'}`}
+            className={`w-full flex justify-between items-center px-6 py-4 text-left text-sm font-bold transition-all duration-200 cursor-pointer border-b
+              ${activeSection === 'education' ? 'bg-brand-surface border-brand-border text-text-main' : 'bg-brand-bg border-transparent text-text-secondary hover:bg-brand-surface'}`}
           >
             <div className="flex items-center gap-3">
-              <BookOpen size={16} className={activeSection === 'education' ? 'text-brand-primary' : 'text-slate-400'} />
+              <BookOpen size={16} className={activeSection === 'education' ? 'text-text-main' : 'text-text-muted'} />
               <span>Educational Timeline</span>
             </div>
             {activeSection === 'education' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
 
           {activeSection === 'education' && (
-            <div className="p-6 border-t border-white/5 flex flex-col gap-6 bg-black/5 animate-fade-in">
+            <div className="p-6 flex flex-col gap-6 bg-brand-bg animate-fade-in">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-500">Log educational institutions and courses</span>
-                <button
+                <span className="text-xs text-text-disabled">Log educational institutions and courses</span>
+                <Button
                   type="button"
                   onClick={handleAddEdu}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/25 text-brand-primary cursor-pointer transition-colors"
+                  variant="secondary"
+                  size="sm"
                 >
-                  <Plus size={12} />
+                  <Plus size={12} className="mr-1.5" />
                   <span>Add School</span>
-                </button>
+                </Button>
               </div>
 
               {profileData.education.length === 0 ? (
-                <p className="text-center py-6 text-xs text-slate-500 italic">No education logs. Click "Add School" to create one.</p>
+                <p className="text-center py-6 text-xs text-text-disabled italic">No education logs. Click "Add School" to create one.</p>
               ) : (
                 <div className="flex flex-col gap-5">
                   {profileData.education.map((edu, index) => (
-                    <div key={index} className="relative bg-slate-900/35 p-5 rounded-xl border border-white/5 flex flex-col gap-4 shadow-sm">
-                      <button
+                    <div key={index} className="relative bg-brand-surface p-5 rounded-md border border-brand-border flex flex-col gap-5">
+                      <Button
                         type="button"
                         onClick={() => handleRemoveEdu(index)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-4 right-4 p-1.5! hover:text-red-400 hover:bg-red-500/10"
                         title="Remove school"
                       >
-                        <Trash2 size={13} />
-                      </button>
+                        <Trash2 size={14} />
+                      </Button>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>School / University</label>
                           <input
                             type="text"
@@ -377,7 +394,7 @@ function ProfileTab() {
                             onChange={(e) => handleEduChange(index, 'institution', e.target.value)}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Degree / Certificate</label>
                           <input
                             type="text"
@@ -389,8 +406,8 @@ function ProfileTab() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="flex flex-col gap-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Field of Study</label>
                           <input
                             type="text"
@@ -400,7 +417,7 @@ function ProfileTab() {
                             onChange={(e) => handleEduChange(index, 'fieldOfStudy', e.target.value)}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Start Year</label>
                           <input
                             type="number"
@@ -409,7 +426,7 @@ function ProfileTab() {
                             onChange={(e) => handleEduChange(index, 'startYear', parseInt(e.target.value) || 0)}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>End Year (Or Expected)</label>
                           <input
                             type="number"
@@ -428,51 +445,54 @@ function ProfileTab() {
         </div>
 
         {/* SECTION 4: Experience */}
-        <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 shadow-md">
+        <div className="structured-panel rounded-lg overflow-hidden border border-brand-border">
           <button
             type="button"
             onClick={() => toggleSection('experience')}
-            className={`w-full flex justify-between items-center px-6 py-4.5 text-left text-sm font-bold transition-all duration-200 cursor-pointer
-              ${activeSection === 'experience' ? 'bg-white/4 text-brand-primary' : 'bg-transparent text-slate-200 hover:bg-white/2 hover:text-white'}`}
+            className={`w-full flex justify-between items-center px-6 py-4 text-left text-sm font-bold transition-all duration-200 cursor-pointer border-b
+              ${activeSection === 'experience' ? 'bg-brand-surface border-brand-border text-text-main' : 'bg-brand-bg border-transparent text-text-secondary hover:bg-brand-surface'}`}
           >
             <div className="flex items-center gap-3">
-              <Briefcase size={16} className={activeSection === 'experience' ? 'text-brand-primary' : 'text-slate-400'} />
+              <Briefcase size={16} className={activeSection === 'experience' ? 'text-text-main' : 'text-text-muted'} />
               <span>Work History Logs</span>
             </div>
             {activeSection === 'experience' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
 
           {activeSection === 'experience' && (
-            <div className="p-6 border-t border-white/5 flex flex-col gap-6 bg-black/5 animate-fade-in">
+            <div className="p-6 flex flex-col gap-6 bg-brand-bg animate-fade-in">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-500">Log professional work experience</span>
-                <button
+                <span className="text-xs text-text-disabled">Log professional work experience</span>
+                <Button
                   type="button"
                   onClick={handleAddExp}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/25 text-brand-primary cursor-pointer transition-colors"
+                  variant="secondary"
+                  size="sm"
                 >
-                  <Plus size={12} />
+                  <Plus size={12} className="mr-1.5" />
                   <span>Add Work</span>
-                </button>
+                </Button>
               </div>
 
               {profileData.experience.length === 0 ? (
-                <p className="text-center py-6 text-xs text-slate-500 italic">No work history logged. Click "Add Work" to add one.</p>
+                <p className="text-center py-6 text-xs text-text-disabled italic">No work history logged. Click "Add Work" to add one.</p>
               ) : (
                 <div className="flex flex-col gap-5">
                   {profileData.experience.map((exp, index) => (
-                    <div key={index} className="relative bg-slate-900/35 p-5 rounded-xl border border-white/5 flex flex-col gap-4 shadow-sm">
-                      <button
+                    <div key={index} className="relative bg-brand-surface p-5 rounded-md border border-brand-border flex flex-col gap-5">
+                      <Button
                         type="button"
                         onClick={() => handleRemoveExp(index)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-4 right-4 p-1.5! hover:text-red-400 hover:bg-red-500/10"
                         title="Remove role"
                       >
-                        <Trash2 size={13} />
-                      </button>
+                        <Trash2 size={14} />
+                      </Button>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Company Name</label>
                           <input
                             type="text"
@@ -482,7 +502,7 @@ function ProfileTab() {
                             onChange={(e) => handleExpChange(index, 'company', e.target.value)}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Role Position</label>
                           <input
                             type="text"
@@ -494,8 +514,8 @@ function ProfileTab() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-                        <div className="flex flex-col gap-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Location</label>
                           <input
                             type="text"
@@ -505,7 +525,7 @@ function ProfileTab() {
                             onChange={(e) => handleExpChange(index, 'location', e.target.value)}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Start Date</label>
                           <input
                             type="text"
@@ -515,7 +535,7 @@ function ProfileTab() {
                             onChange={(e) => handleExpChange(index, 'startDate', e.target.value)}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>End Date</label>
                           <input
                             type="text"
@@ -528,25 +548,35 @@ function ProfileTab() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2">
                         <input
                           id={`profile-job-${index}`}
                           type="checkbox"
-                          className="w-4 h-4 rounded border-white/10 bg-black/40 text-brand-primary focus:ring-0 cursor-pointer"
+                          className="w-4 h-4 rounded border-slate-500 bg-brand-bg text-text-main focus:ring-0 cursor-pointer"
                           checked={exp.current}
                           onChange={(e) => handleExpChange(index, 'current', e.target.checked)}
                         />
-                        <label htmlFor={`profile-job-${index}`} className="text-xs text-slate-450 cursor-pointer select-none font-semibold">I currently work here</label>
+                        <label htmlFor={`profile-job-${index}`} className="text-sm text-text-secondary cursor-pointer select-none">I currently work here</label>
                       </div>
 
-                      <div className="flex flex-col gap-1.5">
+                      <div className="flex flex-col gap-2">
                         <label className={labelClass}>Role Details (Markdown supported)</label>
                         <textarea
+                          ref={(el) => {
+                            if (el) {
+                              el.style.height = 'auto';
+                              el.style.height = `${el.scrollHeight}px`;
+                            }
+                          }}
                           placeholder="Describe your core deliverables and achievements..."
                           rows={3}
-                          className={inputClass}
+                          className={`${inputClass} resize-none overflow-hidden`}
                           value={exp.description}
-                          onChange={(e) => handleExpChange(index, 'description', e.target.value)}
+                          onChange={(e) => {
+                            handleExpChange(index, 'description', e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                          }}
                         />
                       </div>
                     </div>
@@ -558,50 +588,53 @@ function ProfileTab() {
         </div>
 
         {/* SECTION 5: Projects */}
-        <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 shadow-md">
+        <div className="structured-panel rounded-lg overflow-hidden border border-brand-border">
           <button
             type="button"
             onClick={() => toggleSection('projects')}
-            className={`w-full flex justify-between items-center px-6 py-4.5 text-left text-sm font-bold transition-all duration-200 cursor-pointer
-              ${activeSection === 'projects' ? 'bg-white/4 text-brand-primary' : 'bg-transparent text-slate-200 hover:bg-white/2 hover:text-white'}`}
+            className={`w-full flex justify-between items-center px-6 py-4 text-left text-sm font-bold transition-all duration-200 cursor-pointer border-b
+              ${activeSection === 'projects' ? 'bg-brand-surface border-brand-border text-text-main' : 'bg-brand-bg border-transparent text-text-secondary hover:bg-brand-surface'}`}
           >
             <div className="flex items-center gap-3">
-              <Compass size={16} className={activeSection === 'projects' ? 'text-brand-primary' : 'text-slate-400'} />
+              <Compass size={16} className={activeSection === 'projects' ? 'text-text-main' : 'text-text-muted'} />
               <span>Project Showcases</span>
             </div>
             {activeSection === 'projects' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
 
           {activeSection === 'projects' && (
-            <div className="p-6 border-t border-white/5 flex flex-col gap-6 bg-black/5 animate-fade-in">
+            <div className="p-6 flex flex-col gap-6 bg-brand-bg animate-fade-in">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-500">Log academic or side software projects</span>
-                <button
+                <span className="text-xs text-text-disabled">Log academic or side software projects</span>
+                <Button
                   type="button"
                   onClick={handleAddProj}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/25 text-brand-primary cursor-pointer transition-colors"
+                  variant="secondary"
+                  size="sm"
                 >
-                  <Plus size={12} />
+                  <Plus size={12} className="mr-1.5" />
                   <span>Add Project</span>
-                </button>
+                </Button>
               </div>
 
               {profileData.projects.length === 0 ? (
-                <p className="text-center py-6 text-xs text-slate-500 italic">No projects logged. Click "Add Project" to add one.</p>
+                <p className="text-center py-6 text-xs text-text-disabled italic">No projects logged. Click "Add Project" to add one.</p>
               ) : (
                 <div className="flex flex-col gap-5">
                   {profileData.projects.map((proj, index) => (
-                    <div key={index} className="relative bg-slate-900/35 p-5 rounded-xl border border-white/5 flex flex-col gap-4 shadow-sm">
-                      <button
+                    <div key={index} className="relative bg-brand-surface p-5 rounded-md border border-brand-border flex flex-col gap-5">
+                      <Button
                         type="button"
                         onClick={() => handleRemoveProj(index)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-4 right-4 p-1.5! hover:text-red-400 hover:bg-red-500/10"
                         title="Remove project"
                       >
-                        <Trash2 size={13} />
-                      </button>
+                        <Trash2 size={14} />
+                      </Button>
 
-                      <div className="flex flex-col gap-1.5">
+                      <div className="flex flex-col gap-2">
                         <label className={labelClass}>Project Title</label>
                         <input
                           type="text"
@@ -612,19 +645,29 @@ function ProfileTab() {
                         />
                       </div>
 
-                      <div className="flex flex-col gap-1.5">
+                      <div className="flex flex-col gap-2">
                         <label className={labelClass}>Project Description</label>
                         <textarea
+                          ref={(el) => {
+                            if (el) {
+                              el.style.height = 'auto';
+                              el.style.height = `${el.scrollHeight}px`;
+                            }
+                          }}
                           placeholder="Explain what problem it solves and what you built..."
                           rows={2}
-                          className={inputClass}
+                          className={`${inputClass} resize-none overflow-hidden`}
                           value={proj.description}
-                          onChange={(e) => handleProjChange(index, 'description', e.target.value)}
+                          onChange={(e) => {
+                            handleProjChange(index, 'description', e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                          }}
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Repository Link (GitHub)</label>
                           <input
                             type="url"
@@ -640,7 +683,7 @@ function ProfileTab() {
                             }}
                           />
                         </div>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <label className={labelClass}>Live Preview Link</label>
                           <input
                             type="url"
@@ -655,7 +698,7 @@ function ProfileTab() {
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1.5">
+                      <div className="flex flex-col gap-2">
                         <label className={labelClass}>Technologies Used (Comma-separated)</label>
                         <input
                           type="text"
@@ -674,23 +717,24 @@ function ProfileTab() {
         </div>
 
         {/* Global Save Button */}
-        <button
+        <Button
           type="submit"
           disabled={isSaving}
-          className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold text-xs cursor-pointer transition-all duration-200 bg-brand-primary hover:bg-brand-primary-hover text-white shadow-lg shadow-brand-primary/20 disabled:opacity-75 self-start active:scale-[0.98] mt-2 focus:outline-none focus:ring-2 focus:ring-brand-primary/45"
+          variant="primary"
+          className="self-start mt-2"
         >
           {isSaving ? (
             <>
-              <div className="w-4 h-4 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
+              <Loader size={16} className="animate-spin mr-2" />
               <span>Saving Changes...</span>
             </>
           ) : (
             <>
-              <Save size={14} />
+              <Save size={16} className="mr-2" />
               <span>Save Master Profile</span>
             </>
           )}
-        </button>
+        </Button>
 
       </form>
     </div>

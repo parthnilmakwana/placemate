@@ -6,6 +6,7 @@ import {
   User, BookOpen, Briefcase, Code, Compass, 
   ArrowRight, ArrowLeft, Plus, Trash2, Save, Sparkles, CheckCircle2 
 } from 'lucide-react';
+import Button from '../../components/Button';
 
 function OnboardingWizard() {
   const { user, checkUserSession } = useAuth();
@@ -305,36 +306,32 @@ function OnboardingWizard() {
   };
 
   return (
-    <div className="relative min-h-screen bg-brand-bg flex flex-col justify-between p-6 md:p-10 overflow-hidden">
-      
-      {/* Background glow blobs */}
-      <div className="absolute top-[-150px] right-[-100px] w-[600px] h-[600px] rounded-full bg-brand-primary/10 blur-[130px] pointer-events-none z-0 animate-pulse duration-[6000ms]"></div>
-      <div className="absolute bottom-[-100px] left-[-150px] w-[500px] h-[500px] rounded-full bg-brand-secondary/10 blur-[130px] pointer-events-none z-0"></div>
+    <div className="relative min-h-screen bg-brand-bg flex flex-col justify-between p-6 md:p-10 overflow-hidden font-body">
 
-      <header className="max-w-4xl mx-auto w-full flex justify-between items-center z-10 mb-8 pb-4 border-b border-white/10">
+      <header className="max-w-4xl mx-auto w-full flex justify-between items-center z-10 mb-8 pb-4 border-b border-brand-border">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="PlaceMate" className="w-11 h-11 object-contain" />
-          <span className="font-heading text-xl font-extrabold text-white">PlaceMate Onboarding</span>
+          <img src="/logo.png" alt="PlaceMate" className="w-9 h-9 object-contain" />
+          <span className="font-heading text-lg font-bold text-text-main">PlaceMate Onboarding</span>
         </div>
         
         {/* Autosave Status indicator bubble */}
-        <div className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full bg-black/40 border border-white/5 text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-md bg-brand-surface border border-brand-border text-text-muted">
           {saveStatus === 'saving' && (
             <>
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
               <span>Saving draft...</span>
             </>
           )}
           {saveStatus === 'saved' && (
             <>
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-              <span>Draft saved to DB</span>
+              <span>Draft saved</span>
             </>
           )}
           {saveStatus === 'error' && (
             <>
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></div>
-              <span className="text-brand-error">Save failed!</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+              <span className="text-brand-error">Save failed</span>
             </>
           )}
         </div>
@@ -348,52 +345,52 @@ function OnboardingWizard() {
             {[1, 2, 3, 4, 5].map(stepNum => (
               <React.Fragment key={stepNum}>
                 <div 
-                  className={`relative flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 font-heading font-semibold text-sm
+                  className={`relative flex items-center justify-center w-8 h-8 rounded-full border font-heading font-semibold text-xs transition-colors
                     ${step === stepNum 
-                      ? 'border-brand-primary bg-brand-primary text-white shadow-lg shadow-brand-primary/20 scale-110' 
+                      ? 'border-brand-primary bg-brand-primary text-text-main' 
                       : step > stepNum 
-                        ? 'border-brand-secondary bg-brand-secondary/20 text-brand-secondary' 
-                        : 'border-white/10 bg-black/30 text-slate-500'}`}
+                        ? 'border-brand-border bg-brand-surface text-text-secondary' 
+                        : 'border-brand-border bg-brand-bg text-slate-600'}`}
                 >
-                  {step > stepNum ? <CheckCircle2 className="w-5 h-5" /> : stepNum}
+                  {step > stepNum ? <CheckCircle2 className="w-4 h-4 text-status-success" /> : stepNum}
                 </div>
                 {stepNum < 5 && (
-                  <div className={`h-[2px] flex-grow transition-colors duration-300
-                    ${step > stepNum ? 'bg-brand-secondary/40' : 'bg-white/10'}`}
+                  <div className={`h-[1px] flex-grow transition-colors
+                    ${step > stepNum ? 'bg-brand-primary' : 'bg-brand-border'}`}
                   ></div>
                 )}
               </React.Fragment>
             ))}
           </div>
           <div className="text-center">
-            <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">Step {step} of 5</span>
-            <h2 className="font-heading text-2xl font-bold mt-1 text-white">{getStepTitle(step)}</h2>
+            <span className="text-xs font-semibold uppercase tracking-widest text-text-disabled">Step {step} of 5</span>
+            <h2 className="font-heading text-2xl font-bold mt-1 text-text-main">{getStepTitle(step)}</h2>
           </div>
         </section>
 
         {/* Wizard Form Frame */}
-        <section className="glass-panel rounded-2xl p-6 md:p-8 shadow-2xl">
+        <section className="structured-panel rounded-lg p-6 md:p-8 border border-brand-border bg-brand-surface">
           
           {/* STEP 1: Bio & Socials */}
           {step === 1 && (
             <div className="flex flex-col gap-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Professional Title</label>
+                  <label className="text-xs font-bold text-text-muted uppercase tracking-wide">Professional Title</label>
                   <input 
                     type="text" 
                     placeholder="e.g. Full Stack Developer, Computer Engineering Student"
-                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
+                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
                     value={profileData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Professional Bio</label>
+                  <label className="text-xs font-bold text-text-muted uppercase tracking-wide">Professional Bio</label>
                   <textarea 
                     placeholder="Describe your career goals, background, and summary..."
                     rows={1}
-                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200 resize-y min-h-[46px]"
+                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200 resize-y min-h-[46px]"
                     value={profileData.bio}
                     onChange={(e) => handleInputChange('bio', e.target.value)}
                   />
@@ -402,21 +399,21 @@ function OnboardingWizard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">GitHub Profile URL</label>
+                  <label className="text-xs font-bold text-text-muted uppercase tracking-wide">GitHub Profile URL</label>
                   <input 
                     type="url" 
                     placeholder="https://github.com/username"
-                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
+                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
                     value={profileData.githubUrl}
                     onChange={(e) => handleInputChange('githubUrl', e.target.value)}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">LinkedIn Profile URL</label>
+                  <label className="text-xs font-bold text-text-muted uppercase tracking-wide">LinkedIn Profile URL</label>
                   <input 
                     type="url" 
                     placeholder="https://linkedin.com/in/username"
-                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
+                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
                     value={profileData.linkedinUrl}
                     onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
                   />
@@ -425,36 +422,37 @@ function OnboardingWizard() {
 
               {/* Skills inputs */}
               <div className="flex flex-col gap-3 pt-4 border-t border-white/5">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Core Skills & Tools</label>
+                <label className="text-xs font-bold text-text-muted uppercase tracking-wide">Core Skills & Tools</label>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
                     placeholder="e.g. React, Node.js, Python, MongoDB"
-                    className="flex-grow px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
+                    className="flex-grow px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none transition-all duration-200"
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddSkill(e)}
                   />
-                  <button 
+                  <Button 
                     onClick={handleAddSkill}
-                    className="px-4 py-3 rounded-lg bg-brand-secondary/20 hover:bg-brand-secondary/35 text-brand-secondary border border-brand-secondary/30 font-semibold text-sm cursor-pointer transition-colors duration-150"
+                    variant="secondary"
+                    className="py-3"
                   >
                     Add
-                  </button>
+                  </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {profileData.skills.length === 0 ? (
-                    <span className="text-xs text-slate-500 italic">No skills added yet. Add a few above.</span>
+                    <span className="text-xs text-text-disabled italic">No skills added yet. Add a few above.</span>
                   ) : (
                     profileData.skills.map((skill, index) => (
                       <span 
                         key={index} 
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-text-secondary text-xs"
                       >
                         <span>{skill}</span>
                         <button 
                           onClick={() => handleRemoveSkill(skill)}
-                          className="hover:text-brand-error text-slate-500 font-bold ml-1 cursor-pointer"
+                          className="hover:text-brand-error text-text-disabled font-bold ml-1 cursor-pointer"
                         >
                           ×
                         </button>
@@ -470,20 +468,21 @@ function OnboardingWizard() {
           {step === 2 && (
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-semibold text-slate-300">Add Academic Background</h4>
-                <button
+                <h4 className="text-sm font-semibold text-text-secondary">Add Academic Background</h4>
+                <Button
                   type="button"
                   onClick={handleAddEdu}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/25 text-brand-primary cursor-pointer transition-colors duration-150"
+                  variant="secondary"
+                  size="sm"
                 >
-                  <Plus size={14} />
+                  <Plus size={14} className="mr-1.5" />
                   <span>Add School</span>
-                </button>
+                </Button>
               </div>
 
               {profileData.education.length === 0 ? (
                 <div className="text-center py-8 bg-black/20 rounded-xl border border-dashed border-white/10">
-                  <p className="text-slate-500 text-sm">No education entries added. Click "Add School" to get started.</p>
+                  <p className="text-text-disabled text-sm">No education entries added. Click "Add School" to get started.</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
@@ -492,7 +491,7 @@ function OnboardingWizard() {
                       <button
                         type="button"
                         onClick={() => handleRemoveEdu(index)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-all duration-150"
+                        className="absolute top-4 right-4 p-1.5 rounded-lg text-text-disabled hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-all duration-150"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -501,21 +500,21 @@ function OnboardingWizard() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">School / University</label>
+                          <label className="text-xs font-bold text-text-muted">School / University</label>
                           <input
                             type="text"
                             placeholder="e.g. Stanford University"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={edu.institution}
                             onChange={(e) => handleEduChange(index, 'institution', e.target.value)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Degree / Diploma</label>
+                          <label className="text-xs font-bold text-text-muted">Degree / Diploma</label>
                           <input
                             type="text"
                             placeholder="e.g. B.Tech Computer Engineering"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={edu.degree}
                             onChange={(e) => handleEduChange(index, 'degree', e.target.value)}
                           />
@@ -524,31 +523,31 @@ function OnboardingWizard() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Field of Study</label>
+                          <label className="text-xs font-bold text-text-muted">Field of Study</label>
                           <input
                             type="text"
                             placeholder="e.g. Computer Science"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={edu.fieldOfStudy}
                             onChange={(e) => handleEduChange(index, 'fieldOfStudy', e.target.value)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Start Year</label>
+                          <label className="text-xs font-bold text-text-muted">Start Year</label>
                           <input
                             type="number"
                             placeholder="2022"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={edu.startYear}
                             onChange={(e) => handleEduChange(index, 'startYear', parseInt(e.target.value) || 0)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">End Year (Expected)</label>
+                          <label className="text-xs font-bold text-text-muted">End Year (Expected)</label>
                           <input
                             type="number"
                             placeholder="2026"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={edu.endYear}
                             onChange={(e) => handleEduChange(index, 'endYear', parseInt(e.target.value) || 0)}
                           />
@@ -565,20 +564,21 @@ function OnboardingWizard() {
           {step === 3 && (
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-semibold text-slate-300">Add Professional Experience</h4>
-                <button
+                <h4 className="text-sm font-semibold text-text-secondary">Add Professional Experience</h4>
+                <Button
                   type="button"
                   onClick={handleAddExp}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/25 text-brand-primary cursor-pointer transition-colors duration-150"
+                  variant="secondary"
+                  size="sm"
                 >
-                  <Plus size={14} />
+                  <Plus size={14} className="mr-1.5" />
                   <span>Add Experience</span>
-                </button>
+                </Button>
               </div>
 
               {profileData.experience.length === 0 ? (
                 <div className="text-center py-8 bg-black/20 rounded-xl border border-dashed border-white/10">
-                  <p className="text-slate-500 text-sm">No experiences added. Click "Add Experience" to add internships or jobs.</p>
+                  <p className="text-text-disabled text-sm">No experiences added. Click "Add Experience" to add internships or jobs.</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
@@ -587,7 +587,7 @@ function OnboardingWizard() {
                       <button
                         type="button"
                         onClick={() => handleRemoveExp(index)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-all duration-150"
+                        className="absolute top-4 right-4 p-1.5 rounded-lg text-text-disabled hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-all duration-150"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -596,21 +596,21 @@ function OnboardingWizard() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Company Name</label>
+                          <label className="text-xs font-bold text-text-muted">Company Name</label>
                           <input
                             type="text"
                             placeholder="e.g. Google, Startup Inc."
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={exp.company}
                             onChange={(e) => handleExpChange(index, 'company', e.target.value)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Role / Position</label>
+                          <label className="text-xs font-bold text-text-muted">Role / Position</label>
                           <input
                             type="text"
                             placeholder="e.g. Software Engineer Intern"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={exp.position}
                             onChange={(e) => handleExpChange(index, 'position', e.target.value)}
                           />
@@ -619,32 +619,32 @@ function OnboardingWizard() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Location</label>
+                          <label className="text-xs font-bold text-text-muted">Location</label>
                           <input
                             type="text"
                             placeholder="e.g. Mumbai (Remote)"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={exp.location}
                             onChange={(e) => handleExpChange(index, 'location', e.target.value)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Start Date</label>
+                          <label className="text-xs font-bold text-text-muted">Start Date</label>
                           <input
                             type="text"
                             placeholder="e.g. Jan 2024"
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={exp.startDate}
                             onChange={(e) => handleExpChange(index, 'startDate', e.target.value)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">End Date</label>
+                          <label className="text-xs font-bold text-text-muted">End Date</label>
                           <input
                             type="text"
                             placeholder="e.g. Present"
                             disabled={exp.current}
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none disabled:opacity-50"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none disabled:opacity-50"
                             value={exp.current ? 'Present' : exp.endDate}
                             onChange={(e) => handleExpChange(index, 'endDate', e.target.value)}
                           />
@@ -659,7 +659,7 @@ function OnboardingWizard() {
                           checked={exp.current}
                           onChange={(e) => handleExpChange(index, 'current', e.target.checked)}
                         />
-                        <label htmlFor={`current-job-${index}`} className="text-xs text-slate-400 cursor-pointer select-none">
+                        <label htmlFor={`current-job-${index}`} className="text-xs text-text-muted cursor-pointer select-none">
                           I currently work here
                         </label>
                       </div>
@@ -674,20 +674,21 @@ function OnboardingWizard() {
           {step === 4 && (
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-semibold text-slate-300">Add Key Projects</h4>
-                <button
+                <h4 className="text-sm font-semibold text-text-secondary">Add Key Projects</h4>
+                <Button
                   type="button"
                   onClick={handleAddProj}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/25 text-brand-primary cursor-pointer transition-colors duration-150"
+                  variant="secondary"
+                  size="sm"
                 >
-                  <Plus size={14} />
+                  <Plus size={14} className="mr-1.5" />
                   <span>Add Project</span>
-                </button>
+                </Button>
               </div>
 
               {profileData.projects.length === 0 ? (
                 <div className="text-center py-8 bg-black/20 rounded-xl border border-dashed border-white/10">
-                  <p className="text-slate-500 text-sm">No project entries added. Click "Add Project" to log your portfolio works.</p>
+                  <p className="text-text-disabled text-sm">No project entries added. Click "Add Project" to log your portfolio works.</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
@@ -696,7 +697,7 @@ function OnboardingWizard() {
                       <button
                         type="button"
                         onClick={() => handleRemoveProj(index)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-all duration-150"
+                        className="absolute top-4 right-4 p-1.5 rounded-lg text-text-disabled hover:text-brand-error hover:bg-brand-error/10 cursor-pointer transition-all duration-150"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -704,22 +705,22 @@ function OnboardingWizard() {
                       <span className="text-[10px] font-bold text-brand-secondary uppercase tracking-wider">Project #{index + 1}</span>
 
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-slate-400">Project Title</label>
+                        <label className="text-xs font-bold text-text-muted">Project Title</label>
                         <input
                           type="text"
                           placeholder="e.g. PlaceMate AI Agent"
-                          className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                          className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                           value={proj.title}
                           onChange={(e) => handleProjChange(index, 'title', e.target.value)}
                         />
                       </div>
 
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-slate-400">Project Description</label>
+                        <label className="text-xs font-bold text-text-muted">Project Description</label>
                         <textarea
                           placeholder="Write a brief overview of the project and key deliverables..."
                           rows={2}
-                          className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                          className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                           value={proj.description}
                           onChange={(e) => handleProjChange(index, 'description', e.target.value)}
                         />
@@ -727,21 +728,21 @@ function OnboardingWizard() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">GitHub Link</label>
+                          <label className="text-xs font-bold text-text-muted">GitHub Link</label>
                           <input
                             type="url"
                             placeholder="https://github.com/..."
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={proj.githubLink}
                             onChange={(e) => handleProjChange(index, 'githubLink', e.target.value)}
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-bold text-slate-400">Live Demo Link</label>
+                          <label className="text-xs font-bold text-text-muted">Live Demo Link</label>
                           <input
                             type="url"
                             placeholder="https://..."
-                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                            className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                             value={proj.liveLink}
                             onChange={(e) => handleProjChange(index, 'liveLink', e.target.value)}
                           />
@@ -749,11 +750,11 @@ function OnboardingWizard() {
                       </div>
 
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-slate-400">Technologies Used (Comma-separated)</label>
+                        <label className="text-xs font-bold text-text-muted">Technologies Used (Comma-separated)</label>
                         <input
                           type="text"
                           placeholder="React, TailwindCSS, Express, MongoDB"
-                          className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                          className="px-3.5 py-2.5 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                           value={proj.technologies ? proj.technologies.join(', ') : ''}
                           onChange={(e) => handleProjChange(index, 'technologies', e.target.value)}
                         />
@@ -771,12 +772,12 @@ function OnboardingWizard() {
               
               {/* Job roles preference */}
               <div className="flex flex-col gap-3">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Target Job Roles</label>
+                <label className="text-xs font-bold text-text-muted uppercase tracking-wide">Target Job Roles</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="e.g. Frontend Engineer, Fullstack Developer"
-                    className="flex-grow px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                    className="flex-grow px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                     value={roleInput}
                     onChange={(e) => setRoleInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddPrefRole(e)}
@@ -790,12 +791,12 @@ function OnboardingWizard() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {profileData.preferences.targetRoles.length === 0 ? (
-                    <span className="text-xs text-slate-500 italic">No roles selected.</span>
+                    <span className="text-xs text-text-disabled italic">No roles selected.</span>
                   ) : (
                     profileData.preferences.targetRoles.map((role, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs">
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-text-secondary text-xs">
                         <span>{role}</span>
-                        <button onClick={() => handleRemovePrefRole(role)} className="hover:text-brand-error text-slate-500 font-bold ml-1 cursor-pointer">×</button>
+                        <button onClick={() => handleRemovePrefRole(role)} className="hover:text-brand-error text-text-disabled font-bold ml-1 cursor-pointer">×</button>
                       </span>
                     ))
                   )}
@@ -804,12 +805,12 @@ function OnboardingWizard() {
 
               {/* Locations preference */}
               <div className="flex flex-col gap-3 pt-4 border-t border-white/5">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Target Locations</label>
+                <label className="text-xs font-bold text-text-muted uppercase tracking-wide">Target Locations</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="e.g. Remote, Bangalore, Mumbai"
-                    className="flex-grow px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                    className="flex-grow px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                     value={locationInput}
                     onChange={(e) => setLocationInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddPrefLocation(e)}
@@ -823,12 +824,12 @@ function OnboardingWizard() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {profileData.preferences.targetLocations.length === 0 ? (
-                    <span className="text-xs text-slate-500 italic">No locations selected.</span>
+                    <span className="text-xs text-text-disabled italic">No locations selected.</span>
                   ) : (
                     profileData.preferences.targetLocations.map((loc, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs">
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-text-secondary text-xs">
                         <span>{loc}</span>
-                        <button onClick={() => handleRemovePrefLocation(loc)} className="hover:text-brand-error text-slate-500 font-bold ml-1 cursor-pointer">×</button>
+                        <button onClick={() => handleRemovePrefLocation(loc)} className="hover:text-brand-error text-text-disabled font-bold ml-1 cursor-pointer">×</button>
                       </span>
                     ))
                   )}
@@ -838,27 +839,27 @@ function OnboardingWizard() {
               {/* Salary & Job Type */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/5">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-400">Minimum Annual Salary (INR)</label>
+                  <label className="text-xs font-bold text-text-muted">Minimum Annual Salary (INR)</label>
                   <input
                     type="number"
                     placeholder="e.g. 600000"
-                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
+                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main placeholder-slate-600 text-sm focus:border-brand-primary/50 focus:outline-none"
                     value={profileData.preferences.minimumSalary}
                     onChange={(e) => handlePrefChange('minimumSalary', parseInt(e.target.value) || 0)}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-400">Job Type Preference</label>
+                  <label className="text-xs font-bold text-text-muted">Job Type Preference</label>
                   <select
-                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white text-sm focus:border-brand-primary/50 focus:outline-none"
+                    className="px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-text-main text-sm focus:border-brand-primary/50 focus:outline-none"
                     value={profileData.preferences.jobType}
                     onChange={(e) => handlePrefChange('jobType', e.target.value)}
                   >
-                    <option value="Any" className="bg-slate-900 text-white">Any Type</option>
-                    <option value="Full-time" className="bg-slate-900 text-white">Full-time</option>
-                    <option value="Part-time" className="bg-slate-900 text-white">Part-time</option>
-                    <option value="Internship" className="bg-slate-900 text-white">Internship</option>
-                    <option value="Contract" className="bg-slate-900 text-white">Contract</option>
+                    <option value="Any" className="bg-bg-sidebar text-text-main">Any Type</option>
+                    <option value="Full-time" className="bg-bg-sidebar text-text-main">Full-time</option>
+                    <option value="Part-time" className="bg-bg-sidebar text-text-main">Part-time</option>
+                    <option value="Internship" className="bg-bg-sidebar text-text-main">Internship</option>
+                    <option value="Contract" className="bg-bg-sidebar text-text-main">Contract</option>
                   </select>
                 </div>
               </div>
@@ -868,34 +869,34 @@ function OnboardingWizard() {
 
           {/* Stepper Navigation Buttons */}
           <div className="flex justify-between items-center mt-10 pt-6 border-t border-white/5">
-            <button
+            <Button
               type="button"
               disabled={step === 1}
               onClick={handlePrevStep}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 text-sm font-semibold cursor-pointer transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+              variant="ghost"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} className="mr-1.5" />
               <span>Back</span>
-            </button>
+            </Button>
 
             {step < 5 ? (
-              <button
+              <Button
                 type="button"
                 onClick={handleNextStep}
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-semibold cursor-pointer transition-all duration-200 active:scale-[0.98] shadow-lg shadow-brand-primary/20"
+                variant="primary"
               >
                 <span>Save & Continue</span>
-                <ArrowRight size={16} />
-              </button>
+                <ArrowRight size={16} className="ml-1.5" />
+              </Button>
             ) : (
-              <button
+              <Button
                 type="submit"
                 onClick={handleFinalSubmit}
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-gradient-to-r from-brand-primary to-brand-secondary text-white text-sm font-bold cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-brand-secondary/25 active:scale-[0.98]"
+                variant="primary"
               >
-                <Sparkles size={16} />
+                <Sparkles size={16} className="mr-1.5" />
                 <span>Complete & Go to Dashboard</span>
-              </button>
+              </Button>
             )}
           </div>
 

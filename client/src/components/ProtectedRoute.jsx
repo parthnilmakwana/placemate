@@ -11,13 +11,10 @@ const ProtectedRoute = ({ children, requireOnboarded = true }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-brand-bg flex flex-col items-center justify-center text-slate-100 p-8">
-        <div className="relative w-16 h-16 mb-4">
-          <div className="absolute inset-0 rounded-full border-4 border-brand-primary/20 animate-ping"></div>
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-primary border-r-brand-secondary animate-spin"></div>
-        </div>
-        <span className="font-heading text-sm text-slate-400 font-semibold tracking-wider uppercase animate-pulse">
-          Verifying credentials...
+      <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center text-text-main p-8">
+        <div className="custom-spinner mb-4"></div>
+        <span className="font-heading text-xs text-text-muted font-semibold tracking-widest uppercase">
+          Verifying credentials…
         </span>
       </div>
     );

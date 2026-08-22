@@ -64,7 +64,7 @@ const SentJobSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['matched', 'applied', 'rejected'],
+    enum: ['matched', 'applied', 'interviewing', 'offered', 'rejected'],
     default: 'matched'
   },
   createdAt: {
