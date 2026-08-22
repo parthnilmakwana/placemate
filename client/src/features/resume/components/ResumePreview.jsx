@@ -80,7 +80,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
     const scaleByWidth = availableWidth / 595.28;
 
     const computedScale = Math.min(scaleByHeight, scaleByWidth);
-    const minFloor = containerDimensions.width < 500 ? 0.45 : 0.65;
+    const minFloor = containerDimensions.width < 500 ? 0.2 : 0.65;
     return Math.max(minFloor, Math.min(computedScale, 2.2));
   }, [containerDimensions.width, containerDimensions.height]);
 
@@ -96,11 +96,15 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
 
   // Initial Responsive Auto-Fit on Container Load
   useEffect(() => {
-    if (containerDimensions.width > 0 && !isInitialSet.current) {
+    if (containerDimensions.width > 0 && containerDimensions.height > 0 && !isInitialSet.current) {
       isInitialSet.current = true;
-      setScale(calculateFitWidthScale());
+      if (containerDimensions.width < 768) {
+        setScale(calculateFitPageScale());
+      } else {
+        setScale(calculateFitWidthScale());
+      }
     }
-  }, [containerDimensions.width, calculateFitWidthScale]);
+  }, [containerDimensions.width, containerDimensions.height, calculateFitWidthScale, calculateFitPageScale]);
 
   const zoomIn = () => setScale(s => Math.min(s + 0.15, 2.5));
   const zoomOut = () => setScale(s => Math.max(s - 0.15, 0.4));
@@ -267,7 +271,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
 
       {/* Preview Scroll Viewport */}
       <div 
-        className="flex-1 overflow-auto bg-slate-950/60 p-4 sm:p-6 flex flex-col items-center custom-scrollbar"
+        className="flex-1 overflow-auto bg-slate-950/60 p-4 sm:p-6 custom-scrollbar relative"
         ref={containerRef}
       >
         <BlobProvider document={PDFDocument}>
@@ -322,12 +326,12 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
                   if (currentPage > count) setCurrentPage(1);
                 }}
                 loading={
-                  <div className="m-auto flex flex-col items-center gap-3 pt-10">
+                  <div className="mx-auto flex flex-col items-center gap-3 pt-10">
                     <Loader2 className="w-6 h-6 text-brand-primary animate-spin" />
                     <span className="text-xs text-text-muted">Loading pages...</span>
                   </div>
                 }
-                className="flex flex-col gap-6 items-center my-auto"
+                className="flex flex-col gap-6 items-center mx-auto w-fit"
               >
                 {pagesToRender.map((pageNum) => (
                   <div

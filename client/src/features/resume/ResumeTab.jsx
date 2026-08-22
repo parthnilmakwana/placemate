@@ -287,7 +287,7 @@ function ResumeTab() {
         </div>
 
         {/* Right Column: PDF Preview Document Panel */}
-        <div className={`justify-center w-full min-h-[520px] h-[calc(100vh-12rem)] lg:h-[calc(100vh-10rem)] lg:sticky lg:top-0 bg-brand-surface rounded-lg border border-brand-border overflow-hidden relative ${
+        <div className={`justify-center w-full min-h-[400px] lg:min-h-[520px] h-[calc(100dvh-12rem)] lg:h-[calc(100vh-10rem)] lg:sticky lg:top-0 bg-brand-surface rounded-lg border border-brand-border overflow-hidden relative ${
           mobileTab === "preview" ? "flex" : "hidden lg:flex"
         }`}>
           <Suspense
