@@ -212,10 +212,13 @@ function PortfolioTab() {
   useEffect(() => {
     if (location.hash === "#portfolio-settings") {
       setTimeout(() => {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: "smooth"
-        });
+        const mainContainer = document.querySelector('main');
+        if (mainContainer) {
+          mainContainer.scrollTo({
+            top: mainContainer.scrollHeight,
+            behavior: "smooth"
+          });
+        }
       }, 300);
     }
   }, [location.hash]);
