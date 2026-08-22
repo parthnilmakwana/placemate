@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
+import { useLocation } from "react-router-dom";
 import {
   Copy,
   Check,
@@ -179,6 +180,7 @@ const PORTFOLIO_THEMES = [
 
 function PortfolioTab() {
   const { user, checkUserSession } = useAuth();
+  const location = useLocation();
 
   const [username, setUsername] = useState("");
   const [theme, setTheme] = useState("minimal");
@@ -205,6 +207,18 @@ function PortfolioTab() {
       setIsPublic(user.profile?.isPublic !== false);
     }
   }, [user]);
+
+  // Handle scroll to settings
+  useEffect(() => {
+    if (location.hash === "#portfolio-settings") {
+      setTimeout(() => {
+        const element = document.getElementById("portfolio-settings");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [location.hash]);
 
   const handleCopyLink = () => {
     const liveLink = `${window.location.origin}/portfolio/${username}`;
@@ -603,7 +617,7 @@ function PortfolioTab() {
       )}
 
       {/* Main Settings Panel */}
-      <div className="structured-panel rounded-lg p-6 md:p-8 flex flex-col gap-8 border border-brand-border">
+      <div id="portfolio-settings" className="structured-panel rounded-lg p-6 md:p-8 flex flex-col gap-8 border border-brand-border">
         {message.text && (
           <div
             className={`flex items-start gap-3 p-4 rounded-md text-sm

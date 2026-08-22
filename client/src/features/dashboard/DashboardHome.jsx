@@ -280,7 +280,7 @@ function DashboardHome() {
           </div>
 
           <button
-            onClick={() => handleNavigate("portfolio")}
+            onClick={() => navigate("/dashboard/portfolio#portfolio-settings")}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-border-subtle text-text-main border border-border-strong rounded font-medium text-xs transition-colors cursor-pointer"
           >
             <span>Manage Portfolio Settings</span>
