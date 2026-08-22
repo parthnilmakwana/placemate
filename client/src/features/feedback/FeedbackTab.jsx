@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Send, CheckCircle2, Heart, Loader } from 'lucide-react';
+import { MessageSquare, Send, CheckCircle2, Heart, Loader, Bug, Sparkles, Rocket, HelpCircle } from 'lucide-react';
 import { api } from '../../services/api';
 import Button from '../../components/Button';
 
@@ -17,6 +17,33 @@ function FeedbackTab() {
     { score: 3, char: '😐', label: 'Neutral' },
     { score: 4, char: '🙂', label: 'Good' },
     { score: 5, char: '😀', label: 'Excellent' }
+  ];
+
+  const categories = [
+    {
+      id: 'Bug Report',
+      label: 'Bug Report',
+      desc: 'Something is broken or glitchy',
+      icon: Bug,
+    },
+    {
+      id: 'Suggestion',
+      label: 'UI/UX Suggestion',
+      desc: 'Improve visual design or flow',
+      icon: Sparkles,
+    },
+    {
+      id: 'Feature Request',
+      label: 'Feature Request',
+      desc: 'Request new tools or options',
+      icon: Rocket,
+    },
+    {
+      id: 'Other',
+      label: 'Other Remarks',
+      desc: 'General thoughts or questions',
+      icon: HelpCircle,
+    },
   ];
 
   const handleSubmit = async (e) => {
@@ -79,22 +106,46 @@ function FeedbackTab() {
       <div className="structured-panel rounded-lg p-6 md:p-8 border border-brand-border bg-brand-surface">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           
-          {/* Category Dropdown */}
-          <div className="flex flex-col gap-2">
+          {/* Category Options Cards */}
+          <div className="flex flex-col gap-2.5">
             <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">
               Feedback Category
             </label>
-            <div className="relative bg-brand-bg border border-brand-border rounded-md overflow-hidden focus-within:border-brand-primary transition-colors max-w-xs">
-              <select
-                className="w-full bg-transparent border-none py-2.5 px-3 text-sm text-text-main focus:outline-none appearance-none cursor-pointer"
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-              >
-                <option value="Bug Report" className="bg-brand-surface">Bug Report</option>
-                <option value="Suggestion" className="bg-brand-surface">UI/UX Suggestion</option>
-                <option value="Feature Request" className="bg-brand-surface">Feature Request</option>
-                <option value="Other" className="bg-brand-surface">Other Remarks</option>
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {categories.map((cat) => {
+                const Icon = cat.icon;
+                const isSelected = category === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setCategory(cat.id)}
+                    className={`flex items-start gap-3 p-3.5 rounded-lg border text-left transition-all duration-150 cursor-pointer ${
+                      isSelected
+                        ? 'bg-brand-primary/10 border-brand-primary text-text-main shadow-sm'
+                        : 'bg-brand-bg border-brand-border text-text-secondary hover:text-text-main hover:border-brand-border/80 hover:bg-surface-elevated'
+                    }`}
+                  >
+                    <div
+                      className={`p-2 rounded-md shrink-0 transition-colors ${
+                        isSelected
+                          ? 'bg-brand-primary text-text-main'
+                          : 'bg-surface-elevated text-text-muted border border-brand-border'
+                      }`}
+                    >
+                      <Icon size={16} />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-semibold text-text-main">
+                        {cat.label}
+                      </span>
+                      <span className="text-[11px] text-text-muted mt-0.5 leading-tight">
+                        {cat.desc}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
