@@ -46,9 +46,6 @@ function AppearanceTab() {
           <label className={labelClass}>Language</label>
           <select className="w-full md:w-1/2 px-4 py-3 rounded-md bg-brand-bg border border-brand-border text-text-main text-sm focus:border-white focus:outline-none transition-colors">
             <option value="en">English (US)</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="de">Deutsch</option>
           </select>
         </div>
 
