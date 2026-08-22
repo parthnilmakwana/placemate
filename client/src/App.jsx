@@ -43,6 +43,16 @@ const JobDashboardTab = lazy(() => import("./features/jobs/JobDashboardTab"));
 const PricingTab = lazy(() => import("./features/pricing/PricingTab"));
 const FeedbackTab = lazy(() => import("./features/feedback/FeedbackTab"));
 
+// Lazy load Settings modules
+const SettingsLayout = lazy(() => import("./features/settings/SettingsLayout"));
+const AccountTab = lazy(() => import("./features/settings/tabs/AccountTab"));
+const JobPreferencesTab = lazy(() => import("./features/settings/tabs/JobPreferencesTab"));
+const NotificationsTab = lazy(() => import("./features/settings/tabs/NotificationsTab"));
+const PrivacyTab = lazy(() => import("./features/settings/tabs/PrivacyTab"));
+const SecurityTab = lazy(() => import("./features/settings/tabs/SecurityTab"));
+const AppearanceTab = lazy(() => import("./features/settings/tabs/AppearanceTab"));
+const DataAccountTab = lazy(() => import("./features/settings/tabs/DataAccountTab"));
+
 // Loader spinner shown when loading main JS files
 function GlobalLoading() {
   return (
@@ -181,6 +191,18 @@ function App() {
                   <Route path="jobs" element={<JobDashboardTab />} />
                   <Route path="pricing" element={<PricingTab />} />
                   <Route path="feedback" element={<FeedbackTab />} />
+                  
+                  {/* Settings Module with Nested Routes */}
+                  <Route path="settings" element={<SettingsLayout />}>
+                    <Route index element={<Navigate to="account" replace />} />
+                    <Route path="account" element={<AccountTab />} />
+                    <Route path="job-preferences" element={<JobPreferencesTab />} />
+                    <Route path="notifications" element={<NotificationsTab />} />
+                    <Route path="privacy" element={<PrivacyTab />} />
+                    <Route path="security" element={<SecurityTab />} />
+                    <Route path="appearance" element={<AppearanceTab />} />
+                    <Route path="data" element={<DataAccountTab />} />
+                  </Route>
                 </Route>
 
                 {/* Public live portfolio web templates */}

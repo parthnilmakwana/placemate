@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  User,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import Button from "./Button";
@@ -52,7 +53,8 @@ function Sidebar({
   ];
 
   const secondaryNavItems = [
-    { id: "profile", label: "Settings & Profile", icon: Settings },
+    { id: "profile", label: "Profile", icon: User },
+    { id: "settings", label: "Settings", icon: Settings },
     { id: "pricing", label: "Plan & Billing", icon: CreditCard },
     { id: "feedback", label: "Feedback", icon: MessageSquare },
   ];
