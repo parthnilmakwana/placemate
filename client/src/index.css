@@ -104,6 +104,25 @@
     line-height: 1.5;
   }
 
+  /* Light Theme Variables Override */
+  html.light {
+    --color-bg-base: #F8FAFC;
+    --color-bg-sidebar: #FFFFFF;
+    --color-surface-primary: #FFFFFF;
+    --color-surface-elevated: #F1F5F9;
+    --color-border-subtle: #E2E8F0;
+    --color-border-strong: #CBD5E1;
+    --color-text-main: #0F172A;
+    --color-text-secondary: #334155;
+    --color-text-muted: #64748B;
+    --color-text-disabled: #94A3B8;
+    --color-brand-bg: #F8FAFC;
+    --color-brand-sidebar: #FFFFFF;
+    --color-brand-surface: #FFFFFF;
+    --color-brand-surface-hover: #F1F5F9;
+    --color-brand-border: #E2E8F0;
+  }
+
   /* Remove default outline but restore visible focus for keyboard users */
   input, select, textarea {
     outline: none;

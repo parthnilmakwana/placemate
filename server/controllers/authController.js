@@ -9,14 +9,60 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 /**
  * Helper utility to sign and generate a JWT token for authentication
  * @param {string} id - The MongoDB user ID
+ * @param {string} sessionId - Unique session ID for session tracking
  * @returns {string} - The signed JWT
  */
-const generateToken = (id) => {
+const generateToken = (id, sessionId) => {
   return jwt.sign(
-    { id }, 
+    { id, sessionId }, 
     process.env.JWT_SECRET, 
     { expiresIn: process.env.JWT_EXPIRE || '7d' }
   );
+};
+
+/**
+ * Parse user agent to extract basic device, OS, and browser names
+ */
+const parseUserAgent = (uaString = '') => {
+  let browser = 'Chrome';
+  if (uaString.includes('Firefox')) browser = 'Firefox';
+  else if (uaString.includes('Safari') && !uaString.includes('Chrome')) browser = 'Safari';
+  else if (uaString.includes('Edge')) browser = 'Edge';
+
+  let os = 'Windows';
+  if (uaString.includes('Macintosh') || uaString.includes('Mac OS')) os = 'macOS';
+  else if (uaString.includes('Linux')) os = 'Linux';
+  else if (uaString.includes('iPhone') || uaString.includes('iPad')) os = 'iOS';
+  else if (uaString.includes('Android')) os = 'Android';
+
+  return { browser, os, device: `${os} • ${browser}` };
+};
+
+/**
+ * Create a new session entry for user
+ */
+const createSession = async (user, req) => {
+  const sessionId = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
+  const uaInfo = parseUserAgent(req.headers['user-agent']);
+  const ipAddress = req.ip || (req.connection && req.connection.remoteAddress) || '127.0.0.1';
+
+  if (!user.sessions) user.sessions = [];
+  user.sessions.push({
+    sessionId,
+    device: uaInfo.device,
+    os: uaInfo.os,
+    browser: uaInfo.browser,
+    ipAddress,
+    lastActive: new Date(),
+    createdAt: new Date()
+  });
+
+  if (user.sessions.length > 10) {
+    user.sessions = user.sessions.slice(-10);
+  }
+
+  await user.save();
+  return sessionId;
 };
 
 /**
@@ -89,8 +135,9 @@ exports.registerUser = async (req, res, next) => {
       username
     });
 
-    // Generate authentication token
-    const token = generateToken(user._id);
+    // Create session and generate authentication token
+    const sessionId = await createSession(user, req);
+    const token = generateToken(user._id, sessionId);
 
     // Send successful response
     res.status(201).json({
@@ -104,7 +151,10 @@ exports.registerUser = async (req, res, next) => {
         role: user.role,
         plan: user.plan,
         hasCompletedOnboarding: user.hasCompletedOnboarding,
-        profile: user.profile
+        profile: user.profile,
+        settings: user.settings,
+        googleId: user.googleId,
+        isDeactivated: user.isDeactivated
       }
     });
   } catch (error) {
@@ -138,6 +188,10 @@ exports.loginUser = async (req, res, next) => {
       });
     }
 
+    if (user.isDeactivated) {
+      user.isDeactivated = false; // Reactivate account automatically on successful login
+    }
+
     // Check if account is temporarily locked
     if (user.lockUntil && user.lockUntil > Date.now()) {
       const remainingMinutes = Math.ceil((user.lockUntil - Date.now()) / (60 * 1000));
@@ -168,11 +222,11 @@ exports.loginUser = async (req, res, next) => {
     if (user.loginAttempts > 0 || user.lockUntil) {
       user.loginAttempts = 0;
       user.lockUntil = undefined;
-      await user.save();
     }
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Create session and generate token
+    const sessionId = await createSession(user, req);
+    const token = generateToken(user._id, sessionId);
 
     // Send successful response
     res.status(200).json({
@@ -186,7 +240,10 @@ exports.loginUser = async (req, res, next) => {
         role: user.role,
         plan: user.plan,
         hasCompletedOnboarding: user.hasCompletedOnboarding,
-        profile: user.profile
+        profile: user.profile,
+        settings: user.settings,
+        googleId: user.googleId,
+        isDeactivated: user.isDeactivated
       }
     });
   } catch (error) {
@@ -211,7 +268,10 @@ exports.getMe = async (req, res, next) => {
         role: req.user.role,
         plan: req.user.plan,
         hasCompletedOnboarding: req.user.hasCompletedOnboarding,
-        profile: req.user.profile
+        profile: req.user.profile,
+        settings: req.user.settings,
+        googleId: req.user.googleId,
+        isDeactivated: req.user.isDeactivated
       }
     });
   } catch (error) {
@@ -292,8 +352,7 @@ exports.googleLogin = async (req, res, next) => {
         count++;
       }
 
-      // Generate a long cryptographically secure random password that satisfies rules:
-      // min 8 characters, at least 1 uppercase, 1 lowercase, 1 digit, 1 special character
+      // Generate a long cryptographically secure random password that satisfies rules
       const randomPassword = crypto.randomBytes(32).toString('hex') + 'aA1!';
 
       // Create new user in MongoDB
@@ -306,8 +365,14 @@ exports.googleLogin = async (req, res, next) => {
       });
     }
 
-    // Generate local JWT token
-    const token = generateToken(user._id);
+    if (user.isDeactivated) {
+      user.isDeactivated = false;
+      await user.save();
+    }
+
+    // Generate local JWT token with session
+    const sessionId = await createSession(user, req);
+    const token = generateToken(user._id, sessionId);
 
     // Send successful response
     res.status(200).json({
@@ -321,7 +386,10 @@ exports.googleLogin = async (req, res, next) => {
         role: user.role,
         plan: user.plan,
         hasCompletedOnboarding: user.hasCompletedOnboarding,
-        profile: user.profile
+        profile: user.profile,
+        settings: user.settings,
+        googleId: user.googleId,
+        isDeactivated: user.isDeactivated
       }
     });
   } catch (error) {

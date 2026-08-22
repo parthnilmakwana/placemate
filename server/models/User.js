@@ -92,6 +92,12 @@ const UserSchema = new mongoose.Schema({
       targetRoles: { type: [String], default: [] },
       targetLocations: { type: [String], default: [] },
       minimumSalary: { type: Number, default: 0 },
+      maximumSalary: { type: Number, default: 0 },
+      jobSearchStatus: {
+        type: String,
+        enum: ['Actively looking', 'Open to offers', 'Not looking'],
+        default: 'Actively looking'
+      },
       jobType: { type: String, enum: ['Full-time', 'Part-time', 'Internship', 'Contract', 'Any'], default: 'Any' },
       // Technologies the user knows or wants to work with (e.g. ['React', 'Node.js'])
       preferredSkills: { type: [String], default: [] },
@@ -114,6 +120,36 @@ const UserSchema = new mongoose.Schema({
         default: 'any'
       }
     }
+  },
+  settings: {
+    notifications: {
+      jobRecommendations: { type: Boolean, default: true },
+      applicationUpdates: { type: Boolean, default: true },
+      interviewReminders: { type: Boolean, default: true },
+      productUpdates: { type: Boolean, default: false }
+    },
+    privacy: {
+      recruiterVisibility: { type: Boolean, default: true },
+      searchEngineVisibility: { type: Boolean, default: true },
+      contactVisibility: { type: Boolean, default: false }
+    },
+    appearance: {
+      theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
+      language: { type: String, default: 'en' }
+    }
+  },
+  sessions: [{
+    sessionId: { type: String, required: true },
+    device: { type: String, default: 'Unknown Device' },
+    os: { type: String, default: 'Unknown OS' },
+    browser: { type: String, default: 'Unknown Browser' },
+    ipAddress: { type: String, default: '127.0.0.1' },
+    lastActive: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
+  }],
+  isDeactivated: {
+    type: Boolean,
+    default: false
   },
   createdAt: {
     type: Date,

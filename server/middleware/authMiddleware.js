@@ -33,6 +33,26 @@ exports.protect = async (req, res, next) => {
         });
       }
 
+      if (req.user.isDeactivated) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'This account is deactivated. Please sign in again to reactivate.'
+        });
+      }
+
+      // Check session validity if token contains a sessionId
+      if (decoded.sessionId && req.user.sessions && req.user.sessions.length > 0) {
+        const sessionExists = req.user.sessions.some(s => s.sessionId === decoded.sessionId);
+        if (!sessionExists) {
+          return res.status(401).json({
+            status: 'error',
+            message: 'Session has been revoked or expired. Please sign in again.'
+          });
+        }
+      }
+
+      req.currentSessionId = decoded.sessionId;
+
       // Call next middleware in pipeline
       return next();
     } catch (error) {

@@ -87,6 +87,9 @@ app.use('/api/payments', paymentRoutes);
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/api/feedback', feedbackRoutes);
 
+const settingsRoutes = require('./routes/settingsRoutes');
+app.use('/api/settings', settingsRoutes);
+
 const seoRoutes = require('./routes/seoRoutes');
 app.use('/api/seo', seoRoutes);
 // Expose sitemap.xml at the root level for Googlebot

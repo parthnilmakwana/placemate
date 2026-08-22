@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { initTheme, applyTheme } from '../utils/theme';
 
 const AuthContext = createContext(null);
 
@@ -8,10 +9,19 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    if (user?.settings?.appearance?.theme) {
+      applyTheme(user.settings.appearance.theme);
+    } else {
+      initTheme();
+    }
+  }, [user]);
+
   // Check if token exists in localStorage and fetch user details on load
   const checkUserSession = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
+      initTheme();
       setLoading(false);
       return;
     }
@@ -96,6 +106,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         error,
         setError,
