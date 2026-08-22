@@ -100,7 +100,7 @@ const createStyles = (settings) => StyleSheet.create({
   companyText: {
     fontWeight: 400,
     fontSize: 10,
-    color: '#4b5563',
+    color: '#1f2937',
     fontStyle: 'italic',
     marginBottom: 4,
   },
@@ -112,7 +112,7 @@ const createStyles = (settings) => StyleSheet.create({
   bulletIcon: {
     width: 12,
     fontSize: 10,
-    color: '#4b5563',
+    color: '#1f2937',
   },
   bulletText: {
     flex: 1,
@@ -149,7 +149,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   eduSchool: {
     fontSize: 10,
-    color: '#4b5563',
+    color: '#1f2937',
     fontStyle: 'italic',
     marginTop: 2,
   }

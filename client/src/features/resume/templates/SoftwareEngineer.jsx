@@ -36,7 +36,7 @@ const createStyles = (settings) => StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
     fontSize: 9,
-    color: '#4b5563',
+    color: '#374151',
   },
   linkText: {
     color: settings.primaryColor || '#2563eb',
@@ -72,7 +72,7 @@ const createStyles = (settings) => StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 3,
     fontSize: 9,
-    color: '#374151',
+    color: '#1f2937',
     fontWeight: 500,
   },
   experienceItem: {
@@ -92,12 +92,12 @@ const createStyles = (settings) => StyleSheet.create({
   dateText: {
     fontSize: 9,
     fontWeight: 500,
-    color: '#6b7280',
+    color: '#374151',
   },
   companyText: {
     fontWeight: 500,
     fontSize: 10,
-    color: settings.secondaryColor || '#4b5563',
+    color: settings.secondaryColor || '#374151',
     marginBottom: 4,
   },
   bulletPoint: {
@@ -154,7 +154,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   eduSchool: {
     fontSize: 9,
-    color: '#4b5563',
+    color: '#1f2937',
     marginTop: 2,
   }
 });

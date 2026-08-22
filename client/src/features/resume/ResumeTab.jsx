@@ -61,7 +61,7 @@ function ResumeTab() {
         <h2 className="font-heading text-2xl md:text-3xl font-bold text-text-main tracking-tight">
           Resume Studio
         </h2>
-        <p className="text-sm text-text-muted">
+        <p className="text-sm text-text-secondary leading-relaxed">
           Design and download pixel-perfect, ATS-optimized developer resumes.
           Live rendering matches your selection immediately.
         </p>
@@ -75,7 +75,7 @@ function ResumeTab() {
           className={`flex-1 py-2 rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
             mobileTab === "editor"
               ? "bg-brand-primary text-text-main shadow-sm"
-              : "text-text-muted hover:text-text-main"
+              : "text-text-secondary hover:text-text-main"
           }`}
         >
           <Sliders size={14} />
@@ -87,7 +87,7 @@ function ResumeTab() {
           className={`flex-1 py-2 rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
             mobileTab === "preview"
               ? "bg-brand-primary text-text-main shadow-sm"
-              : "text-text-muted hover:text-text-main"
+              : "text-text-secondary hover:text-text-main"
           }`}
         >
           <Eye size={14} />
@@ -107,10 +107,10 @@ function ResumeTab() {
           {/* AI Enhancement Section */}
           <div className="structured-panel rounded-lg p-6 border border-brand-border flex flex-col gap-4">
             <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-widest flex items-center gap-2 border-b border-brand-border pb-3">
-              <Sparkles size={14} className="text-text-muted" />
+              <Sparkles size={14} className="text-text-secondary" />
               <span>AI Writing Assistant</span>
             </h3>
-            <p className="text-xs text-text-muted leading-relaxed">
+            <p className="text-[13px] text-text-secondary leading-relaxed">
               Analyze your bio summaries and project logs. The assistant will rewrite
               your descriptions using high-impact professional phrasing.
             </p>
@@ -178,7 +178,7 @@ function ResumeTab() {
           {/* Phrasing Optimization Config */}
           <div className="structured-panel rounded-lg p-6 border border-brand-border flex flex-col gap-4">
             <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-widest flex items-center gap-2 border-b border-brand-border pb-3">
-              <CheckCircle size={14} className="text-text-muted" />
+              <CheckCircle size={14} className="text-text-secondary" />
               <span>ATS Optimizers</span>
             </h3>
 
@@ -187,7 +187,7 @@ function ResumeTab() {
                 <h4 className="text-sm font-semibold text-text-main">
                   Active Verb Enhancer
                 </h4>
-                <p className="text-xs text-text-muted leading-normal">
+                <p className="text-[13px] text-text-secondary leading-relaxed mt-0.5">
                   Replaces generic verbs with high-impact action verbs (e.g., changing "worked on" to "architected") automatically before export.
                 </p>
               </div>
@@ -210,13 +210,13 @@ function ResumeTab() {
           {/* Integrity Checklist Card */}
           <div className="structured-panel rounded-lg p-6 border border-brand-border flex flex-col gap-4">
             <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-widest flex items-center gap-2 border-b border-brand-border pb-3">
-              <CheckCircle size={14} className="text-text-muted" />
+              <CheckCircle size={14} className="text-text-secondary" />
               <span>Document Integrity</span>
             </h3>
 
             <div className="flex flex-col gap-3 mt-1 text-sm">
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 text-text-muted">
+                <div className="flex items-center gap-3 text-text-secondary font-medium">
                   <User size={14} />
                   <span>Personal Bio</span>
                 </div>
@@ -230,7 +230,7 @@ function ResumeTab() {
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 text-text-muted">
+                <div className="flex items-center gap-3 text-text-secondary font-medium">
                   <Code size={14} />
                   <span>Skills Set</span>
                 </div>
@@ -244,7 +244,7 @@ function ResumeTab() {
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 text-text-muted">
+                <div className="flex items-center gap-3 text-text-secondary font-medium">
                   <BookOpen size={14} />
                   <span>Education</span>
                 </div>
@@ -258,7 +258,7 @@ function ResumeTab() {
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 text-text-muted">
+                <div className="flex items-center gap-3 text-text-secondary font-medium">
                   <Briefcase size={14} />
                   <span>Experience</span>
                 </div>
@@ -270,7 +270,7 @@ function ResumeTab() {
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 text-text-muted">
+                <div className="flex items-center gap-3 text-text-secondary font-medium">
                   <Compass size={14} />
                   <span>Projects</span>
                 </div>

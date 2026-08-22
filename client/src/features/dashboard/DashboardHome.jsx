@@ -176,7 +176,7 @@ function DashboardHome() {
               Application Tracker
             </h2>
             <button
-              onClick={() => handleNavigate("jobs")}
+              onClick={() => navigate("/dashboard/jobs?tab=tracker")}
               className="text-xs text-brand-primary hover:underline font-medium"
             >
               Pipeline
@@ -208,7 +208,7 @@ function DashboardHome() {
                 Track all job applications, response dates, and interview stages in one central workspace.
               </p>
               <button
-                onClick={() => handleNavigate("jobs")}
+                onClick={() => navigate("/dashboard/jobs?tab=tracker")}
                 className="w-full py-2 bg-surface-elevated hover:bg-border-subtle text-text-main text-xs font-medium border border-border-subtle rounded transition-colors text-center cursor-pointer mt-1"
               >
                 Open Application Kanban

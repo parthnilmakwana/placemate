@@ -33,7 +33,7 @@ const createStyles = (settings) => StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
     fontSize: 9,
-    color: '#6b7280',
+    color: '#374151',
   },
   section: {
     marginBottom: 20,
@@ -47,7 +47,7 @@ const createStyles = (settings) => StyleSheet.create({
     marginBottom: 10,
   },
   summaryText: {
-    color: '#4b5563',
+    color: '#1f2937',
   },
   skillsContainer: {
     flexDirection: 'row',
@@ -56,7 +56,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   skillText: {
     fontSize: 10,
-    color: '#374151',
+    color: '#1f2937',
   },
   experienceItem: {
     marginBottom: 16,
@@ -75,11 +75,11 @@ const createStyles = (settings) => StyleSheet.create({
   companyText: {
     fontWeight: 400,
     fontSize: 11,
-    color: settings.secondaryColor || '#4b5563',
+    color: settings.secondaryColor || '#374151',
   },
   dateText: {
     fontSize: 9,
-    color: '#9ca3af',
+    color: '#4b5563',
   },
   bulletPoint: {
     flexDirection: 'row',
@@ -93,7 +93,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   bulletText: {
     flex: 1,
-    color: '#4b5563',
+    color: '#1f2937',
   },
   projectItem: {
     marginBottom: 12,
@@ -111,7 +111,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   projectLink: {
     fontSize: 9,
-    color: settings.secondaryColor || '#6b7280',
+    color: settings.secondaryColor || '#374151',
     textDecoration: 'none',
   },
   educationItem: {
@@ -127,7 +127,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   eduSchool: {
     fontSize: 10,
-    color: '#4b5563',
+    color: '#1f2937',
   }
 });
 
@@ -208,7 +208,7 @@ export const MinimalCleanTheme = ({ user, profile, settings, optimize }) => {
                 <View key={idx} style={styles.projectItem}>
                   <View style={styles.projectTitleRow}>
                     <Text style={styles.projectTitle}>{proj.title}</Text>
-                    <Text style={{ fontSize: 9, color: '#9ca3af' }}>{techStack}</Text>
+                    <Text style={{ fontSize: 9, color: '#4b5563' }}>{techStack}</Text>
                     {(proj.liveLink || proj.githubLink) && (
                       <Link src={proj.liveLink || proj.githubLink} style={styles.projectLink}>
                         {(proj.liveLink || proj.githubLink).replace(/^https?:\/\//, '')}

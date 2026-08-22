@@ -38,7 +38,7 @@ const createStyles = (settings) => StyleSheet.create({
     flexWrap: 'wrap',
     gap: 8,
     fontSize: 9,
-    color: '#64748b',
+    color: '#334155',
   },
   section: {
     marginBottom: 16,
@@ -68,7 +68,7 @@ const createStyles = (settings) => StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 4,
     fontSize: 9,
-    color: '#475569',
+    color: '#334155',
   },
   experienceItem: {
     marginBottom: 10,
@@ -86,7 +86,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   dateText: {
     fontSize: 9,
-    color: '#64748b',
+    color: '#334155',
   },
   companyText: {
     fontWeight: 500,
@@ -102,7 +102,7 @@ const createStyles = (settings) => StyleSheet.create({
   bulletIcon: {
     width: 10,
     fontSize: 10,
-    color: '#64748b',
+    color: '#334155',
   },
   bulletText: {
     flex: 1,
@@ -142,7 +142,7 @@ const createStyles = (settings) => StyleSheet.create({
   },
   eduSchool: {
     fontSize: 9,
-    color: '#64748b',
+    color: '#334155',
     marginTop: 2,
   }
 });

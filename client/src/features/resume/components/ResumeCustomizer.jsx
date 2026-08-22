@@ -30,13 +30,13 @@ const ResumeCustomizer = ({ settings, setSettings }) => {
   return (
     <div className="structured-panel rounded-lg p-6 border border-brand-border flex flex-col gap-5">
       <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-widest flex items-center gap-2 border-b border-brand-border pb-3">
-        <LayoutTemplate size={14} className="text-text-muted" />
+        <LayoutTemplate size={14} className="text-text-secondary" />
         <span>Resume Customization</span>
       </h3>
 
       {/* Theme Selection */}
       <div className="flex flex-col gap-2">
-        <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+        <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
           Template Style
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -48,7 +48,7 @@ const ResumeCustomizer = ({ settings, setSettings }) => {
                 ${
                   settings.themeId === t.id
                     ? "bg-brand-bg border-white text-text-main"
-                    : "bg-brand-surface border-brand-border text-text-muted hover:bg-brand-surface-hover hover:text-text-main"
+                    : "bg-brand-surface border-brand-border text-text-secondary hover:bg-brand-surface-hover hover:text-text-main"
                 }`}
             >
               {t.name}
@@ -59,7 +59,7 @@ const ResumeCustomizer = ({ settings, setSettings }) => {
 
       {/* Font Selection */}
       <div className="flex flex-col gap-2">
-        <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+        <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
           <Type size={12} /> Typography
         </label>
         <div className="flex flex-wrap gap-2">
@@ -72,7 +72,7 @@ const ResumeCustomizer = ({ settings, setSettings }) => {
                 ${
                   settings.fontFamily === f.value
                     ? "bg-brand-bg border-white text-text-main"
-                    : "bg-brand-surface border-brand-border text-text-muted hover:bg-brand-surface-hover hover:text-text-main"
+                    : "bg-brand-surface border-brand-border text-text-secondary hover:bg-brand-surface-hover hover:text-text-main"
                 }`}
             >
               {f.name}
@@ -83,7 +83,7 @@ const ResumeCustomizer = ({ settings, setSettings }) => {
 
       {/* Color Selection */}
       <div className="flex flex-col gap-2">
-        <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+        <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
           <Palette size={12} /> Color Scheme
         </label>
         <div className="flex flex-wrap gap-3 mt-1">
