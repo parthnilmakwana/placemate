@@ -15,6 +15,8 @@ import {
   Save,
   Activity,
   ArrowRight,
+  Sliders,
+  Eye,
 } from "lucide-react";
 import ResumeCustomizer from "./components/ResumeCustomizer";
 import { api } from "../../services/api";
@@ -25,6 +27,7 @@ const ResumePreview = lazy(() => import("./components/ResumePreview"));
 function ResumeTab() {
   const { user, checkUserSession } = useAuth();
 
+  const [mobileTab, setMobileTab] = useState("editor"); // 'editor' | 'preview'
   const [optimize, setOptimize] = useState(true);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [draftProfile, setDraftProfile] = useState(null);
@@ -64,10 +67,40 @@ function ResumeTab() {
         </p>
       </div>
 
+      {/* Mobile Mode Switcher (< lg screens) */}
+      <div className="flex lg:hidden rounded-lg bg-brand-surface p-1 border border-brand-border">
+        <button
+          type="button"
+          onClick={() => setMobileTab("editor")}
+          className={`flex-1 py-2 rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+            mobileTab === "editor"
+              ? "bg-brand-primary text-text-main shadow-sm"
+              : "text-text-muted hover:text-text-main"
+          }`}
+        >
+          <Sliders size={14} />
+          <span>Editor & Settings</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("preview")}
+          className={`flex-1 py-2 rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+            mobileTab === "preview"
+              ? "bg-brand-primary text-text-main shadow-sm"
+              : "text-text-muted hover:text-text-main"
+          }`}
+        >
+          <Eye size={14} />
+          <span>Live PDF Preview</span>
+        </button>
+      </div>
+
       {/* Workspace Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 items-start relative">
         {/* Left Column: Configuration Panels */}
-        <div className="flex flex-col gap-6 w-full lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto pr-1.5 pb-20 custom-scrollbar">
+        <div className={`flex-col gap-6 w-full lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto pr-1.5 pb-20 custom-scrollbar ${
+          mobileTab === "editor" ? "flex" : "hidden lg:flex"
+        }`}>
           {/* Customizer */}
           <ResumeCustomizer settings={settings} setSettings={setSettings} />
 
@@ -254,7 +287,9 @@ function ResumeTab() {
         </div>
 
         {/* Right Column: PDF Preview Document Panel */}
-        <div className="flex justify-center w-full lg:sticky lg:top-0 lg:h-[calc(100vh-10rem)] bg-brand-surface rounded-lg border border-brand-border overflow-hidden relative">
+        <div className={`justify-center w-full min-h-[520px] h-[calc(100vh-12rem)] lg:h-[calc(100vh-10rem)] lg:sticky lg:top-0 bg-brand-surface rounded-lg border border-brand-border overflow-hidden relative ${
+          mobileTab === "preview" ? "flex" : "hidden lg:flex"
+        }`}>
           <Suspense
             fallback={
               <div className="flex items-center justify-center w-full h-full min-h-[500px]">

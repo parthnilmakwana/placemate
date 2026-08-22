@@ -45,10 +45,10 @@ function Sidebar({
 
   const primaryNavItems = [
     { id: "home", label: "Dashboard", icon: LayoutGrid },
-    { id: "jobs", label: "Find Jobs", icon: Search, badge: "Beta" },
-    { id: "applications", label: "Applications", icon: Layers, targetTab: "jobs", badge: "Beta" },
     { id: "resume", label: "Resume Builder", icon: FileText },
     { id: "portfolio", label: "Portfolio", icon: Globe },
+    { id: "jobs", label: "Find Jobs", icon: Search, badge: "Beta" },
+    { id: "applications", label: "Applications", icon: Layers, targetTab: "jobs", badge: "Beta" },
   ];
 
   const secondaryNavItems = [
