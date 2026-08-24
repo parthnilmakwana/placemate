@@ -313,9 +313,6 @@ exports.loginUser = async (req, res, next) => {
  */
 exports.getMe = async (req, res, next) => {
   try {
-    const fs = require('fs');
-    fs.writeFileSync('C:/placeMate/debug_user.json', JSON.stringify(req.user, null, 2));
-    
     // Auto-migrate legacy data fields if needed
     await autoMigrateLegacyUser(req.user);
 
