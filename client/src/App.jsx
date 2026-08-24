@@ -39,6 +39,7 @@ const DashboardHome = lazy(() => import("./features/dashboard/DashboardHome"));
 const ProfileTab = lazy(() => import("./features/profile/ProfileTab"));
 const PortfolioTab = lazy(() => import("./features/portfolio/PortfolioTab"));
 const ResumeTab = lazy(() => import("./features/resume/ResumeTab"));
+const AtsChecker = lazy(() => import("./features/ats/AtsChecker"));
 const JobDashboardTab = lazy(() => import("./features/jobs/JobDashboardTab"));
 const PricingTab = lazy(() => import("./features/pricing/PricingTab"));
 const FeedbackTab = lazy(() => import("./features/feedback/FeedbackTab"));
@@ -188,6 +189,7 @@ function App() {
                   <Route path="profile" element={<ProfileTab />} />
                   <Route path="portfolio" element={<PortfolioTab />} />
                   <Route path="resume" element={<ResumeTab />} />
+                  <Route path="ats-checker" element={<AtsChecker />} />
                   <Route path="jobs" element={<JobDashboardTab />} />
                   <Route path="pricing" element={<PricingTab />} />
                   <Route path="feedback" element={<FeedbackTab />} />

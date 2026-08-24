@@ -88,6 +88,12 @@ app.use('/api/payments', paymentRoutes);
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/api/feedback', feedbackRoutes);
 
+const atsRoutes = require('./routes/ats');
+app.use('/api/ats', atsRoutes);
+
+const uploadRoutes = require('./routes/uploadRoutes');
+app.use('/api/upload', uploadRoutes);
+
 
 
 const seoRoutes = require('./routes/seoRoutes');

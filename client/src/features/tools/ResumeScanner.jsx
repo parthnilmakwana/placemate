@@ -1,12 +1,90 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FileText, CheckCircle, XCircle, ArrowRight, Activity, UploadCloud } from 'lucide-react';
-import * as pdfjsLib from 'pdfjs-dist';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FileText, CheckCircle, XCircle, ArrowRight, UploadCloud, RefreshCw, Sparkles, Zap, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 
-// Configure the PDF.js worker to run in the background (Performance Optimization)
-// We use a CDN to fetch the exact version worker without complex bundler configuration.
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+// Custom SVG Circular Progress
+const CircularScore = ({ score }) => {
+  const [animatedScore, setAnimatedScore] = useState(0);
+  
+  useEffect(() => {
+    if (score === null) return;
+    
+    // Animate score from 0 to actual score
+    let start = 0;
+    const duration = 1500;
+    const increment = score / (duration / 16); // 60fps
+    
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= score) {
+        setAnimatedScore(score);
+        clearInterval(timer);
+      } else {
+        setAnimatedScore(Math.floor(start));
+      }
+    }, 16);
+    
+    return () => clearInterval(timer);
+  }, [score]);
+
+  const radius = 60;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (animatedScore / 100) * circumference;
+
+  const getColor = (s) => {
+    if (s >= 80) return '#10b981'; // success
+    if (s >= 50) return '#f59e0b'; // warning
+    return '#ef4444'; // error
+  };
+  
+  const color = getColor(animatedScore);
+
+  return (
+    <div className="relative flex items-center justify-center animate-scale-in drop-shadow-xl">
+      {/* Glow effect */}
+      <div 
+        className="absolute inset-0 rounded-full blur-xl opacity-30" 
+        style={{ backgroundColor: color }}
+      ></div>
+      
+      <svg className="w-40 h-40 transform -rotate-90 relative z-10" viewBox="0 0 140 140">
+        <circle
+          className="text-brand-border"
+          strokeWidth="10"
+          stroke="currentColor"
+          fill="transparent"
+          r={radius}
+          cx="70"
+          cy="70"
+        />
+        <circle
+          style={{ 
+            stroke: color,
+            transition: 'stroke-dashoffset 0.1s ease-out'
+          }}
+          strokeWidth="10"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          fill="transparent"
+          r={radius}
+          cx="70"
+          cy="70"
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center justify-center z-20">
+        <span className="text-4xl font-black tracking-tighter" style={{ color }}>
+          {animatedScore}%
+        </span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted mt-1">
+          ATS Score
+        </span>
+      </div>
+    </div>
+  );
+};
 
 const ResumeScanner = () => {
   const { user } = useAuth();
@@ -18,46 +96,46 @@ const ResumeScanner = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState('');
 
-  // Extract text completely in the browser (Privacy & Performance)
   const extractTextFromFile = async (file) => {
     try {
       setIsParsing(true);
       
-      if (file.type === 'text/plain') {
-        const text = await file.text();
-        handleScan(text);
-      } else if (file.type === 'application/pdf') {
-        const arrayBuffer = await file.arrayBuffer();
-        
-        // Parse the PDF
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let fullText = '';
-        
-        // Iterate through all pages and extract text blocks
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items.map(item => item.str).join(' ');
-          fullText += pageText + ' ';
+      // We now send the file directly to the backend to support OCR (images) and DOCX
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await api.post('/api/upload/extract-text', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-        
-        handleScan(fullText);
+      });
+      
+      if (response.data && response.data.success) {
+        handleScan(response.data.text);
+      } else {
+        throw new Error(response.data.error || 'Failed to extract text');
       }
     } catch (error) {
       console.error("Error reading file:", error);
-      alert("Failed to read the file. It might be corrupted or protected.");
+      alert(error.response?.data?.error || "Failed to read the file. Please ensure it is a valid format.");
       setIsParsing(false);
     }
   };
 
   const handleFileUpload = (file) => {
-    // Validate file type
-    if (file.type !== 'application/pdf' && file.type !== 'text/plain') {
-      alert("Please upload a .pdf or .txt file.");
+    const validTypes = [
+      'application/pdf', 
+      'text/plain', 
+      'image/png', 
+      'image/jpeg', 
+      'image/jpg',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (!validTypes.includes(file.type) && !file.name.endsWith('.docx')) {
+      alert("Please upload a PDF, DOCX, TXT, or Image file.");
       return;
     }
-    
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert("File is too large. Please upload a file smaller than 5MB.");
       return;
@@ -68,7 +146,7 @@ const ResumeScanner = () => {
     extractTextFromFile(file);
   };
 
-  const handleScan = (extractedText) => {
+  const handleScan = async (extractedText) => {
     if (!extractedText || !extractedText.trim()) {
       setIsParsing(false);
       alert("No text could be extracted from this file. It might be an image-based PDF.");
@@ -78,158 +156,199 @@ const ResumeScanner = () => {
     setIsParsing(false);
     setIsScanning(true);
     
-    // Simulate network delay for UX effect (makes it feel authoritative)
-    setTimeout(() => {
-      const text = extractedText.toLowerCase();
+    try {
+      // Simulate network delay for that dramatic "scanning" UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Regex logic to check for critical ATS sections
-      const criteria = [
-        { name: 'Education Section', regex: /\b(education|university|college|degree)\b/i, weight: 20 },
-        { name: 'Experience Section', regex: /\b(experience|employment|work history|career)\b/i, weight: 30 },
-        { name: 'Skills Section', regex: /\b(skills|technologies|proficiencies|tools)\b/i, weight: 20 },
-        { name: 'Projects Section', regex: /\b(projects|portfolio|personal work)\b/i, weight: 15 },
-        { name: 'Contact Info', regex: /\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|phone|email|linkedin|github)\b/i, weight: 15 },
-      ];
-
-      let currentScore = 0;
-      const newFeedback = [];
-
-      criteria.forEach(item => {
-        const passed = item.regex.test(text);
-        if (passed) {
-          currentScore += item.weight;
-          newFeedback.push({ name: item.name, passed: true, message: 'Found' });
-        } else {
-          newFeedback.push({ name: item.name, passed: false, message: 'Missing' });
-        }
-      });
-
-      setScore(currentScore);
-      setFeedback(newFeedback);
+      const response = await api.post('/api/ats/analyze-public', { text: extractedText });
+      if (response.data && response.data.success) {
+        setScore(response.data.data.score);
+        setFeedback(response.data.data.feedback);
+      } else {
+        throw new Error('Invalid response from ATS engine');
+      }
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+      alert("Failed to analyze resume with our servers. Please try again.");
+    } finally {
       setIsScanning(false);
-    }, 1500);
+    }
+  };
+
+  const resetScanner = () => {
+    setScore(null);
+    setFeedback([]);
+    setFileName('');
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="structured-panel p-6 md:p-8 shadow-2xl">
+      {/* Upload & Analyzing View */}
+      {score === null && (
+        <div className="relative group animate-fade-in">
+          {/* Animated decorative gradient border */}
+          <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-brand-primary via-indigo-500 to-brand-secondary opacity-30 group-hover:opacity-70 transition duration-500 blur-sm"></div>
           
-          <div className="mb-2">
-            <label className="text-sm font-medium text-text-secondary mb-4 flex items-center gap-2">
-              <UploadCloud size={18} className="text-brand-primary" />
-              <span>Upload Your Resume</span>
-            </label>
+          <div className="relative bg-brand-surface border border-brand-border rounded-2xl shadow-2xl p-8 md:p-12 flex flex-col items-center justify-center text-center overflow-hidden">
             
-            {/* Professional Drag and Drop Zone */}
-            <div 
-              className={`relative w-full h-64 rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden
-                ${isDragging ? 'border-brand-primary bg-brand-primary/10 scale-[1.01]' : 'border-border-strong bg-bg-sidebar hover:border-brand-primary/50 hover:bg-surface-elevated'}
-                ${(isParsing || isScanning) ? 'opacity-80 pointer-events-none' : ''}`}
-              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-              onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                  handleFileUpload(e.dataTransfer.files[0]);
-                }
-              }}
-              onClick={() => document.getElementById('file-upload').click()}
-            >
-              <input 
-                id="file-upload" 
-                type="file" 
-                accept=".pdf,.txt" 
-                className="hidden" 
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleFileUpload(e.target.files[0]);
+            {/* Background pattern */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+            
+            {isParsing || isScanning ? (
+              <div className="flex flex-col items-center justify-center py-10 animate-fade-in z-10 w-full">
+                <div className="relative w-24 h-24 mb-6">
+                  <div className="absolute inset-0 rounded-full border-4 border-brand-primary/20"></div>
+                  <div className="absolute inset-0 rounded-full border-4 border-t-brand-primary border-l-brand-primary animate-spin"></div>
+                  <div className="absolute inset-0 flex items-center justify-center text-brand-primary">
+                    <Sparkles size={24} className="animate-pulse" />
+                  </div>
+                </div>
+                <h3 className="font-heading text-2xl font-bold text-text-main mb-2">
+                  {isParsing ? 'Extracting Resume Text...' : 'Running ATS Algorithms...'}
+                </h3>
+                <p className="text-text-muted text-sm max-w-md mx-auto">
+                  Our system is analyzing your resume against standard ATS parsers to ensure perfect readability.
+                </p>
+                
+                {/* Fake progress bar for UX */}
+                <div className="w-full max-w-xs h-1.5 bg-brand-bg rounded-full overflow-hidden mt-8">
+                  <div className="h-full bg-brand-primary rounded-full animate-progress-indeterminate"></div>
+                </div>
+              </div>
+            ) : (
+              <div 
+                className={`w-full py-12 px-6 flex flex-col items-center justify-center border-2 border-dashed rounded-xl transition-all cursor-pointer z-10
+                  ${isDragging ? 'border-brand-primary bg-brand-primary/5 scale-[1.02]' : 'border-border-strong hover:border-brand-primary/50 hover:bg-brand-bg/50'}
+                `}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFileUpload(e.dataTransfer.files[0]);
                   }
-                }} 
-              />
+                }}
+                onClick={() => document.getElementById('resume-file-upload').click()}
+              >
+                <input 
+                  id="resume-file-upload" 
+                  type="file" 
+                  accept=".pdf,.txt,.docx,.png,.jpg,.jpeg" 
+                  className="hidden" 
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileUpload(e.target.files[0]);
+                    }
+                  }} 
+                />
+                
+                <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-primary/10 to-brand-primary/30 flex items-center justify-center mb-6 shadow-inner text-brand-primary">
+                  <UploadCloud size={36} />
+                </div>
+                
+                <h3 className="font-heading text-2xl font-bold text-text-main mb-3">Upload your Resume</h3>
+                <p className="text-text-secondary max-w-md mx-auto mb-6 text-sm leading-relaxed">
+                  Drag and drop your PDF, DOCX, or Image file here. We'll instantly extract the text and scan it for ATS compatibility.
+                </p>
+                
+                <button className="px-6 py-2.5 bg-brand-primary text-white rounded-full font-semibold text-sm hover:shadow-lg hover:shadow-brand-primary/30 transition-all flex items-center gap-2">
+                  <FileText size={16} /> Browse Files
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Results View */}
+      {score !== null && (
+        <div className="animate-fade-in flex flex-col gap-8">
+          
+          {/* Hero Score Card */}
+          <div className="relative bg-brand-surface border border-brand-border rounded-2xl shadow-xl p-8 overflow-hidden flex flex-col md:flex-row items-center gap-8 md:gap-12 justify-center">
+             <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(45deg, currentColor 25%, transparent 25%, transparent 75%, currentColor 75%, currentColor), linear-gradient(45deg, currentColor 25%, transparent 25%, transparent 75%, currentColor 75%, currentColor)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 10px 10px' }}></div>
+            
+            <div className="z-10 flex flex-col items-center md:items-start text-center md:text-left">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-elevated border border-border-strong text-xs font-semibold text-text-secondary mb-4 uppercase tracking-widest shadow-sm">
+                <FileText size={12} className="text-brand-primary" /> {fileName}
+              </span>
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-text-main mb-3">
+                Your ATS Score
+              </h2>
+              <p className="text-text-secondary text-sm max-w-sm mb-6 leading-relaxed">
+                {score >= 80 
+                  ? "Great job! Your resume is highly readable by ATS systems and contains essential sections." 
+                  : score >= 50 
+                    ? "Your resume is missing some crucial standard sections that ATS systems look for." 
+                    : "Your resume failed the basic ATS checks. It may be discarded before a human reads it."}
+              </p>
               
-              {isParsing || isScanning ? (
-                <div className="flex flex-col items-center gap-4 text-brand-primary animate-fade-in">
-                  <div className="w-12 h-12 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin"></div>
-                  <span className="font-bold text-lg text-text-main">
-                    {isParsing ? 'Extracting Text...' : 'Scanning for ATS Keywords...'}
-                  </span>
-                </div>
-              ) : fileName && score !== null ? (
-                <div className="flex flex-col items-center gap-3 text-status-success animate-fade-in">
-                  <div className="w-16 h-16 rounded-full bg-status-success/10 flex items-center justify-center mb-2 border border-status-success/20">
-                    <CheckCircle size={32} />
+              <button 
+                onClick={resetScanner}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary hover:text-brand-primary transition-colors cursor-pointer"
+              >
+                <RefreshCw size={14} /> Scan another resume
+              </button>
+            </div>
+            
+            <div className="z-10 shrink-0">
+              <CircularScore score={score} />
+            </div>
+          </div>
+
+          {/* Feedback Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {feedback.map((item, idx) => (
+              <div 
+                key={idx} 
+                className="group flex items-center justify-between p-5 rounded-xl bg-brand-surface border border-brand-border shadow-sm hover:border-brand-primary/40 hover:shadow-md transition-all duration-300"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${
+                    item.passed ? 'bg-status-success/10 text-status-success' : 'bg-status-error/10 text-status-error'
+                  }`}>
+                    {item.passed ? <CheckCircle size={20} /> : <XCircle size={20} />}
                   </div>
-                  <span className="font-bold text-lg text-text-main">{fileName}</span>
-                  <span className="text-xs text-text-muted">Click or drop a different file to re-scan</span>
+                  <div>
+                    <h4 className="font-semibold text-text-main text-sm mb-0.5">{item.name}</h4>
+                    <p className={`text-xs font-medium ${item.passed ? 'text-status-success/80' : 'text-status-error/80'}`}>
+                      {item.message}
+                    </p>
+                  </div>
                 </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Upsell / Call to Action */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-brand-primary to-brand-secondary rounded-2xl shadow-xl p-8 md:p-10 text-center text-white mt-4">
+            <div className="absolute top-0 right-0 -mt-10 -mr-10 opacity-20 transform rotate-12">
+              <Zap size={200} />
+            </div>
+            <div className="relative z-10 flex flex-col items-center">
+              <h4 className="font-heading text-2xl font-bold mb-3 shadow-black/10">Bypass the ATS instantly.</h4>
+              <p className="text-white/80 mb-8 max-w-lg mx-auto text-sm leading-relaxed">
+                Don't let formatting errors or missing keywords cost you the interview. Let our AI completely rewrite and optimize your resume to guarantee a 100% ATS match.
+              </p>
+              {user ? (
+                <Link to="/dashboard/profile" className="inline-flex items-center gap-2 bg-white text-brand-primary hover:bg-slate-50 px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                  Fix my resume in the Dashboard
+                  <ArrowRight size={18} />
+                </Link>
               ) : (
-                <div className="flex flex-col items-center gap-4 text-text-muted animate-fade-in">
-                  <div className="w-16 h-16 rounded-full bg-surface-primary flex items-center justify-center mb-2 border border-border-subtle group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-colors">
-                    <UploadCloud size={32} />
-                  </div>
-                  <div className="text-center">
-                    <p className="font-bold text-text-main mb-1 text-lg">Click to upload or drag and drop</p>
-                    <p className="text-sm text-text-muted">PDF or TXT files only (Max 5MB)</p>
-                  </div>
-                </div>
+                <Link to="/register" className="inline-flex items-center gap-2 bg-white text-brand-primary hover:bg-slate-50 px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                  Create Account to Fix Resume
+                  <ArrowRight size={18} />
+                </Link>
               )}
             </div>
           </div>
 
-          {/* Results Section */}
-          {score !== null && (
-            <div className="mt-10 pt-10 border-t border-border-subtle animate-fade-in">
-              <div className="text-center mb-8">
-                <h3 className="font-heading text-2xl font-bold text-text-main mb-2">Your ATS Match Score</h3>
-                <div className={`text-6xl font-black ${score >= 80 ? 'text-status-success' : score >= 50 ? 'text-status-warning' : 'text-status-error'}`}>
-                  {score}%
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                {feedback.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 rounded-md bg-bg-sidebar border border-border-subtle hover:border-border-strong transition-colors">
-                    <span className="text-text-secondary font-medium">{item.name}</span>
-                    <div className="flex items-center gap-2">
-                      {item.passed ? (
-                        <>
-                          <span className="text-status-success text-sm font-bold">{item.message}</span>
-                          <CheckCircle size={18} className="text-status-success" />
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-status-error text-sm font-bold">{item.message}</span>
-                          <XCircle size={18} className="text-status-error" />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* High-Converting CTA */}
-              <div className="bg-surface-elevated border border-border-strong rounded-xl p-6 md:p-8 text-center shadow-lg">
-                <h4 className="font-heading text-xl font-bold text-text-main mb-3">Want to reach 100% instantly?</h4>
-                <p className="text-text-secondary mb-6 text-sm">
-                  Don't let formatting errors cost you the interview. Let our AI rewrite and reformat your resume to bypass ATS filters automatically.
-                </p>
-                {user ? (
-                  <Link to="/dashboard/profile" className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-hover text-text-main px-8 py-3.5 rounded-md font-semibold text-sm transition-all shadow-sm">
-                    Fill profile to fix resume
-                    <ArrowRight size={18} />
-                  </Link>
-                ) : (
-                  <Link to="/register" className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-hover text-text-main px-8 py-3.5 rounded-md font-semibold text-sm transition-all shadow-sm">
-                    Fix my resume with AI
-                    <ArrowRight size={18} />
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
+    </div>
   );
 };
 

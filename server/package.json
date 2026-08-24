@@ -19,11 +19,15 @@
     "google-auth-library": "^10.7.0",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.12.1",
     "mongoose": "^8.4.1",
+    "multer": "^2.2.0",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.13",
+    "pdf-parse": "^2.4.5",
     "pdfkit": "^0.15.0",
-    "puppeteer": "^22.10.2"
+    "puppeteer": "^22.10.2",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "jest": "^30.4.2",

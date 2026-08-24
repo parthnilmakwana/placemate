@@ -16,6 +16,7 @@ import {
   ChevronRight,
   X,
   User,
+  Activity,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import Button from "./Button";
@@ -55,6 +56,7 @@ function Sidebar({
   const primaryNavItems = [
     { id: "home", label: "Dashboard", icon: LayoutGrid },
     { id: "resume", label: "Resume Builder", icon: FileText },
+    { id: "ats-checker", label: "ATS Checker", icon: Activity },
     { id: "portfolio", label: "Portfolio", icon: Globe },
     { id: "jobs", label: "Find Jobs", icon: Search, badge: "Beta" },
     { id: "applications", label: "Applications", icon: Layers, targetTab: "jobs", badge: "Beta" },
