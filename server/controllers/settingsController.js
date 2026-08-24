@@ -13,7 +13,7 @@ const bcrypt = require('bcryptjs');
  */
 exports.getSettings = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).lean();
     if (!user) {
       return res.status(404).json({ status: 'error', message: 'User not found' });
     }

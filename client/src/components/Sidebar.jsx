@@ -37,7 +37,7 @@ function Sidebar({
         ? `${user.settings.firstName} ${user.settings.lastName || ''}`.trim() 
         : (user?.name || 'User'));
         
-  console.log('Sidebar user:', user, 'displayName:', displayName);
+
 
   const getActiveTab = () => {
     const path = location.pathname;
@@ -130,7 +130,7 @@ function Sidebar({
                 <div className="flex items-center justify-between w-full min-w-0">
                   <span className="truncate">{item.label}</span>
                   {item.badge && (
-                    <span className="ml-2 px-1.5 py-[1px] rounded bg-brand-primary/15 text-brand-primary border border-brand-primary/20 text-[9px] font-bold uppercase tracking-wider shrink-0">
+                    <span className="ml-2 px-1.5 py-px rounded bg-brand-primary/15 text-brand-primary border border-brand-primary/20 text-[9px] font-bold uppercase tracking-wider shrink-0">
                       {item.badge}
                     </span>
                   )}
@@ -255,7 +255,7 @@ function Sidebar({
       {/* Mobile Drawer Navigation */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/80 flex animate-fade-in">
-          <div className="w-[85vw] max-w-[280px] bg-bg-sidebar h-full p-5 flex flex-col justify-between border-r border-border-subtle">
+          <div className="w-[85vw] max-w-70 bg-bg-sidebar h-full p-5 flex flex-col justify-between border-r border-border-subtle">
             <div className="flex flex-col gap-6">
               <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
                 <div className="flex items-center gap-2.5">
@@ -291,7 +291,7 @@ function Sidebar({
                 <div className="w-8 h-8 rounded-full bg-brand-primary/15 border border-brand-primary/30 flex items-center justify-center font-bold text-brand-primary text-xs shrink-0">
                   {getInitials(displayName)}
                 </div>
-                <div className="flex flex-col min-w-0">
+                <div className="flex flex-col max-w-70">
                   <span className="text-xs font-medium text-text-main truncate">
                     {displayName}
                   </span>
@@ -312,7 +312,7 @@ function Sidebar({
           </div>
 
           <div
-            className="flex-grow h-full"
+            className="grow h-full"
             onClick={() => setMobileOpen(false)}
           ></div>
         </div>

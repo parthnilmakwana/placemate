@@ -13,7 +13,7 @@ exports.getPublicPortfolio = async (req, res, next) => {
     const { username } = req.params;
 
     // Find the user document by username
-    const user = await User.findOne({ username: username.toLowerCase() });
+    const user = await User.findOne({ username: username.toLowerCase() }).lean();
     
     // If user not found, or user portfolio is set to private
     if (!user || user.profile?.isPublic === false) {

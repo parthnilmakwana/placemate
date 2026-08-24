@@ -37,7 +37,8 @@ exports.getJobsHistory = async (req, res, next) => {
     const jobs = await SentJob.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     res.status(200).json({
       status: 'success',
@@ -219,7 +220,7 @@ exports.searchJobs = async (req, res, next) => {
     const total = await Job.countDocuments(filter);
     
     // Build query with optional text score sorting
-    let query = Job.find(filter);
+    let query = Job.find(filter).lean();
     
     if (filter.$text) {
       // Sort by text relevance score when doing keyword search

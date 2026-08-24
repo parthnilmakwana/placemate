@@ -89,7 +89,7 @@ function DashboardHome() {
         </div>
 
         <div className="flex items-center gap-4 text-xs">
-          <div className="flex flex-col text-right hidden sm:flex">
+          <div className="hidden flex-col text-right sm:flex">
             <span className="text-text-main font-semibold">{completedCount} of {checklist.length} Sections</span>
             <span className="text-text-muted">Verified data points</span>
           </div>

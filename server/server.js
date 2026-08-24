@@ -73,12 +73,6 @@ app.use('/api/settings', settingsRoutes);
 const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/profile', profileRoutes);
 
-app.get('/api/debug-users', async (req, res) => {
-  const User = require('./models/User');
-  const users = await User.find({}).lean();
-  res.json(users);
-});
-
 const portfolioRoutes = require('./routes/portfolioRoutes');
 app.use('/api/portfolio', portfolioRoutes);
 
