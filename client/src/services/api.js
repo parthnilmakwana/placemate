@@ -5,10 +5,11 @@
 
 export const BASE_URL = import.meta.env.VITE_API_URL || '';
 
-const getHeaders = () => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+const getHeaders = (isFormData = false) => {
+  const headers = {};
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const token = localStorage.getItem('token');
   if (token) {
@@ -34,6 +35,8 @@ const handleResponse = async (response) => {
     const error = new Error(message);
     error.status = response.status;
     error.data = data;
+    // Add response property to match Axios behavior that components might expect
+    error.response = { data }; 
     throw error;
   }
 
@@ -49,29 +52,51 @@ export const api = {
     return handleResponse(response);
   },
 
-  post: async (url, body) => {
+  post: async (url, body, options = {}) => {
+    const isFormData = body instanceof FormData;
+    const headers = { ...getHeaders(isFormData), ...(options.headers || {}) };
+    
+    // Browser must set the boundary for multipart/form-data
+    if (isFormData && headers['Content-Type'] === 'multipart/form-data') {
+      delete headers['Content-Type'];
+    }
+
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(body),
+      headers,
+      body: isFormData ? body : JSON.stringify(body),
     });
     return handleResponse(response);
   },
 
-  put: async (url, body) => {
+  put: async (url, body, options = {}) => {
+    const isFormData = body instanceof FormData;
+    const headers = { ...getHeaders(isFormData), ...(options.headers || {}) };
+
+    if (isFormData && headers['Content-Type'] === 'multipart/form-data') {
+      delete headers['Content-Type'];
+    }
+
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(body),
+      headers,
+      body: isFormData ? body : JSON.stringify(body),
     });
     return handleResponse(response);
   },
 
-  patch: async (url, body) => {
+  patch: async (url, body, options = {}) => {
+    const isFormData = body instanceof FormData;
+    const headers = { ...getHeaders(isFormData), ...(options.headers || {}) };
+
+    if (isFormData && headers['Content-Type'] === 'multipart/form-data') {
+      delete headers['Content-Type'];
+    }
+
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'PATCH',
-      headers: getHeaders(),
-      body: JSON.stringify(body),
+      headers,
+      body: isFormData ? body : JSON.stringify(body),
     });
     return handleResponse(response);
   },

@@ -24,7 +24,7 @@
     "multer": "^2.2.0",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.13",
-    "pdf-parse": "^2.4.5",
+    "pdf-parse": "^1.1.1",
     "pdfkit": "^0.15.0",
     "puppeteer": "^22.10.2",
     "tesseract.js": "^7.0.0"

@@ -110,14 +110,14 @@ const ResumeScanner = () => {
         }
       });
       
-      if (response.data && response.data.success) {
-        handleScan(response.data.text);
+      if (response && response.success) {
+        handleScan(response.text);
       } else {
-        throw new Error(response.data.error || 'Failed to extract text');
+        throw new Error(response.error || 'Failed to extract text');
       }
     } catch (error) {
       console.error("Error reading file:", error);
-      alert(error.response?.data?.error || "Failed to read the file. Please ensure it is a valid format.");
+      alert(`Debug Error: ${error.message} | Server: ${error.response?.data?.error || 'N/A'} | Status: ${error.status || 'N/A'}`);
       setIsParsing(false);
     }
   };
