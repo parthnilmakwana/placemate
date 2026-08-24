@@ -451,6 +451,17 @@ exports.googleLogin = async (req, res, next) => {
       user.settings.firstName = gFirstName;
       user.settings.lastName = gLastName;
 
+      // FIX: If the user's profile name is empty, or if it exactly matches the old legacy 
+      // root name (which might be a garbage email prefix like "xcdgs"), 
+      // overwrite it with the proper Google Name so it's not stuck forever.
+      if (!user.profile) user.profile = {};
+      if (!user.profile.fullName || user.profile.fullName === user.name) {
+        user.profile.fullName = gFullName;
+      }
+
+      // Update the root legacy name as well to permanently wipe the garbage value from the DB
+      user.name = gFullName;
+
       // Link googleId to existing email account if not already linked
       if (!user.googleId) user.googleId = googleId;
 
