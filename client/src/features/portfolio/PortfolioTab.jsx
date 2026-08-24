@@ -635,7 +635,16 @@ function PortfolioTab() {
           </div>
         )}
 
-        <form onSubmit={handleSaveSettings} className="flex flex-col gap-8">
+        <form
+          onSubmit={handleSaveSettings}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSaveSettings(e);
+            }
+          }}
+          className="flex flex-col gap-8"
+        >
           {/* URL Slug Input */}
           <div className="flex flex-col gap-3">
             <label
@@ -662,6 +671,12 @@ function PortfolioTab() {
                         .toLowerCase(),
                     )
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSaveSettings(e);
+                    }
+                  }}
                   disabled={isSaving}
                   required
                 />
@@ -774,8 +789,15 @@ function PortfolioTab() {
               }).map((t) => (
                 <div
                   key={t.id}
+                  tabIndex={0}
                   onClick={() => setTheme(t.id)}
-                  className={`flex flex-col gap-4 p-5 rounded-lg border cursor-pointer hover:-translate-y-1 transition-all duration-200 relative overflow-hidden group
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setTheme(t.id);
+                    }
+                  }}
+                  className={`flex flex-col gap-4 p-5 rounded-lg border cursor-pointer hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 relative overflow-hidden group
                     ${
                       theme === t.id
                         ? "border-white bg-brand-bg shadow-lg shadow-white/5"

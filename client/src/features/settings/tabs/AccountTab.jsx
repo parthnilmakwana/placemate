@@ -160,11 +160,13 @@ function AccountTab() {
           
         </div>
 
-        <div className="flex justify-end mt-2">
-          <Button type="submit" variant="primary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
+        {!isGoogleAccount && (
+          <div className="flex justify-end mt-2">
+            <Button type="submit" variant="primary" disabled={saving}>
+              {saving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

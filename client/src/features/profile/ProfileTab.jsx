@@ -76,11 +76,20 @@ function ProfileTab() {
 
   /* Helper dynamic operations */
   const handleAddSkill = (e) => {
-    e.preventDefault();
     const cleanSkill = skillInput.trim();
-    if (cleanSkill && !profileData.skills.includes(cleanSkill)) {
-      setProfileData(prev => ({ ...prev, skills: [...prev.skills, cleanSkill] }));
-      setSkillInput('');
+    if (cleanSkill) {
+      if (e && e.preventDefault) e.preventDefault();
+      if (!profileData.skills.includes(cleanSkill)) {
+        setProfileData(prev => ({ ...prev, skills: [...prev.skills, cleanSkill] }));
+        setSkillInput('');
+      }
+    }
+  };
+
+  const handleTextareaKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveProfile(e);
     }
   };
 
@@ -246,6 +255,7 @@ function ProfileTab() {
                     rows={1}
                     className={`${inputClass} resize-none overflow-hidden min-h-[46px]`}
                     value={profileData.bio}
+                    onKeyDown={handleTextareaKeyDown}
                     onChange={(e) => {
                       handleInputChange('bio', e.target.value);
                       e.target.style.height = 'auto';
@@ -311,7 +321,14 @@ function ProfileTab() {
                   className={inputClass}
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddSkill(e)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (skillInput.trim()) {
+                        e.preventDefault();
+                        handleAddSkill(e);
+                      }
+                    }
+                  }}
                 />
                 <Button
                   type="button"
@@ -587,6 +604,7 @@ function ProfileTab() {
                           rows={3}
                           className={`${inputClass} resize-none overflow-hidden`}
                           value={exp.description}
+                          onKeyDown={handleTextareaKeyDown}
                           onChange={(e) => {
                             handleExpChange(index, 'description', e.target.value);
                             e.target.style.height = 'auto';
@@ -673,6 +691,7 @@ function ProfileTab() {
                           rows={2}
                           className={`${inputClass} resize-none overflow-hidden`}
                           value={proj.description}
+                          onKeyDown={handleTextareaKeyDown}
                           onChange={(e) => {
                             handleProjChange(index, 'description', e.target.value);
                             e.target.style.height = 'auto';
