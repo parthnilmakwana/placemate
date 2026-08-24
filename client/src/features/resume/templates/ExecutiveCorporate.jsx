@@ -164,7 +164,7 @@ export const ExecutiveCorporateTheme = ({ user, profile, settings, optimize }) =
         
         {/* HEADER BLOCK */}
         <View style={styles.headerBackground}>
-          <Text style={styles.name}>{user?.name || 'Your Name'}</Text>
+          <Text style={styles.name}>{profile?.fullName || 'Your Name'}</Text>
           <Text style={styles.title}>{profile?.title || 'Professional Title'}</Text>
           <View style={styles.contactRow}>
             {user?.email && <Text style={styles.contactText}>{user.email}</Text>}

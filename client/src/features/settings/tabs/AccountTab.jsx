@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '../../../components/Button';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchSettings, updateAccountSettings } from '../../../services/settingsApi';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 
 function AccountTab() {
   const { user, setUser } = useAuth();
@@ -25,17 +25,23 @@ function AccountTab() {
         const res = await fetchSettings();
         if (isMounted && res.data?.account) {
           const acc = res.data.account;
-          setFirstName(acc.firstName || '');
+          
+          // The production API currently falls back to `name` if `firstName` is missing.
+          // We want to enforce Google-controlled names, so if it's a Google account and 
+          // the firstName exactly matches the legacy user.name, it means the API fell back.
+          // In this case, we treat it as empty so the user knows they need to re-login to sync.
+          const isLegacyFallback = acc.isGoogleAccount && acc.firstName === acc.name && acc.lastName === '';
+          
+          setFirstName(isLegacyFallback ? '' : (acc.firstName || ''));
           setLastName(acc.lastName || '');
           setEmail(acc.email || '');
           setIsGoogleAccount(acc.isGoogleAccount || false);
         }
       } catch (err) {
         if (isMounted) {
-          // Fallback to user context
-          const nameParts = (user?.name || '').split(' ');
-          setFirstName(nameParts[0] || '');
-          setLastName(nameParts.slice(1).join(' ') || '');
+          // Fallback to user context which now guarantees settings are populated
+          setFirstName(user?.settings?.firstName || '');
+          setLastName(user?.settings?.lastName || '');
           setEmail(user?.email || '');
           setIsGoogleAccount(Boolean(user?.googleId));
         }
@@ -102,24 +108,30 @@ function AccountTab() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-2">
-              <label className={labelClass}>First Name</label>
+              <label className={`${labelClass} flex items-center gap-1.5`}>
+                First Name {isGoogleAccount && <Lock size={12} className="text-brand-primary" title="Managed by Google" />}
+              </label>
               <input 
                 type="text" 
                 placeholder="John" 
                 className={inputClass} 
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
+                disabled={isGoogleAccount}
                 required
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className={labelClass}>Last Name</label>
+              <label className={`${labelClass} flex items-center gap-1.5`}>
+                Last Name {isGoogleAccount && <Lock size={12} className="text-brand-primary" title="Managed by Google" />}
+              </label>
               <input 
                 type="text" 
                 placeholder="Doe" 
                 className={inputClass} 
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
+                disabled={isGoogleAccount}
               />
             </div>
           </div>

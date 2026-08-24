@@ -27,9 +27,8 @@ exports.getSettings = async (req, res, next) => {
 
     const preferences = user.profile?.preferences || {};
 
-    const nameParts = (user.name || '').trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    const firstName = user.settings?.firstName || '';
+    const lastName = user.settings?.lastName || '';
 
     res.status(200).json({
       status: 'success',
@@ -78,10 +77,14 @@ exports.updateAccount = async (req, res, next) => {
     }
 
     if (firstName !== undefined || lastName !== undefined) {
-      const existingParts = (user.name || '').split(' ');
-      const newFirst = firstName !== undefined ? firstName.trim() : existingParts[0];
-      const newLast = lastName !== undefined ? lastName.trim() : existingParts.slice(1).join(' ');
-      user.name = `${newFirst} ${newLast}`.trim();
+      // Ignore firstName and lastName updates if the user is a Google account
+      // The Settings name is Google-controlled and locked for Google users.
+      if (!user.googleId) {
+        if (!user.settings) user.settings = {};
+        if (firstName !== undefined) user.settings.firstName = firstName.trim();
+        if (lastName !== undefined) user.settings.lastName = lastName.trim();
+        user.markModified('settings');
+      }
     }
 
     if (email && email.trim().toLowerCase() !== user.email.toLowerCase()) {
@@ -119,8 +122,8 @@ exports.updateAccount = async (req, res, next) => {
         isDeactivated: user.isDeactivated
       },
       data: {
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
+        firstName: user.settings?.firstName || '',
+        lastName: user.settings?.lastName || '',
         email: user.email
       }
     });

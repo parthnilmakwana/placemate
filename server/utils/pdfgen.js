@@ -80,7 +80,8 @@ function generateResumePDF(user, options = {}) {
   };
 
   // 1. HEADER SECTION
-  doc.font('Helvetica-Bold').fontSize(22).fillColor(colors.primary).text(user.name, { align: 'center' });
+  const displayName = profile.fullName || '';
+  doc.font('Helvetica-Bold').fontSize(22).fillColor(colors.primary).text(displayName, { align: 'center' });
   doc.moveDown(0.25);
 
   const title = profile.title || 'Developer';

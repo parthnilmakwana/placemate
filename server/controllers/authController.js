@@ -66,6 +66,46 @@ const createSession = async (user, req) => {
 };
 
 /**
+ * Auto-migrate legacy user to populate settings and profile fields if they are missing
+ */
+const autoMigrateLegacyUser = async (user) => {
+  if (!user) return;
+  let isUpdated = false;
+
+  if (!user.settings) {
+    user.settings = {};
+    isUpdated = true;
+  }
+  if (!user.profile) {
+    user.profile = {};
+    isUpdated = true;
+  }
+  
+  // For Google users, we strictly use the Google profile name.
+  // We do not want to auto-migrate the legacy user.name into settings.firstName
+  // because that might overwrite their blank Google name with an old email fallback.
+  if (!user.googleId) {
+    if (!user.settings.firstName && user.name) {
+      const nameParts = user.name.trim().split(' ');
+      user.settings.firstName = nameParts[0] || '';
+      user.settings.lastName = nameParts.slice(1).join(' ') || '';
+      isUpdated = true;
+    }
+  }
+
+  if (!user.profile.fullName && user.name) {
+    user.profile.fullName = user.name;
+    isUpdated = true;
+  }
+
+  if (isUpdated) {
+    user.markModified('settings');
+    user.markModified('profile');
+    await user.save();
+  }
+};
+
+/**
  * @desc    Register a new user
  * @route   POST /api/auth/register
  * @access  Public
@@ -127,12 +167,24 @@ exports.registerUser = async (req, res, next) => {
       count++;
     }
 
-    // Create user in database (triggers the pre-save password hashing hook)
+    // Derive first/last name for settings initialization
+    const nameParts = name.trim().split(' ');
+    const regFirstName = nameParts[0] || '';
+    const regLastName = nameParts.slice(1).join(' ') || '';
+
+    // Create user in database with both name identities initialized
     const user = await User.create({
       name,
       email,
       password,
-      username
+      username,
+      settings: {
+        firstName: regFirstName,
+        lastName: regLastName,
+      },
+      profile: {
+        fullName: name.trim(),
+      },
     });
 
     // Create session and generate authentication token
@@ -224,6 +276,9 @@ exports.loginUser = async (req, res, next) => {
       user.lockUntil = undefined;
     }
 
+    // Auto-migrate legacy data fields if needed
+    await autoMigrateLegacyUser(user);
+
     // Create session and generate token
     const sessionId = await createSession(user, req);
     const token = generateToken(user._id, sessionId);
@@ -258,6 +313,12 @@ exports.loginUser = async (req, res, next) => {
  */
 exports.getMe = async (req, res, next) => {
   try {
+    const fs = require('fs');
+    fs.writeFileSync('C:/placeMate/debug_user.json', JSON.stringify(req.user, null, 2));
+    
+    // Auto-migrate legacy data fields if needed
+    await autoMigrateLegacyUser(req.user);
+
     res.status(200).json({
       status: 'success',
       user: {
@@ -311,7 +372,23 @@ exports.googleLogin = async (req, res, next) => {
     }
 
     const payload = ticket.getPayload();
-    const { sub: googleId, email, name, picture } = payload;
+    const { sub: googleId, email, name, given_name, family_name, picture } = payload;
+
+    // Derive first/last name from Google's structured fields (preferred).
+    // If given_name is absent, we attempt to parse `name`.
+    // We STRICTLY AVOID falling back to the email prefix for the Settings Name.
+    let gFirstName = given_name || '';
+    let gLastName = family_name || '';
+
+    if (!gFirstName && name) {
+      const parts = name.trim().split(' ');
+      gFirstName = parts[0] || '';
+      gLastName = parts.slice(1).join(' ') || '';
+    }
+
+    // The legacy root 'name' field can still use email fallback just so it's not empty, 
+    // but the Settings Name will strictly be gFirstName/gLastName.
+    const gFullName = [gFirstName, gLastName].filter(Boolean).join(' ') || name || email.split('@')[0];
 
     // Verify we got the required fields from Google
     if (!email) {
@@ -327,17 +404,13 @@ exports.googleLogin = async (req, res, next) => {
     // 2. If not found by googleId, check by email (to link account if they registered with email previously)
     if (!user) {
       user = await User.findOne({ email });
-      if (user) {
-        // Link googleId to existing email account
-        user.googleId = googleId;
-        await user.save();
-      }
     }
 
     // 3. If user still doesn't exist, create a new user account
     if (!user) {
+
       // Generate unique username from name
-      const baseUsername = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const baseUsername = gFullName.toLowerCase().replace(/[^a-z0-9]/g, '');
       let username = baseUsername || 'user';
       let count = 1;
       let usernameExists = await User.findOne({ username });
@@ -355,20 +428,43 @@ exports.googleLogin = async (req, res, next) => {
       // Generate a long cryptographically secure random password that satisfies rules
       const randomPassword = crypto.randomBytes(32).toString('hex') + 'aA1!';
 
-      // Create new user in MongoDB
+      // Create new user in MongoDB with both name identities initialized
       user = await User.create({
-        name,
+        name: gFullName,
         email,
         username,
         googleId,
         password: randomPassword,
+        settings: {
+          firstName: gFirstName,
+          lastName: gLastName,
+        },
+        profile: {
+          fullName: gFullName,
+        },
       });
-    }
+    } else {
+      // User exists. Synchronize the latest Google name to the Settings name.
+      // We will ALWAYS update to the latest Google name, even if it's empty, 
+      // because Settings Name is strictly Google-controlled.
+      if (!user.settings) user.settings = {};
+      user.settings.firstName = gFirstName;
+      user.settings.lastName = gLastName;
 
-    if (user.isDeactivated) {
-      user.isDeactivated = false;
+      // Link googleId to existing email account if not already linked
+      if (!user.googleId) user.googleId = googleId;
+
+      // Reactivate account if it was deactivated
+      if (user.isDeactivated) {
+        user.isDeactivated = false;
+      }
+
+      user.markModified('settings');
       await user.save();
     }
+
+    // Auto-migrate legacy data fields if needed
+    await autoMigrateLegacyUser(user);
 
     // Generate local JWT token with session
     const sessionId = await createSession(user, req);

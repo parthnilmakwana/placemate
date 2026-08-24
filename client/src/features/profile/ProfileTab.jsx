@@ -17,7 +17,7 @@ function ProfileTab() {
   
   // Local profile states
   const [profileData, setProfileData] = useState({
-    name: '',
+    fullName: '',
     bio: '',
     title: '',
     githubUrl: '',
@@ -34,7 +34,7 @@ function ProfileTab() {
   useEffect(() => {
     if (user && user.profile) {
       setProfileData({
-        name: user.name || '',
+        fullName: user.profile?.fullName ?? '',
         bio: user.profile.bio || '',
         title: user.profile.title || '',
         githubUrl: user.profile.githubUrl || '',
@@ -62,7 +62,6 @@ function ProfileTab() {
 
     try {
       await api.put('/api/profile', {
-        name: profileData.name,
         profile: profileData
       });
       await checkUserSession(); // Refresh session values in context
@@ -217,8 +216,8 @@ function ProfileTab() {
                     type="text"
                     placeholder="e.g. Jane Doe"
                     className={inputClass}
-                    value={profileData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    value={profileData.fullName}
+                    onChange={(e) => handleInputChange('fullName', e.target.value)}
                   />
                 </div>
                 <div className="flex flex-col gap-2">

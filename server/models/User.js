@@ -57,6 +57,7 @@ const UserSchema = new mongoose.Schema({
   },
   // Unified profile nested state which feeds Portfolio, Resume, and Job Matching systems
   profile: {
+    fullName: { type: String },
     bio: { type: String, default: '' },
     title: { type: String, default: '' },
     githubUrl: { type: String, default: '' },
@@ -122,6 +123,8 @@ const UserSchema = new mongoose.Schema({
     }
   },
   settings: {
+    firstName: { type: String },
+    lastName: { type: String },
     notifications: {
       jobRecommendations: { type: Boolean, default: true },
       applicationUpdates: { type: Boolean, default: true },

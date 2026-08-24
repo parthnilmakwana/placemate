@@ -10,7 +10,7 @@ export default defineConfig({
     host: true, // Listen on all local IP addresses
     proxy: {
       '/api': {
-        target: 'https://placemate-pynm.onrender.com',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       }
     }

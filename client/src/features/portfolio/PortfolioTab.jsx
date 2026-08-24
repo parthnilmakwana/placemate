@@ -322,7 +322,7 @@ function PortfolioTab() {
               <div>
                 <span className="text-brand-primary">name:</span>{" "}
                 <span className="text-status-success">
-                  "{user?.name || "Candidate"}"
+                  "{user?.profile?.fullName || "Candidate"}"
                 </span>
                 ,
               </div>

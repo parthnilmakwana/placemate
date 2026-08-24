@@ -51,7 +51,13 @@ function DashboardHome() {
             Overview
           </h1>
           <p className="text-sm text-text-secondary mt-1">
-            Welcome back, <span className="text-text-main font-medium">{user?.name || "Candidate"}</span>. Here is your placement campaign summary.
+            Welcome back, <span className="text-text-main font-medium">
+              {user?.googleId 
+                ? (`${user?.settings?.firstName || ''} ${user?.settings?.lastName || ''}`.trim() || "Candidate")
+                : (user?.settings?.firstName 
+                    ? `${user.settings.firstName} ${user.settings.lastName || ''}`.trim() 
+                    : (user?.name || "Candidate"))}
+            </span>. Here is your placement campaign summary.
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-text-muted font-medium">

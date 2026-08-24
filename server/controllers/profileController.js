@@ -27,7 +27,13 @@ exports.updateProfile = async (req, res, next) => {
 
     // Merge/Assign new profile details (bio, title, socials, edu, work, projects, preferences)
     if (profile) {
-      const allowedFields = ['bio', 'title', 'githubUrl', 'linkedinUrl', 'skills', 'education', 'experience', 'projects', 'preferences'];
+      // Map frontend's 'name' field to 'fullName' for backward compatibility
+      // (ProfileTab sends profile.name but the schema field is profile.fullName)
+      if (profile.name !== undefined && profile.fullName === undefined) {
+        profile.fullName = profile.name;
+      }
+
+      const allowedFields = ['fullName', 'bio', 'title', 'githubUrl', 'linkedinUrl', 'skills', 'education', 'experience', 'projects', 'preferences'];
       const sanitizedProfile = {};
       for (const key of allowedFields) {
         if (profile[key] !== undefined) {
@@ -35,14 +41,18 @@ exports.updateProfile = async (req, res, next) => {
         }
       }
 
-      user.profile = {
-        ...(user.profile ? user.profile.toObject() : {}),
-        ...sanitizedProfile
-      };
+      if (!user.profile) user.profile = {};
+      Object.assign(user.profile, sanitizedProfile);
+
+      // Mongoose requires markModified for nested objects replaced via spread
+      user.markModified('profile');
     }
 
+    // Also accept top-level 'name' field as a fallback for profile.fullName
     if (name && typeof name === 'string' && name.trim().length > 0) {
-      user.name = name.trim();
+      if (!user.profile) user.profile = {};
+      user.profile.fullName = name.trim();
+      user.markModified('profile');
     }
 
     // Update onboarding completion flag if explicitly submitted
@@ -60,10 +70,14 @@ exports.updateProfile = async (req, res, next) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        username: user.username,
         role: user.role,
         plan: user.plan,
         hasCompletedOnboarding: user.hasCompletedOnboarding,
-        profile: user.profile
+        profile: user.profile,
+        settings: user.settings,
+        googleId: user.googleId,
+        isDeactivated: user.isDeactivated
       }
     });
   } catch (error) {

@@ -168,7 +168,7 @@ export const SoftwareEngineerTheme = ({ user, profile, settings, optimize }) => 
         
         {/* HEADER */}
         <View style={styles.header}>
-          <Text style={styles.name}>{user?.name || 'Your Name'}</Text>
+          <Text style={styles.name}>{profile?.fullName || 'Your Name'}</Text>
           <Text style={styles.title}>{profile?.title || 'Software Engineer'}</Text>
           <View style={styles.contactRow}>
             {user?.email && <Text>{user.email}</Text>}

@@ -148,7 +148,8 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
     );
   }
 
-  const fileName = `${user?.name ? user.name.replace(/\s+/g, '_') : 'My'}_Resume.pdf`;
+  const displayName = profile?.fullName || user?.name;
+  const fileName = `${displayName ? displayName.replace(/\s+/g, '_') : 'My'}_Resume.pdf`;
   const highDpiRatio = typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 1) : 2;
 
   return (

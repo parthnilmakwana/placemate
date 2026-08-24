@@ -31,6 +31,14 @@ function Sidebar({
   const location = useLocation();
   const navigate = useNavigate();
 
+  const displayName = user?.googleId
+    ? (`${user?.settings?.firstName || ''} ${user?.settings?.lastName || ''}`.trim() || 'User')
+    : (user?.settings?.firstName 
+        ? `${user.settings.firstName} ${user.settings.lastName || ''}`.trim() 
+        : (user?.name || 'User'));
+        
+  console.log('Sidebar user:', user, 'displayName:', displayName);
+
   const getActiveTab = () => {
     const path = location.pathname;
     const search = location.search;
@@ -220,12 +228,12 @@ function Sidebar({
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-7 h-7 rounded-full bg-brand-primary/15 border border-brand-primary/30 flex items-center justify-center font-bold text-brand-primary text-xs shrink-0">
-                {getInitials(user?.name)}
+                {getInitials(displayName)}
               </div>
               {!sidebarCollapsed && (
                 <div className="flex flex-col min-w-0 text-left">
                   <span className="text-xs font-medium text-text-main truncate">
-                    {user?.name}
+                    {displayName}
                   </span>
                   <span className="text-[11px] text-text-muted truncate">
                     {user?.email}
@@ -281,11 +289,11 @@ function Sidebar({
             <div className="flex flex-col gap-3 border-t border-border-subtle pt-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-brand-primary/15 border border-brand-primary/30 flex items-center justify-center font-bold text-brand-primary text-xs shrink-0">
-                  {getInitials(user?.name)}
+                  {getInitials(displayName)}
                 </div>
-                <div className="flex flex-col text-left min-w-0">
+                <div className="flex flex-col min-w-0">
                   <span className="text-xs font-medium text-text-main truncate">
-                    {user?.name}
+                    {displayName}
                   </span>
                   <span className="text-[11px] text-text-muted truncate">
                     {user?.email}

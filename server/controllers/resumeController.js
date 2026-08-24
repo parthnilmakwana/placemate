@@ -22,7 +22,7 @@ exports.downloadResume = async (req, res, next) => {
     const { sentJobId, optimize: optimizeQuery } = req.query;
     const optimize = optimizeQuery === 'true';
     let tailoredProfile = null;
-    let customFileName = `${user.name.replace(/\s+/g, '_')}_Resume.pdf`;
+    let customFileName = `${(user.profile?.fullName || user.name).replace(/\s+/g, '_')}_Resume.pdf`;
 
     if (sentJobId) {
       const mongoose = require('mongoose');
@@ -37,7 +37,7 @@ exports.downloadResume = async (req, res, next) => {
         if (sentJob.tailoredProfile && sentJob.tailoredProfile.bio) {
           tailoredProfile = sentJob.tailoredProfile;
           const companySlug = sentJob.company.replace(/[^a-zA-Z0-9]/g, '_');
-          customFileName = `${user.name.replace(/\s+/g, '_')}_Tailored_${companySlug}_Resume.pdf`;
+          customFileName = `${(user.profile?.fullName || user.name).replace(/\s+/g, '_')}_Tailored_${companySlug}_Resume.pdf`;
           console.log(`[RESUME] Generating tailored resume for job: ${sentJob.title} at ${sentJob.company}`);
         }
       }

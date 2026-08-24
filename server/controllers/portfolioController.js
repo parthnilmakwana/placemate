@@ -27,7 +27,7 @@ exports.getPublicPortfolio = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       data: {
-        name: user.name,
+        name: user.profile?.fullName || '',
         username: user.username,
         title: user.profile?.title || '',
         bio: user.profile?.bio || '',

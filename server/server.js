@@ -65,12 +65,19 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mounting authentication router
+// API Routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
-
+const settingsRoutes = require('./routes/settingsRoutes');
+app.use('/api/settings', settingsRoutes);
 const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/profile', profileRoutes);
+
+app.get('/api/debug-users', async (req, res) => {
+  const User = require('./models/User');
+  const users = await User.find({}).lean();
+  res.json(users);
+});
 
 const portfolioRoutes = require('./routes/portfolioRoutes');
 app.use('/api/portfolio', portfolioRoutes);
@@ -87,8 +94,7 @@ app.use('/api/payments', paymentRoutes);
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/api/feedback', feedbackRoutes);
 
-const settingsRoutes = require('./routes/settingsRoutes');
-app.use('/api/settings', settingsRoutes);
+
 
 const seoRoutes = require('./routes/seoRoutes');
 app.use('/api/seo', seoRoutes);
