@@ -49,7 +49,7 @@ const CircularScore = ({ score }) => {
         style={{ backgroundColor: color }}
       ></div>
       
-      <svg className="w-40 h-40 transform -rotate-90 relative z-10" viewBox="0 0 140 140">
+      <svg className="w-32 h-32 md:w-40 md:h-40 transform -rotate-90 relative z-10" viewBox="0 0 140 140">
         <circle
           className="text-brand-border"
           strokeWidth="10"
@@ -161,9 +161,9 @@ const ResumeScanner = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       const response = await api.post('/api/ats/analyze-public', { text: extractedText });
-      if (response.data && response.data.success) {
-        setScore(response.data.data.score);
-        setFeedback(response.data.data.feedback);
+      if (response && response.success) {
+        setScore(response.data.score);
+        setFeedback(response.data.feedback);
       } else {
         throw new Error('Invalid response from ATS engine');
       }
@@ -189,7 +189,7 @@ const ResumeScanner = () => {
           {/* Animated decorative gradient border */}
           <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-brand-primary via-indigo-500 to-brand-secondary opacity-30 group-hover:opacity-70 transition duration-500 blur-sm"></div>
           
-          <div className="relative bg-brand-surface border border-brand-border rounded-2xl shadow-2xl p-8 md:p-12 flex flex-col items-center justify-center text-center overflow-hidden">
+          <div className="relative bg-brand-surface border border-brand-border rounded-2xl shadow-2xl p-6 md:p-12 flex flex-col items-center justify-center text-center overflow-hidden">
             
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
@@ -203,7 +203,7 @@ const ResumeScanner = () => {
                     <Sparkles size={24} className="animate-pulse" />
                   </div>
                 </div>
-                <h3 className="font-heading text-2xl font-bold text-text-main mb-2">
+                <h3 className="font-heading text-xl md:text-2xl font-bold text-text-main mb-2">
                   {isParsing ? 'Extracting Resume Text...' : 'Running ATS Algorithms...'}
                 </h3>
                 <p className="text-text-muted text-sm max-w-md mx-auto">
@@ -217,7 +217,7 @@ const ResumeScanner = () => {
               </div>
             ) : (
               <div 
-                className={`w-full py-12 px-6 flex flex-col items-center justify-center border-2 border-dashed rounded-xl transition-all cursor-pointer z-10
+                className={`w-full py-8 md:py-12 px-4 md:px-6 flex flex-col items-center justify-center border-2 border-dashed rounded-xl transition-all cursor-pointer z-10
                   ${isDragging ? 'border-brand-primary bg-brand-primary/5 scale-[1.02]' : 'border-border-strong hover:border-brand-primary/50 hover:bg-brand-bg/50'}
                 `}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -247,7 +247,7 @@ const ResumeScanner = () => {
                   <UploadCloud size={36} />
                 </div>
                 
-                <h3 className="font-heading text-2xl font-bold text-text-main mb-3">Upload your Resume</h3>
+                <h3 className="font-heading text-xl md:text-2xl font-bold text-text-main mb-2 md:mb-3">Upload your Resume</h3>
                 <p className="text-text-secondary max-w-md mx-auto mb-6 text-sm leading-relaxed">
                   Drag and drop your PDF, DOCX, or Image file here. We'll instantly extract the text and scan it for ATS compatibility.
                 </p>
@@ -266,14 +266,14 @@ const ResumeScanner = () => {
         <div className="animate-fade-in flex flex-col gap-8">
           
           {/* Hero Score Card */}
-          <div className="relative bg-brand-surface border border-brand-border rounded-2xl shadow-xl p-8 overflow-hidden flex flex-col md:flex-row items-center gap-8 md:gap-12 justify-center">
+          <div className="relative bg-brand-surface border border-brand-border rounded-2xl shadow-xl p-6 md:p-8 overflow-hidden flex flex-col md:flex-row items-center gap-6 md:gap-12 justify-center">
              <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(45deg, currentColor 25%, transparent 25%, transparent 75%, currentColor 75%, currentColor), linear-gradient(45deg, currentColor 25%, transparent 25%, transparent 75%, currentColor 75%, currentColor)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 10px 10px' }}></div>
             
             <div className="z-10 flex flex-col items-center md:items-start text-center md:text-left">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-elevated border border-border-strong text-xs font-semibold text-text-secondary mb-4 uppercase tracking-widest shadow-sm">
                 <FileText size={12} className="text-brand-primary" /> {fileName}
               </span>
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-text-main mb-3">
+              <h2 className="font-heading text-2xl md:text-4xl font-bold text-text-main mb-2 md:mb-3">
                 Your ATS Score
               </h2>
               <p className="text-text-secondary text-sm max-w-sm mb-6 leading-relaxed">
@@ -302,7 +302,7 @@ const ResumeScanner = () => {
             {feedback.map((item, idx) => (
               <div 
                 key={idx} 
-                className="group flex items-center justify-between p-5 rounded-xl bg-brand-surface border border-brand-border shadow-sm hover:border-brand-primary/40 hover:shadow-md transition-all duration-300"
+                className="group flex items-center justify-between p-4 md:p-5 rounded-xl bg-brand-surface border border-brand-border shadow-sm hover:border-brand-primary/40 hover:shadow-md transition-all duration-300"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div className="flex items-center gap-4">
