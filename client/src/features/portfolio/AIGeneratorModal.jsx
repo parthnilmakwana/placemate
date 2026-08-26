@@ -2,12 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { X, Sparkles, AlertCircle, Loader } from 'lucide-react';
 import { api } from '../../services/api';
 import Button from '../../components/Button';
+import CustomSelect from '../../components/CustomSelect';
 
 function AIGeneratorModal({ isOpen, onClose, onDraftGenerated }) {
   const [profession, setProfession] = useState('');
   const [style, setStyle] = useState('minimal');
   const [color, setColor] = useState('');
   const [goals, setGoals] = useState('');
+
+  const styleOptions = [
+    { value: 'minimal', label: 'Minimal Slate' },
+    { value: 'dark', label: 'Terminal Neon' },
+    { value: 'bold', label: 'Mesh Gradient' },
+    { value: 'startup', label: 'Startup Founder' },
+    { value: 'creative', label: 'Creative Designer' },
+    { value: 'corporate', label: 'Corporate Engineer' },
+    { value: 'glassmorphism', label: 'Glassmorphism' },
+    { value: 'neon', label: 'Dark Neon' },
+    { value: 'personal', label: 'Personal Brand' },
+    { value: 'student', label: 'Student Portfolio' },
+  ];
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [usage, setUsage] = useState({ remaining: null, maxGenerations: 2 });
@@ -99,22 +113,11 @@ function AIGeneratorModal({ isOpen, onClose, onDraftGenerated }) {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Preferred Style</label>
-            <select 
+            <CustomSelect 
+              options={styleOptions}
               value={style}
-              onChange={(e) => setStyle(e.target.value)}
-              className="w-full px-4 py-2.5 bg-surface-elevated border border-border-subtle rounded-md text-sm text-text-main focus:border-brand-primary focus:outline-none appearance-none"
-            >
-              <option value="minimal">Minimal Slate</option>
-              <option value="dark">Terminal Neon</option>
-              <option value="bold">Mesh Gradient</option>
-              <option value="startup">Startup Founder</option>
-              <option value="creative">Creative Designer</option>
-              <option value="corporate">Corporate Engineer</option>
-              <option value="glassmorphism">Glassmorphism</option>
-              <option value="neon">Dark Neon</option>
-              <option value="personal">Personal Brand</option>
-              <option value="student">Student Portfolio</option>
-            </select>
+              onChange={(val) => setStyle(val)}
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">

@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Profile = require('../models/Profile');
+const Portfolio = require('../models/Portfolio');
 const AIPortfolioUsage = require('../models/AIPortfolioUsage');
 const PortfolioDraft = require('../models/PortfolioDraft');
 const { generateContent } = require('../utils/aiClient');
@@ -12,18 +14,39 @@ exports.getPublicPortfolio = async (req, res, next) => {
   try {
     const { username } = req.params;
 
-    // Find the user document by username
-    const user = await User.findOne({ username: username.toLowerCase() }).lean();
+    // 1. Try to find the new Portfolio document by slug
+    let portfolio = await Portfolio.findOne({ slug: username.toLowerCase() }).populate('profileId');
     
-    // If user not found, or user portfolio is set to private
-    if (!user || user.profile?.isPublic === false) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Portfolio not found or has been set to private by the owner'
+    if (portfolio) {
+      if (!portfolio.isPublic) {
+        return res.status(404).json({ status: 'error', message: 'Portfolio not found or has been set to private by the owner' });
+      }
+      const profile = portfolio.profileId;
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          name: profile?.fullName || '',
+          username: portfolio.slug,
+          title: profile?.title || '',
+          bio: profile?.bio || '',
+          githubUrl: profile?.githubUrl || '',
+          linkedinUrl: profile?.linkedinUrl || '',
+          skills: profile?.skills || [],
+          education: profile?.education || [],
+          experience: profile?.experience || [],
+          projects: profile?.projects || [],
+          theme: portfolio.theme || 'minimal'
+        }
       });
     }
 
-    // Sanitize and return ONLY safe public data (do not leak password, email, role, etc.)
+    // 2. Fallback for un-migrated users (find user document by username)
+    const user = await User.findOne({ username: username.toLowerCase() }).lean();
+    
+    if (!user || user.profile?.isPublic === false) {
+      return res.status(404).json({ status: 'error', message: 'Portfolio not found or has been set to private by the owner' });
+    }
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -286,34 +309,49 @@ exports.generateAIPortfolio = async (req, res, next) => {
  */
 exports.applyPortfolioDraft = async (req, res, next) => {
   try {
+    const { profileId } = req.body; // Allow passing specific profile to apply to
+
     const draft = await PortfolioDraft.findOne({ _id: req.params.id, userId: req.user._id });
     if (!draft) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Draft not found.'
-      });
+      return res.status(404).json({ status: 'error', message: 'Draft not found.' });
     }
     
     if (draft.isApplied) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'This draft has already been applied.'
-      });
+      return res.status(400).json({ status: 'error', message: 'This draft has already been applied.' });
     }
 
+    const newProfileData = draft.profileDraft;
+
+    // Find target Profile
+    let targetProfile;
+    if (profileId) {
+      targetProfile = await Profile.findOne({ _id: profileId, userId: req.user._id });
+    } else {
+      // Fallback to owner profile
+      targetProfile = await Profile.findOne({ userId: req.user._id, profileType: 'OWNER' });
+    }
+
+    if (targetProfile) {
+      targetProfile.bio = newProfileData.bio || targetProfile.bio;
+      targetProfile.title = newProfileData.title || targetProfile.title;
+      targetProfile.theme = newProfileData.theme || targetProfile.theme;
+      targetProfile.skills = newProfileData.skills || targetProfile.skills;
+      targetProfile.experience = newProfileData.experience || targetProfile.experience;
+      targetProfile.projects = newProfileData.projects || targetProfile.projects;
+      targetProfile.education = newProfileData.education || targetProfile.education;
+      await targetProfile.save();
+    }
+
+    // Also update legacy user.profile for backward compatibility
     const user = await User.findById(req.user._id);
     if (!user.profile) user.profile = {};
-
-    // Apply drafted fields
-    const newProfile = draft.profileDraft;
-    user.profile.bio = newProfile.bio || user.profile.bio;
-    user.profile.title = newProfile.title || user.profile.title;
-    user.profile.theme = newProfile.theme || user.profile.theme;
-    user.profile.skills = newProfile.skills || user.profile.skills;
-    user.profile.experience = newProfile.experience || user.profile.experience;
-    user.profile.projects = newProfile.projects || user.profile.projects;
-    user.profile.education = newProfile.education || user.profile.education;
-
+    user.profile.bio = newProfileData.bio || user.profile.bio;
+    user.profile.title = newProfileData.title || user.profile.title;
+    user.profile.theme = newProfileData.theme || user.profile.theme;
+    user.profile.skills = newProfileData.skills || user.profile.skills;
+    user.profile.experience = newProfileData.experience || user.profile.experience;
+    user.profile.projects = newProfileData.projects || user.profile.projects;
+    user.profile.education = newProfileData.education || user.profile.education;
     user.markModified('profile');
     await user.save();
 
@@ -323,9 +361,7 @@ exports.applyPortfolioDraft = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       message: 'Draft applied successfully.',
-      user: {
-        profile: user.profile
-      }
+      data: targetProfile
     });
   } catch (error) {
     next(error);
@@ -351,6 +387,128 @@ exports.discardPortfolioDraft = async (req, res, next) => {
       status: 'success',
       message: 'Draft discarded successfully.'
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// CRUD Operations for Portfolio Collection
+
+exports.getPortfolios = async (req, res, next) => {
+  try {
+    const portfolios = await Portfolio.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    res.status(200).json({ status: 'success', data: portfolios });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getPortfolio = async (req, res, next) => {
+  try {
+    const portfolio = await Portfolio.findOne({ _id: req.params.id, userId: req.user._id }).populate('profileId');
+    if (!portfolio) {
+      return res.status(404).json({ status: 'error', message: 'Portfolio not found' });
+    }
+    res.status(200).json({ status: 'success', data: portfolio });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createPortfolio = async (req, res, next) => {
+  try {
+    const { title, slug, profileId, theme, isPublic } = req.body;
+
+    if (!profileId || !slug) {
+      return res.status(400).json({ status: 'error', message: 'Profile ID and Slug are required' });
+    }
+
+    let cleanSlug = slug.trim().toLowerCase();
+    const slugRegex = /^[a-z0-9-]{3,30}$/;
+    if (!slugRegex.test(cleanSlug)) {
+      return res.status(400).json({ status: 'error', message: 'Slug must be 3-30 characters, lowercase letters, numbers, hyphens only' });
+    }
+
+    const taken = await Portfolio.findOne({ slug: cleanSlug });
+    if (taken) {
+      // Auto-generate a unique slug
+      let counter = 1;
+      let newSlug = `${cleanSlug}-${counter}`;
+      while (await Portfolio.findOne({ slug: newSlug })) {
+        counter++;
+        newSlug = `${cleanSlug}-${counter}`;
+      }
+      cleanSlug = newSlug;
+    }
+
+    const profile = await Profile.findOne({ _id: profileId, userId: req.user._id });
+    if (!profile) {
+      return res.status(404).json({ status: 'error', message: 'Profile not found or unauthorized' });
+    }
+
+    const portfolio = await Portfolio.create({
+      userId: req.user._id,
+      profileId,
+      title: title || 'New Portfolio',
+      slug: cleanSlug,
+      theme: theme || 'minimal',
+      isPublic: isPublic !== undefined ? isPublic : true
+    });
+
+    res.status(201).json({ status: 'success', data: portfolio });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updatePortfolio = async (req, res, next) => {
+  try {
+    const { title, slug, profileId, theme, isPublic } = req.body;
+
+    const portfolio = await Portfolio.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!portfolio) {
+      return res.status(404).json({ status: 'error', message: 'Portfolio not found' });
+    }
+
+    if (slug) {
+      const cleanSlug = slug.trim().toLowerCase();
+      
+      const slugRegex = /^[a-z0-9-]{3,30}$/;
+      if (!slugRegex.test(cleanSlug)) {
+        return res.status(400).json({ status: 'error', message: 'Slug must be 3-30 characters, lowercase letters, numbers, hyphens only' });
+      }
+
+      if (cleanSlug !== portfolio.slug) {
+        const taken = await Portfolio.findOne({ slug: cleanSlug, _id: { $ne: portfolio._id } });
+        if (taken) return res.status(400).json({ status: 'error', message: 'Slug is already claimed' });
+        portfolio.slug = cleanSlug;
+      }
+    }
+
+    if (profileId) {
+      const profile = await Profile.findOne({ _id: profileId, userId: req.user._id });
+      if (!profile) return res.status(404).json({ status: 'error', message: 'Profile not found' });
+      portfolio.profileId = profileId;
+    }
+
+    if (title !== undefined) portfolio.title = title;
+    if (theme !== undefined) portfolio.theme = theme;
+    if (isPublic !== undefined) portfolio.isPublic = isPublic;
+
+    await portfolio.save();
+    res.status(200).json({ status: 'success', data: portfolio });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deletePortfolio = async (req, res, next) => {
+  try {
+    const portfolio = await Portfolio.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    if (!portfolio) {
+      return res.status(404).json({ status: 'error', message: 'Portfolio not found' });
+    }
+    res.status(200).json({ status: 'success', message: 'Portfolio deleted successfully' });
   } catch (error) {
     next(error);
   }

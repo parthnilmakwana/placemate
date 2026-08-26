@@ -19,7 +19,9 @@ import {
   Eye,
 } from "lucide-react";
 import ResumeCustomizer from "./components/ResumeCustomizer";
+import ProfileSelector from "../../components/ProfileSelector";
 import { api } from "../../services/api";
+import { profilesApi } from "../../services/profilesApi";
 
 // Lazy load the PDF components because @react-pdf/renderer is heavy
 const ResumePreview = lazy(() => import("./components/ResumePreview"));
@@ -39,8 +41,20 @@ function ResumeTab() {
     fontSize: 10,
   });
 
+  const [selectedProfileId, setSelectedProfileId] = useState(null);
+  const [selectedProfileData, setSelectedProfileData] = useState(null);
+
+  // Fetch the selected profile data when it changes
+  useEffect(() => {
+    if (selectedProfileId) {
+      profilesApi.getProfile(selectedProfileId)
+        .then(res => setSelectedProfileData(res.data))
+        .catch(err => console.error("Failed to fetch selected profile", err));
+    }
+  }, [selectedProfileId]);
+
   // Calculate profile completeness and checklist
-  const profile = draftProfile || user?.profile || {};
+  const profile = draftProfile || selectedProfileData || user?.profile || {};
 
   const checklist = {
     bio: !!profile.bio,
@@ -101,6 +115,14 @@ function ResumeTab() {
         <div className={`flex-col gap-6 w-full lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto pr-1.5 pb-20 custom-scrollbar ${
           mobileTab === "editor" ? "flex" : "hidden lg:flex"
         }`}>
+          {/* Profile Selector */}
+          <div className="structured-panel rounded-lg p-6 border border-brand-border">
+            <ProfileSelector 
+              selectedProfileId={selectedProfileId} 
+              onChange={setSelectedProfileId} 
+            />
+          </div>
+
           {/* Customizer */}
           <ResumeCustomizer settings={settings} setSettings={setSettings} />
 

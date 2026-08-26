@@ -1,5 +1,7 @@
 const rateLimit = require('express-rate-limit');
 
+const isDev = process.env.NODE_ENV === 'development';
+
 /**
  * Global Rate Limiter
  * Applied to all API routes to prevent general spam/DDoS.
@@ -7,7 +9,7 @@ const rateLimit = require('express-rate-limit');
  */
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  max: isDev ? 5000 : 100, // Increase limit in dev mode
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
@@ -24,7 +26,7 @@ const globalLimiter = rateLimit({
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per `window`
+  max: isDev ? 500 : 10, // Increase limit in dev mode
   standardHeaders: true,
   legacyHeaders: false,
   message: {

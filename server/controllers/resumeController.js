@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Profile = require('../models/Profile');
+const Resume = require('../models/Resume');
 const { generateResumePDF } = require('../utils/pdfgen');
 const { enhanceResumeGeneral } = require('../utils/aiMatcher');
 
@@ -18,11 +20,24 @@ exports.downloadResume = async (req, res, next) => {
       });
     }
 
-    // 2. Determine if downloading a tailored resume
-    const { sentJobId, optimize: optimizeQuery } = req.query;
+    const { sentJobId, optimize: optimizeQuery, resumeId } = req.query;
+    
+    // 2. Resolve the profile to use (either from Resume model or fallback to User)
+    let activeProfile = user.profile;
+    let activeName = user.name;
+    
+    if (resumeId) {
+      const resume = await Resume.findOne({ _id: resumeId, userId: req.user._id }).populate('profileId');
+      if (resume && resume.profileId) {
+        activeProfile = resume.profileId;
+        activeName = resume.profileId.fullName;
+      }
+    }
+
+    // 3. Determine if downloading a tailored resume
     const optimize = optimizeQuery === 'true';
     let tailoredProfile = null;
-    let customFileName = `${(user.profile?.fullName || user.name).replace(/\s+/g, '_')}_Resume.pdf`;
+    let customFileName = `${(activeProfile?.fullName || activeName || 'Candidate').replace(/\s+/g, '_')}_Resume.pdf`;
 
     if (sentJobId) {
       const mongoose = require('mongoose');
@@ -37,14 +52,15 @@ exports.downloadResume = async (req, res, next) => {
         if (sentJob.tailoredProfile && sentJob.tailoredProfile.bio) {
           tailoredProfile = sentJob.tailoredProfile;
           const companySlug = sentJob.company.replace(/[^a-zA-Z0-9]/g, '_');
-          customFileName = `${(user.profile?.fullName || user.name).replace(/\s+/g, '_')}_Tailored_${companySlug}_Resume.pdf`;
+          customFileName = `${(activeProfile?.fullName || activeName || 'Candidate').replace(/\s+/g, '_')}_Tailored_${companySlug}_Resume.pdf`;
           console.log(`[RESUME] Generating tailored resume for job: ${sentJob.title} at ${sentJob.company}`);
         }
       }
     }
 
-    // 3. Generate PDFKit document
-    const doc = generateResumePDF(user, { optimize, tailoredProfile });
+    // 4. Generate PDFKit document
+    const docUser = { name: activeName, profile: activeProfile };
+    const doc = generateResumePDF(docUser, { optimize, tailoredProfile });
 
     // 4. Compile PDF stream in memory to prevent silent post-header failures
     const chunks = [];
@@ -108,5 +124,103 @@ exports.enhanceResume = async (req, res, next) => {
       status: 'error',
       message: 'Failed to enhance resume with AI. Please try again later.'
     });
+  }
+};
+
+// CRUD Operations for Resume Collection
+
+exports.getResumes = async (req, res, next) => {
+  try {
+    const resumes = await Resume.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    res.status(200).json({ status: 'success', data: resumes });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getResume = async (req, res, next) => {
+  try {
+    const resume = await Resume.findOne({ _id: req.params.id, userId: req.user._id }).populate('profileId');
+    if (!resume) {
+      return res.status(404).json({ status: 'error', message: 'Resume not found' });
+    }
+    res.status(200).json({ status: 'success', data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createResume = async (req, res, next) => {
+  try {
+    const { title, profileId, settings } = req.body;
+
+    if (!profileId) {
+      return res.status(400).json({ status: 'error', message: 'Profile ID is required' });
+    }
+
+    // Verify profile ownership
+    const profile = await Profile.findOne({ _id: profileId, userId: req.user._id });
+    if (!profile) {
+      return res.status(404).json({ status: 'error', message: 'Profile not found or unauthorized' });
+    }
+
+    const resume = await Resume.create({
+      userId: req.user._id,
+      profileId,
+      title: title || 'New Resume',
+      settings: settings || undefined
+    });
+
+    res.status(201).json({ status: 'success', data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateResume = async (req, res, next) => {
+  try {
+    const { title, profileId, settings } = req.body;
+
+    const resume = await Resume.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!resume) {
+      return res.status(404).json({ status: 'error', message: 'Resume not found' });
+    }
+
+    if (profileId) {
+      const profile = await Profile.findOne({ _id: profileId, userId: req.user._id });
+      if (!profile) {
+        return res.status(404).json({ status: 'error', message: 'Profile not found or unauthorized' });
+      }
+      resume.profileId = profileId;
+    }
+
+    if (title) resume.title = title;
+    
+    if (settings) {
+      if (settings.themeId) resume.settings.themeId = settings.themeId;
+      if (settings.fontFamily) resume.settings.fontFamily = settings.fontFamily;
+      if (settings.primaryColor) resume.settings.primaryColor = settings.primaryColor;
+      if (settings.secondaryColor) resume.settings.secondaryColor = settings.secondaryColor;
+      if (settings.fontSize) resume.settings.fontSize = settings.fontSize;
+    }
+
+    await resume.save();
+
+    res.status(200).json({ status: 'success', data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteResume = async (req, res, next) => {
+  try {
+    const resume = await Resume.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    if (!resume) {
+      return res.status(404).json({ status: 'error', message: 'Resume not found' });
+    }
+
+    res.status(200).json({ status: 'success', message: 'Resume deleted successfully' });
+  } catch (error) {
+    next(error);
   }
 };

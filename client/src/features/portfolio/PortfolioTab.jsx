@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
+import { portfolioApi } from "../../services/portfolioApi";
+import ProfileSelector from "../../components/ProfileSelector";
 import { useLocation } from "react-router-dom";
 import {
   Copy,
@@ -182,6 +184,8 @@ function PortfolioTab() {
   const { user, checkUserSession } = useAuth();
   const location = useLocation();
 
+  const [portfolioId, setPortfolioId] = useState(null);
+  const [selectedProfileId, setSelectedProfileId] = useState(null);
   const [username, setUsername] = useState("");
   const [theme, setTheme] = useState("minimal");
   const [isPublic, setIsPublic] = useState(true);
@@ -201,11 +205,27 @@ function PortfolioTab() {
 
   // Pre-fill local state with user data
   useEffect(() => {
-    if (user) {
-      setUsername(user.username || "");
-      setTheme(user.profile?.theme || "minimal");
-      setIsPublic(user.profile?.isPublic !== false);
-    }
+    const init = async () => {
+      try {
+        const res = await portfolioApi.getPortfolios();
+        if (res.data && res.data.length > 0) {
+          const port = res.data[0];
+          setPortfolioId(port._id);
+          setUsername(port.slug || "");
+          setTheme(port.theme || "minimal");
+          setIsPublic(port.isPublic !== false);
+          if (port.profileId) setSelectedProfileId(port.profileId._id || port.profileId);
+        } else if (user) {
+          // fallback
+          setUsername(user.username || "");
+          setTheme(user.profile?.theme || "minimal");
+          setIsPublic(user.profile?.isPublic !== false);
+        }
+      } catch (err) {
+        console.error("Failed to load portfolio", err);
+      }
+    };
+    init();
   }, [user]);
 
   // Handle scroll to settings
@@ -236,16 +256,45 @@ function PortfolioTab() {
     setMessage({ type: "", text: "" });
 
     try {
-      await api.put("/api/portfolio/settings", {
-        username,
-        theme,
-        isPublic,
-      });
-      await checkUserSession();
-      setMessage({
-        type: "success",
-        text: "Portfolio settings updated successfully!",
-      });
+      if (portfolioId) {
+        await portfolioApi.updatePortfolio(portfolioId, {
+          slug: username,
+          theme,
+          isPublic,
+          profileId: selectedProfileId
+        });
+        
+        await checkUserSession();
+        setMessage({
+          type: "success",
+          text: "Portfolio settings updated successfully!",
+        });
+      } else {
+        const res = await portfolioApi.createPortfolio({
+          title: `${username}'s Portfolio`,
+          slug: username,
+          theme,
+          isPublic,
+          profileId: selectedProfileId
+        });
+        
+        const createdSlug = res.data.data.slug;
+        setPortfolioId(res.data.data._id);
+        
+        if (createdSlug !== username) {
+          setUsername(createdSlug);
+          setMessage({
+            type: "success",
+            text: `Your requested slug was taken. We assigned "${createdSlug}" instead. You can change it anytime!`,
+          });
+        } else {
+          setMessage({
+            type: "success",
+            text: "Portfolio created successfully!",
+          });
+        }
+        await checkUserSession();
+      }
     } catch (err) {
       setMessage({
         type: "error",
@@ -269,7 +318,7 @@ function PortfolioTab() {
     if (!draftData?.draftId) return;
     setIsApplyingDraft(true);
     try {
-      await api.post(`/api/portfolio/draft/${draftData.draftId}/apply`);
+      await portfolioApi.applyDraft(draftData.draftId, { profileId: selectedProfileId });
       await checkUserSession();
       setDraftData(null);
       setMessage({
@@ -292,7 +341,7 @@ function PortfolioTab() {
       return;
     }
     try {
-      await api.delete(`/api/portfolio/draft/${draftData.draftId}`);
+      await portfolioApi.discardDraft(draftData.draftId);
       setDraftData(null);
       setMessage({ type: "", text: "" });
     } catch (err) {
@@ -304,7 +353,7 @@ function PortfolioTab() {
   const livePortfolioUrl = `${window.location.origin}/portfolio/${username}`;
 
   // Format check for slug
-  const isSlugValid = username.length >= 3 && /^[a-z0-9-]+$/.test(username);
+  const isSlugValid = username && username.length >= 3 && /^[a-z0-9-]+$/.test(username);
 
   // Render small abstract miniature drawings of templates to act as "Illustrations"
   const renderThemeMiniatureMockup = (themeId) => {
@@ -645,6 +694,26 @@ function PortfolioTab() {
           }}
           className="flex flex-col gap-8"
         >
+          {/* Profile Selector */}
+          <div className="flex flex-col gap-3">
+            <ProfileSelector 
+              selectedProfileId={selectedProfileId} 
+              onChange={(id, profile) => {
+                setSelectedProfileId(id);
+                if (profile && profile.fullName) {
+                  const baseSlug = profile.fullName
+                    .toLowerCase()
+                    .replace(/[^a-z0-9-]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                  if (baseSlug) {
+                    setUsername(baseSlug);
+                  }
+                }
+              }} 
+            />
+          </div>
+
           {/* URL Slug Input */}
           <div className="flex flex-col gap-3">
             <label

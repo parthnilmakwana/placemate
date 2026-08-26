@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../../../components/Button';
+import CustomSelect from '../../../components/CustomSelect';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchSettings, updateJobPreferencesSettings } from '../../../services/settingsApi';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
@@ -21,6 +22,35 @@ function JobPreferencesTab() {
 
   const inputClass = "w-full px-4 py-3 rounded-md bg-brand-bg border border-brand-border text-text-main placeholder-slate-600 text-sm focus:border-white focus:outline-none transition-colors";
   const labelClass = "text-xs font-semibold text-text-secondary uppercase tracking-widest";
+
+  const workModeOptions = [
+    { value: 'remote', label: 'Remote' },
+    { value: 'hybrid', label: 'Hybrid' },
+    { value: 'onsite', label: 'On-site' },
+    { value: 'any', label: 'Any Work Mode' },
+  ];
+
+  const employmentTypeOptions = [
+    { value: 'Full-time', label: 'Full-time' },
+    { value: 'Part-time', label: 'Part-time' },
+    { value: 'Contract', label: 'Contract' },
+    { value: 'Internship', label: 'Internship' },
+    { value: 'Any', label: 'Any Employment Type' },
+  ];
+
+  const experienceLevelOptions = [
+    { value: 'fresher', label: 'Entry-level' },
+    { value: 'junior', label: 'Junior' },
+    { value: 'mid', label: 'Mid-level' },
+    { value: 'senior', label: 'Senior' },
+    { value: 'any', label: 'Any Experience Level' },
+  ];
+
+  const jobSearchStatusOptions = [
+    { value: 'Actively looking', label: 'Actively looking' },
+    { value: 'Open to offers', label: 'Open to offers' },
+    { value: 'Not looking', label: 'Not looking' },
+  ];
 
   useEffect(() => {
     let isMounted = true;
@@ -147,7 +177,7 @@ function JobPreferencesTab() {
       )}
 
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-        <div className="structured-panel rounded-lg overflow-hidden border border-brand-border p-6 flex flex-col gap-5 bg-brand-surface">
+        <div className="structured-panel rounded-lg relative border border-brand-border p-6 flex flex-col gap-5 bg-brand-surface">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-2">
@@ -175,81 +205,66 @@ function JobPreferencesTab() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="flex flex-col gap-2">
               <label className={labelClass}>Work Mode</label>
-              <select 
-                className={inputClass}
+              <CustomSelect 
+                options={workModeOptions}
                 value={workMode}
-                onChange={(e) => setWorkMode(e.target.value)}
-              >
-                <option value="remote">Remote</option>
-                <option value="hybrid">Hybrid</option>
-                <option value="onsite">On-site</option>
-                <option value="any">Any</option>
-              </select>
+                onChange={(val) => setWorkMode(val)}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <label className={labelClass}>Employment Type</label>
-              <select 
-                className={inputClass}
+              <CustomSelect 
+                options={employmentTypeOptions}
                 value={employmentType}
-                onChange={(e) => setEmploymentType(e.target.value)}
-              >
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-                <option value="Any">Any</option>
-              </select>
+                onChange={(val) => setEmploymentType(val)}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <label className={labelClass}>Experience Level</label>
-              <select 
-                className={inputClass}
+              <CustomSelect 
+                options={experienceLevelOptions}
                 value={experienceLevel}
-                onChange={(e) => setExperienceLevel(e.target.value)}
-              >
-                <option value="fresher">Entry-level</option>
-                <option value="junior">Junior</option>
-                <option value="mid">Mid-level</option>
-                <option value="senior">Senior</option>
-                <option value="any">Any</option>
-              </select>
+                onChange={(val) => setExperienceLevel(val)}
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="flex flex-col gap-2">
               <label className={labelClass}>Minimum Salary (USD)</label>
-              <input 
-                type="number" 
-                placeholder="60000" 
-                className={inputClass} 
-                value={minSalary}
-                onChange={(e) => setMinSalary(e.target.value)}
-                min="0"
-              />
+              <div className="relative flex items-center">
+                <span className="absolute left-3.5 text-text-muted font-semibold text-sm select-none">$</span>
+                <input 
+                  type="number" 
+                  placeholder="60000" 
+                  className={`${inputClass} pl-8`} 
+                  value={minSalary}
+                  onChange={(e) => setMinSalary(e.target.value)}
+                  min="0"
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label className={labelClass}>Maximum Salary (USD)</label>
-              <input 
-                type="number" 
-                placeholder="120000" 
-                className={inputClass} 
-                value={maxSalary}
-                onChange={(e) => setMaxSalary(e.target.value)}
-                min="0"
-              />
+              <div className="relative flex items-center">
+                <span className="absolute left-3.5 text-text-muted font-semibold text-sm select-none">$</span>
+                <input 
+                  type="number" 
+                  placeholder="120000" 
+                  className={`${inputClass} pl-8`} 
+                  value={maxSalary}
+                  onChange={(e) => setMaxSalary(e.target.value)}
+                  min="0"
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label className={labelClass}>Job Search Status</label>
-              <select 
-                className={inputClass}
+              <CustomSelect 
+                options={jobSearchStatusOptions}
                 value={jobSearchStatus}
-                onChange={(e) => setJobSearchStatus(e.target.value)}
-              >
-                <option value="Actively looking">Actively looking</option>
-                <option value="Open to offers">Open to offers</option>
-                <option value="Not looking">Not looking</option>
-              </select>
+                onChange={(val) => setJobSearchStatus(val)}
+              />
             </div>
           </div>
           

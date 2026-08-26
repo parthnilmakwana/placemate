@@ -128,6 +128,86 @@
     outline: none;
   }
 
+  /* Hide number input spinners (up/down arrows) */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  /* Enhanced Default Select styling */
+  select {
+    background-color: var(--color-surface-primary);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 0.5rem;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23A7AFBA'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: all 0.2s ease-in-out;
+  }
+
+  select:hover {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface-elevated);
+  }
+
+  select:focus {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  }
+
+  select option {
+    background-color: var(--color-surface-primary);
+    color: var(--color-text-main);
+    padding: 10px;
+  }
+
+  /* Custom Select Component Utility */
+  .custom-select {
+    background-color: var(--color-surface-primary) !important;
+    color: var(--color-text-main) !important;
+    border: 1px solid var(--color-border-subtle) !important;
+    border-radius: 0.75rem !important;
+    padding-left: 1rem !important;
+    padding-right: 2.75rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B82F6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.85rem center !important;
+    background-size: 1rem !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .custom-select:hover {
+    border-color: var(--color-border-strong) !important;
+    background-color: var(--color-surface-elevated) !important;
+  }
+
+  .custom-select:focus {
+    border-color: var(--color-brand-primary) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    outline: none !important;
+  }
+
   /* Accessible focus ring — only appears for keyboard navigation */
   :focus-visible {
     outline: 2px solid var(--color-brand-primary);
@@ -224,6 +304,32 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-strong);
+}
+
+/* High visibility dropdown scrollbar */
+.dropdown-scrollbar {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text-muted) rgba(255, 255, 255, 0.03);
+}
+
+.dropdown-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 4px;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-primary);
 }
 
 /* Hide scrollbar entirely */

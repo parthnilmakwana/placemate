@@ -4,6 +4,9 @@ const { OAuth2Client } = require('google-auth-library');
 const crypto = require('crypto');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const Profile = require('../models/Profile');
+const Portfolio = require('../models/Portfolio');
+const Resume = require('../models/Resume');
 
 
 /**
@@ -102,6 +105,53 @@ const autoMigrateLegacyUser = async (user) => {
     user.markModified('settings');
     user.markModified('profile');
     await user.save();
+  }
+
+  // --- NEW ARCHITECTURE MIGRATION ---
+  // Ensure the user has an OWNER Profile
+  let ownerProfile = await Profile.findOne({ userId: user._id, profileType: 'OWNER' });
+  if (!ownerProfile) {
+    ownerProfile = await Profile.create({
+      userId: user._id,
+      profileType: 'OWNER',
+      isOwner: true,
+      isDefault: true,
+      fullName: user.profile?.fullName || user.name || 'Anonymous User',
+      firstName: user.settings?.firstName || '',
+      lastName: user.settings?.lastName || '',
+      bio: user.profile?.bio || '',
+      title: user.profile?.title || '',
+      theme: user.profile?.theme || 'minimal',
+      skills: user.profile?.skills || [],
+      education: user.profile?.education || [],
+      experience: user.profile?.experience || [],
+      projects: user.profile?.projects || [],
+      githubUrl: user.profile?.githubUrl || '',
+      linkedinUrl: user.profile?.linkedinUrl || ''
+    });
+  }
+
+  // Ensure the user has a default Portfolio
+  const existingPortfolio = await Portfolio.findOne({ userId: user._id });
+  if (!existingPortfolio) {
+    await Portfolio.create({
+      userId: user._id,
+      profileId: ownerProfile._id,
+      title: `${ownerProfile.fullName}'s Portfolio`,
+      slug: user.username, // keep backward compatibility for /:username route
+      theme: user.profile?.theme || 'minimal',
+      isPublic: user.profile?.isPublic !== false
+    });
+  }
+
+  // Ensure the user has a default Resume
+  const existingResume = await Resume.findOne({ userId: user._id });
+  if (!existingResume) {
+    await Resume.create({
+      userId: user._id,
+      profileId: ownerProfile._id,
+      title: 'Main Resume'
+    });
   }
 };
 

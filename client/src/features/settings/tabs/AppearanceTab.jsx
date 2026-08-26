@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../../../components/Button';
+import CustomSelect from '../../../components/CustomSelect';
 import { Moon, Sun, Monitor, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchSettings, updateAppearanceSettings } from '../../../services/settingsApi';
@@ -14,6 +15,10 @@ function AppearanceTab() {
   const [feedback, setFeedback] = useState({ type: '', message: '' });
 
   const labelClass = "text-sm font-semibold text-text-main";
+
+  const languageOptions = [
+    { value: 'en', label: 'English (US)' },
+  ];
 
   useEffect(() => {
     let isMounted = true;
@@ -156,13 +161,12 @@ function AppearanceTab() {
 
         <div className="flex flex-col gap-3 pt-4 border-t border-brand-border/50">
           <label className={labelClass}>Language</label>
-          <select 
+          <CustomSelect 
+            options={languageOptions}
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="w-full md:w-1/2 px-4 py-3 rounded-md bg-brand-bg border border-brand-border text-text-main text-sm focus:border-white focus:outline-none transition-colors"
-          >
-            <option value="en">English (US)</option>
-          </select>
+            onChange={(val) => setLanguage(val)}
+            className="w-full md:w-1/2"
+          />
         </div>
 
         <div className="flex justify-end mt-4">

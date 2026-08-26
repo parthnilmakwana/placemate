@@ -27,7 +27,9 @@ app.use(globalLimiter); // Apply rate limiter to all API requests
 const allowedOrigins = [
   'https://placemate.me',
   'https://www.placemate.me',
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175'
 ];
 
 if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
@@ -72,6 +74,9 @@ const settingsRoutes = require('./routes/settingsRoutes');
 app.use('/api/settings', settingsRoutes);
 const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/profile', profileRoutes);
+
+const profilesRoutes = require('./routes/profilesRoutes');
+app.use('/api/profiles', profilesRoutes);
 
 const portfolioRoutes = require('./routes/portfolioRoutes');
 app.use('/api/portfolio', portfolioRoutes);
