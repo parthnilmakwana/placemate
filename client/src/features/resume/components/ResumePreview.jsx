@@ -99,7 +99,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
     if (containerDimensions.width > 0 && containerDimensions.height > 0 && !isInitialSet.current) {
       isInitialSet.current = true;
       if (containerDimensions.width < 768) {
-        setScale(calculateFitPageScale());
+        setScale(0.5);
       } else {
         setScale(calculateFitWidthScale());
       }
@@ -108,7 +108,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
 
   const zoomIn = () => setScale(s => Math.min(s + 0.15, 2.5));
   const zoomOut = () => setScale(s => Math.max(s - 0.15, 0.4));
-  const resetZoom = () => setScale(1);
+  const resetZoom = () => setScale(containerDimensions.width < 768 ? 0.5 : 1);
 
   // Page Navigation Handlers
   const handlePrevPage = () => {
