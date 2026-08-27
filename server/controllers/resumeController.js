@@ -2,7 +2,7 @@ const User = require('../models/User');
 const Profile = require('../models/Profile');
 const Resume = require('../models/Resume');
 const { generateResumePDF } = require('../utils/pdfgen');
-const { enhanceResumeGeneral } = require('../utils/aiMatcher');
+const { enhanceResumeGeneral, enhanceTextSnippet } = require('../utils/aiMatcher');
 
 /**
  * @desc    Generate and stream the user's PDF resume
@@ -123,6 +123,33 @@ exports.enhanceResume = async (req, res, next) => {
     res.status(500).json({
       status: 'error',
       message: 'Failed to enhance resume with AI. Please try again later.'
+    });
+  }
+};
+
+/**
+ * @desc    Enhance a single text snippet (for Tiptap editor)
+ * @route   POST /api/resume/enhance-text
+ * @access  Private
+ */
+exports.enhanceText = async (req, res, next) => {
+  try {
+    const { text, mode } = req.body;
+    if (!text) {
+      return res.status(400).json({ status: 'error', message: 'Text is required' });
+    }
+
+    const enhancedText = await enhanceTextSnippet(text, mode || 'professional');
+
+    res.status(200).json({
+      status: 'success',
+      data: enhancedText
+    });
+  } catch (error) {
+    console.error('Error in enhanceText:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to enhance text. Please try again later.'
     });
   }
 };

@@ -5,7 +5,7 @@ import { optimizePhrasing } from '../utils/resumeOptimizer';
 const createStyles = (settings) => StyleSheet.create({
   page: {
     padding: 35,
-    fontFamily: settings.fontFamily || 'Roboto',
+    fontFamily: settings.fontFamily || 'FiraCode',
     fontSize: settings.fontSize || 10,
     color: '#1f2937',
     lineHeight: 1.5,

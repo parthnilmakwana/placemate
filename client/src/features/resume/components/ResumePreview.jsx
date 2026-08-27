@@ -274,20 +274,6 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
           </button>
         </div>
 
-        {/* Right: Download Action */}
-        <div className="flex items-center gap-2">
-          <PDFDownloadLink document={PDFDocument} fileName={fileName}>
-            {({ loading }) => (
-              <button
-                disabled={loading}
-                className="inline-flex items-center justify-center gap-1.5 py-1 px-2.5 rounded-md font-bold text-[11px] cursor-pointer transition-all duration-200 bg-brand-primary hover:bg-brand-hover text-text-main disabled:opacity-75"
-              >
-                {loading ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
-                <span>{loading ? 'Building...' : 'Download PDF'}</span>
-              </button>
-            )}
-          </PDFDownloadLink>
-        </div>
       </div>
 
       {/* Preview Scroll Viewport */}

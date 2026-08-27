@@ -5,7 +5,7 @@
 
 export const BASE_URL = import.meta.env.VITE_API_URL || '';
 
-const getHeaders = (isFormData = false) => {
+export const getHeaders = (isFormData = false) => {
   const headers = {};
   if (!isFormData) {
     headers['Content-Type'] = 'application/json';
@@ -101,11 +101,18 @@ export const api = {
     return handleResponse(response);
   },
 
-  delete: async (url) => {
-    const response = await fetch(`${BASE_URL}${url}`, {
+  delete: async (url, body = null, options = {}) => {
+    const headers = { ...getHeaders(), ...(options.headers || {}) };
+    const fetchOptions = {
       method: 'DELETE',
-      headers: getHeaders(),
-    });
+      headers,
+    };
+    
+    if (body) {
+      fetchOptions.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(`${BASE_URL}${url}`, fetchOptions);
     return handleResponse(response);
   },
 };

@@ -39,5 +39,14 @@ export const registerFonts = () => {
     ]
   });
 
+  // FiraCode (Monospace, Developer)
+  Font.register({
+    family: 'FiraCode',
+    fonts: [
+      { src: 'https://fonts.gstatic.com/s/firacode/v22/u5df4cb_v-_FB34_8fc3Ig.ttf', fontWeight: 400 },
+      { src: 'https://fonts.gstatic.com/s/firacode/v22/u5df4cb_v-_FB34_8fc3Ig.ttf', fontWeight: 700 }
+    ]
+  });
+
   fontsRegistered = true;
 };

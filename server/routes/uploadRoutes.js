@@ -26,4 +26,16 @@ router.post('/extract-text', upload.single('file'), async (req, res, next) => {
   }
 });
 
+const { parseToProfile } = require('../controllers/uploadController');
+const { protect } = require('../middleware/authMiddleware'); // Need protect for this one
+
+router.post('/parse-to-profile', protect, upload.single('file'), async (req, res, next) => {
+  try {
+    fs.appendFileSync(path.join(__dirname, '../upload.log'), `[${new Date().toISOString()}] REQ (parse): file=${!!req.file}\n`);
+    await parseToProfile(req, res);
+  } catch(e) {
+    next(e);
+  }
+});
+
 module.exports = router;

@@ -192,5 +192,6 @@ Provide scores, keyword analysis, skills gap analysis, section-by-section struct
 
 module.exports = {
   analyzeResumeDeterministically,
-  analyzeResumeWithAI
+  analyzeResumeWithAI,
+  serializeProfile
 };

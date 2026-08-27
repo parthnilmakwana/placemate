@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.post('/analyze-public', analyzePublic);
 router.post('/analyze', protect, analyzeAuthenticated);
+router.post('/analyze-profile', protect, exports.analyzeProfile = require('../controllers/atsController').analyzeProfile);
 
 module.exports = router;

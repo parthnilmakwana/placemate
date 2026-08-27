@@ -117,8 +117,8 @@ function Dashboard() {
         </header>
 
         {/* Scrollable Work Viewport */}
-        <main className="flex-grow overflow-y-auto px-6 pt-8 md:px-10 md:pt-10 custom-scrollbar flex justify-center text-left">
-          <div className="w-full max-w-5xl flex flex-col pb-[25px]">
+        <main className={`flex-grow custom-scrollbar flex justify-center text-left ${location.pathname.includes('/dashboard/resume/editor') ? 'p-0 overflow-hidden' : 'overflow-y-auto px-6 pt-8 md:px-10 md:pt-10'}`}>
+          <div className={`w-full flex flex-col ${location.pathname.includes('/dashboard/resume/editor') ? 'max-w-full h-full pb-0' : 'max-w-5xl pb-[25px]'}`}>
             <Suspense
               fallback={
                 <SkeletonLoader

@@ -1,4 +1,4 @@
-import { api, BASE_URL } from './api';
+import { api, BASE_URL, getHeaders } from './api';
 
 export const fetchSettings = async () => {
   return await api.get('/api/settings');
@@ -41,12 +41,9 @@ export const logoutAllOtherSessions = async () => {
 };
 
 export const downloadExportData = async () => {
-  const token = localStorage.getItem('token');
   const response = await fetch(`${BASE_URL}/api/settings/export`, {
     method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers: getHeaders()
   });
 
   if (!response.ok) {
@@ -69,25 +66,5 @@ export const deactivateAccount = async () => {
 };
 
 export const deleteAccount = async (password) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${BASE_URL}/api/settings/account`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ password })
-  });
-
-  const contentType = response.headers.get('content-type');
-  let data;
-  if (contentType && contentType.includes('application/json')) {
-    data = await response.json();
-  }
-
-  if (!response.ok) {
-    throw new Error((data && data.message) || 'Failed to delete account.');
-  }
-
-  return data;
+  return await api.delete('/api/settings/account', { password });
 };

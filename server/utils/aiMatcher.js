@@ -119,6 +119,65 @@ const generalEnhancementSchema = {
 };
 
 /**
+ * JSON Schema for Parsing Raw Resume Text into Profile
+ */
+const profileParserSchema = {
+  type: 'OBJECT',
+  properties: {
+    fullName: { type: 'STRING' },
+    email: { type: 'STRING' },
+    phone: { type: 'STRING' },
+    location: { type: 'STRING' },
+    bio: { type: 'STRING', description: 'Professional summary' },
+    skills: { type: 'ARRAY', items: { type: 'STRING' } },
+    experience: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          company: { type: 'STRING' },
+          position: { type: 'STRING' },
+          location: { type: 'STRING' },
+          startDate: { type: 'STRING', description: 'e.g. Jan 2020' },
+          endDate: { type: 'STRING', description: 'e.g. Present or Dec 2022' },
+          description: { type: 'STRING', description: 'Bullet points separated by newlines' }
+        },
+        required: ['company', 'position']
+      }
+    },
+    education: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          institution: { type: 'STRING' },
+          degree: { type: 'STRING' },
+          fieldOfStudy: { type: 'STRING' },
+          startYear: { type: 'INTEGER' },
+          endYear: { type: 'INTEGER' },
+          description: { type: 'STRING' }
+        },
+        required: ['institution', 'degree']
+      }
+    },
+    projects: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          title: { type: 'STRING' },
+          description: { type: 'STRING', description: 'Bullet points separated by newlines' },
+          technologies: { type: 'ARRAY', items: { type: 'STRING' } }
+        },
+        required: ['title', 'description']
+      }
+    }
+  },
+  required: ['fullName']
+};
+
+
+/**
  * Helper to format user profile data into a clean, readable text block for LLM parsing.
  */
 function serializeProfile(profile) {
@@ -326,8 +385,132 @@ Please rewrite the profile details to make them highly professional and impactfu
   }
 }
 
+/**
+ * Task 6.5: Parse raw text from a document into a structured Profile schema.
+ * 
+ * @param {string} rawText - The extracted raw text from PDF/DOCX
+ * @param {string} [modelOverride] - Override model (e.g. 'gemini-3.5-flash')
+ * @returns {Promise<Object>} - The structured JSON representing the Profile
+ */
+async function parseResumeTextToProfile(rawText, modelOverride = 'gemini-3.5-flash') {
+  if (!rawText) {
+    throw new Error('Raw text is required for parsing.');
+  }
+
+  const systemInstruction = `
+You are an expert ATS (Applicant Tracking System) parser.
+Your task is to take raw, unstructured text extracted from a resume document and map it perfectly into a structured JSON schema.
+RULES:
+1. Extract the candidate's full name, email, and phone number accurately.
+2. Group experience, education, and projects into the correct arrays.
+3. For descriptions (experience/projects), separate bullet points strictly with newline characters (\\n). Do not use bullet symbols like - or *.
+4. Do not invent information. If a field like 'location' or 'endDate' is missing in the text, leave it empty or omit it.
+5. Extract all identifiable technical skills into the skills array.
+  `.trim();
+
+  const prompt = `
+=== RAW RESUME TEXT ===
+${rawText}
+
+Parse this resume text into the requested JSON schema format.
+  `.trim();
+
+  let attempt = 0;
+  while (attempt < 3) {
+    try {
+      const response = await generateContent({
+        model: modelOverride,
+        contents: [
+          { text: prompt }
+        ],
+        config: {
+          systemInstruction: systemInstruction,
+          responseMimeType: 'application/json',
+          responseSchema: profileParserSchema,
+          temperature: 0.1 // Very low temperature for accurate data extraction
+        }
+      });
+
+      try {
+        return JSON.parse(response.text);
+      } catch (parseError) {
+        attempt++;
+        console.warn(`[aiMatcher] JSON parse failed for resume parsing (attempt ${attempt}/3). AI response was: ${response.text}`);
+        if (attempt >= 3) throw new Error('Failed to parse resume text as JSON after 3 attempts');
+      }
+    } catch (error) {
+      console.error('Error in parseResumeTextToProfile AI helper:', error);
+      throw error;
+    }
+  }
+}
+
+/**
+ * Task 6.6: Enhance a single text snippet (used for Tiptap Floating Toolbar).
+ * 
+ * @param {string} text - The text to enhance
+ * @param {string} mode - 'professional' | 'action_verbs' | 'grammar'
+ * @param {string} [modelOverride] - Override model (e.g. 'gemini-3.5-flash')
+ * @returns {Promise<string>} - The enhanced text
+ */
+async function enhanceTextSnippet(text, mode, modelOverride = 'gemini-3.5-flash') {
+  if (!text) throw new Error('Text is required');
+
+  let instruction = '';
+  if (mode === 'professional') {
+    instruction = 'Make this text sound more professional and impactful. Fix any grammatical errors.';
+  } else if (mode === 'action_verbs') {
+    instruction = 'Rewrite this text to start with strong, active action verbs (e.g., Spearheaded, Architected, Engineered). Keep it punchy.';
+  } else if (mode === 'grammar') {
+    instruction = 'Fix any grammatical, spelling, or punctuation errors in this text. Do not change the underlying meaning.';
+  } else if (mode === 'concise') {
+    instruction = 'Make this text concise and eliminate fluff, wordiness, and redundant adjectives while keeping all key technical facts intact.';
+  } else if (mode === 'impact') {
+    instruction = 'Reframe this bullet point to emphasize results, problem-solving, and technical impact. Do NOT invent fake percentages or metrics.';
+  } else if (mode === 'ats_optimize') {
+    instruction = 'Optimize this bullet point for ATS parsers by using standard industry keywords, clear technical terminology, and active phrasing.';
+  } else {
+    instruction = 'Enhance this text for a professional developer resume.';
+  }
+
+  const systemInstruction = `
+You are an expert resume writer and career coach.
+Your task is to rewrite the user's text according to their request.
+RULES:
+1. Return ONLY the rewritten text. No conversational filler, no explanations, no quotes around the result.
+2. Do not use Markdown formatting (like ** or *) unless the original text had it.
+3. Keep the original intent and factual information intact.
+4. CRITICAL FABRICATION RULE: NEVER fabricate numbers, percentages, metrics, company names, technologies, or achievements that were not in the original text. If a metric is missing, do not invent one.
+  `.trim();
+
+  const prompt = `
+Instruction: ${instruction}
+
+Original text:
+${text}
+  `.trim();
+
+  try {
+    const response = await generateContent({
+      model: modelOverride,
+      contents: [{ text: prompt }],
+      config: {
+        systemInstruction,
+        temperature: 0.2
+      }
+    });
+
+    return response.text.trim();
+  } catch (error) {
+    console.error('Error in enhanceTextSnippet:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   matchJobWithProfile,
   tailorResumeForJob,
-  enhanceResumeGeneral
+  enhanceResumeGeneral,
+  parseResumeTextToProfile,
+  enhanceTextSnippet
 };
