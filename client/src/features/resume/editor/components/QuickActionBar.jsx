@@ -3,7 +3,7 @@ import { Wand2, Zap, CheckSquare, Target, Palette } from 'lucide-react';
 
 const QuickActionBar = ({ onAIImprove, onVerbEnhancer, onATS, onTargetJob, onTemplate }) => {
   return (
-    <div className="sticky bottom-16 sm:bottom-4 mx-auto max-w-[95vw] z-20 flex items-center gap-1.5 p-1 sm:p-1.5 bg-brand-surface/95 border border-brand-border rounded-full shadow-lg backdrop-blur-md overflow-x-auto hide-scrollbar">
+    <div className="sticky bottom-16 xl:bottom-4 mx-auto max-w-[92vw] sm:max-w-fit z-20 flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-brand-surface/95 border border-brand-border rounded-full shadow-lg backdrop-blur-md overflow-x-auto hide-scrollbar flex-nowrap shrink-0">
       
       <button 
         onClick={onAIImprove}
@@ -20,7 +20,7 @@ const QuickActionBar = ({ onAIImprove, onVerbEnhancer, onATS, onTargetJob, onTem
         title="Enhance Action Verbs"
       >
         <Zap size={13} className="text-amber-500" />
-        <span className="hidden xs:inline">Verb</span>
+        <span className="inline">Verb</span>
       </button>
 
       <div className="w-px h-3 sm:h-4 bg-brand-border mx-0.5 shrink-0"></div>
@@ -31,7 +31,7 @@ const QuickActionBar = ({ onAIImprove, onVerbEnhancer, onATS, onTargetJob, onTem
         title="Check ATS Score"
       >
         <CheckSquare size={13} className="text-status-success" />
-        <span className="hidden sm:inline">ATS</span>
+        <span className="hidden xs:inline">ATS</span>
       </button>
 
       <button 
@@ -40,7 +40,7 @@ const QuickActionBar = ({ onAIImprove, onVerbEnhancer, onATS, onTargetJob, onTem
         title="Target Job Match"
       >
         <Target size={13} className="text-blue-500" />
-        <span className="hidden sm:inline">Job Match</span>
+        <span className="hidden xs:inline">Job Match</span>
       </button>
 
       <button 
@@ -49,7 +49,7 @@ const QuickActionBar = ({ onAIImprove, onVerbEnhancer, onATS, onTargetJob, onTem
         title="Change Template"
       >
         <Palette size={13} className="text-purple-500" />
-        <span className="hidden md:inline">Template</span>
+        <span className="hidden sm:inline">Template</span>
       </button>
 
     </div>

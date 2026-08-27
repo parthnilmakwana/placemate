@@ -36,10 +36,10 @@ const EditorHeader = ({
   ];
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-brand-surface border-b border-brand-border shrink-0 relative z-50 shadow-xs">
+    <div className="flex items-center justify-between px-2.5 sm:px-4 py-2 sm:py-3 bg-brand-surface border-b border-brand-border shrink-0 relative z-50 shadow-xs">
       
       {/* Left: Navigation and Title */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         <Link 
           to="/dashboard/resume" 
           className="p-1.5 text-text-secondary hover:text-text-main hover:bg-brand-surface-hover rounded transition-colors"
@@ -52,12 +52,12 @@ const EditorHeader = ({
             <div className="relative">
               <button 
                 onClick={() => setShowProfilePicker(!showProfilePicker)}
-                className="flex items-center gap-1.5 hover:bg-brand-surface-hover px-2 py-1 rounded transition-colors -ml-2 text-left"
+                className="flex items-center gap-1 hover:bg-brand-surface-hover px-1.5 py-1 rounded transition-colors -ml-1 sm:-ml-2 text-left"
               >
-                <h1 className="text-sm font-semibold text-text-main truncate max-w-44 sm:max-w-xs">
+                <h1 className="text-xs sm:text-sm font-semibold text-text-main truncate max-w-28 xs:max-w-40 sm:max-w-xs">
                   {profile?.fullName ? `${profile.fullName}'s Resume` : 'Resume Editor'}
                 </h1>
-                <span className="px-1.5 py-0.5 rounded-md bg-brand-primary/10 text-brand-primary text-[10px] font-bold uppercase tracking-wider shrink-0">
+                <span className="px-1 py-0.5 rounded bg-brand-primary/10 text-brand-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shrink-0">
                   {profile?.profileType === 'OWNER' ? 'Primary' : 'Custom'}
                 </span>
                 <span className="text-text-muted text-[10px]">▼</span>
@@ -67,7 +67,7 @@ const EditorHeader = ({
               {showProfilePicker && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowProfilePicker(false)} />
-                  <div className="absolute left-0 top-full mt-2 z-50 w-70 bg-brand-surface border-2 border-brand-border rounded-xl shadow-2xl p-3 flex flex-col gap-1.5 animate-fade-in ring-1 ring-black/20">
+                  <div className="absolute left-0 top-full mt-2 z-50 w-64 sm:w-70 bg-brand-surface border-2 border-brand-border rounded-xl shadow-2xl p-3 flex flex-col gap-1.5 animate-fade-in ring-1 ring-black/20">
                     <div className="px-3 py-1.5 border-b border-brand-border/60 flex items-center justify-between">
                       <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Select Profile</span>
                       <button onClick={() => setShowProfilePicker(false)} className="text-text-muted hover:text-text-main p-0.5">
@@ -114,7 +114,7 @@ const EditorHeader = ({
       </div>
 
       {/* Center: Save Status */}
-      <div className="hidden sm:flex items-center justify-center flex-1">
+      <div className="hidden md:flex items-center justify-center flex-1">
         <div className="flex items-center gap-1.5 text-xs font-medium">
           {isSaving ? (
             <>
@@ -131,43 +131,43 @@ const EditorHeader = ({
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-2">
-        {/* Right Panel Toggles */}
-        <div className="flex items-center bg-brand-bg rounded-lg p-0.5 border border-brand-border">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right Panel Toggles (Visible on xl desktop screens where side-by-side pane is active) */}
+        <div className="hidden xl:flex items-center bg-brand-bg rounded-lg p-0.5 border border-brand-border">
           <button 
             onClick={() => handlePanelChange('preview')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 ${rightPanelMode === 'preview' ? 'bg-brand-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-main hover:bg-brand-surface-hover'}`}
           >
             <Eye size={14} />
-            <span className="hidden xl:inline">Preview</span>
+            <span>Preview</span>
           </button>
           <button 
             onClick={() => handlePanelChange('ats')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 ${rightPanelMode === 'ats' ? 'bg-brand-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-main hover:bg-brand-surface-hover'}`}
           >
             <Activity size={14} />
-            <span className="hidden xl:inline">ATS</span>
+            <span>ATS</span>
           </button>
           <button 
             onClick={() => handlePanelChange('match')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 ${rightPanelMode === 'match' ? 'bg-brand-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-main hover:bg-brand-surface-hover'}`}
           >
             <Target size={14} />
-            <span className="hidden xl:inline">Job Match</span>
+            <span>Job Match</span>
           </button>
         </div>
 
-        <div className="w-px h-6 bg-brand-border mx-1"></div>
+        <div className="hidden xl:block w-px h-6 bg-brand-border mx-1"></div>
 
         {/* Typography Selector Button */}
         <div className="relative">
           <button 
             onClick={() => setShowTemplatePicker(!showTemplatePicker)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-brand-surface border border-brand-border rounded-lg hover:bg-brand-surface-hover transition-all text-text-main shadow-xs"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-semibold bg-brand-surface border border-brand-border rounded-lg hover:bg-brand-surface-hover transition-all text-text-main shadow-xs"
             title="Select Resume Typography / Font"
           >
             <Type size={14} className="text-brand-primary" />
-            <span>{activeFont}</span>
+            <span className="hidden xs:inline">{activeFont}</span>
             <span className="text-text-muted text-[10px]">▼</span>
           </button>
 
@@ -175,7 +175,7 @@ const EditorHeader = ({
           {showTemplatePicker && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowTemplatePicker(false)} />
-              <div className="absolute right-0 top-full mt-2 z-50 w-72 bg-brand-surface border-2 border-brand-primary/40 rounded-xl shadow-2xl p-3.5 flex flex-col gap-2.5 animate-fade-in ring-1 ring-black/20">
+              <div className="absolute right-0 top-full mt-2 z-50 w-64 sm:w-72 bg-brand-surface border-2 border-brand-primary/40 rounded-xl shadow-2xl p-3 sm:p-3.5 flex flex-col gap-2.5 animate-fade-in ring-1 ring-black/20">
                 <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
                   <div className="flex items-center gap-1.5">
                     <Type size={14} className="text-brand-primary" />
@@ -194,7 +194,7 @@ const EditorHeader = ({
                         if (setActiveFont) setActiveFont(t.id);
                         setShowTemplatePicker(false);
                       }}
-                      className={`p-2.5 border rounded-lg text-center transition-all flex flex-col items-center justify-center gap-1 ${
+                      className={`p-2 sm:p-2.5 border rounded-lg text-center transition-all flex flex-col items-center justify-center gap-1 ${
                         activeFont === t.id 
                           ? 'border-brand-primary bg-brand-primary/10 text-brand-primary font-bold shadow-xs' 
                           : 'border-brand-border bg-brand-bg hover:border-brand-primary/50 text-text-secondary hover:text-text-main hover:bg-brand-surface-hover'
@@ -220,10 +220,10 @@ const EditorHeader = ({
         <button
           onClick={handleDownload}
           disabled={isDownloading}
-          className="ml-1 px-3 py-1.5 bg-brand-primary hover:bg-brand-hover disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+          className="ml-0.5 px-2.5 sm:px-3 py-1.5 bg-brand-primary hover:bg-brand-hover disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
         >
           {isDownloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-          <span className="hidden sm:inline">Export</span>
+          <span className="hidden xs:inline">Export</span>
         </button>
       </div>
 

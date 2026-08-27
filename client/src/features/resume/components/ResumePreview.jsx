@@ -168,10 +168,10 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
     <div className="flex flex-col w-full h-full bg-bg-sidebar rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
       
       {/* Sticky Controls Header */}
-      <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 bg-slate-800/95 backdrop-blur-md border-b border-white/10 shadow-sm text-xs select-none">
+      <div className="sticky top-0 z-20 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 bg-slate-800/95 backdrop-blur-md border-b border-white/10 shadow-sm text-xs select-none overflow-x-auto hide-scrollbar flex-nowrap shrink-0">
         
         {/* Left: Page Navigation Controls */}
-        <div className="flex items-center gap-1.5 bg-slate-900/60 p-1 rounded-lg border border-white/5">
+        <div className="flex items-center gap-1.5 bg-slate-900/60 p-1 rounded-lg border border-white/5 shrink-0">
           <button
             onClick={handlePrevPage}
             disabled={currentPage <= 1}
@@ -207,7 +207,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
         </div>
 
         {/* Center: Zoom Controls & Presets */}
-        <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <div className="flex items-center gap-1 bg-slate-900/60 p-1 rounded-lg border border-white/5">
             <button onClick={zoomOut} className="p-1 text-text-muted hover:text-text-main hover:bg-white/10 rounded cursor-pointer transition-colors" title="Zoom Out">
               <ZoomOut size={14} />

@@ -195,14 +195,14 @@ function ResumeEditorTab() {
     <div className="flex flex-col w-full h-full animate-fade-in bg-brand-bg relative overflow-hidden rounded-xl border border-brand-border shadow-sm">
       
       {/* Top Beta Feature Announcement Banner */}
-      <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 flex items-center justify-between text-xs text-amber-200 shrink-0">
+      <div className="bg-amber-500/10 border-b border-amber-500/20 px-3 sm:px-4 py-1.5 flex items-center justify-between text-xs text-amber-200 shrink-0">
         <div className="flex items-center gap-2">
           <Sparkles size={14} className="text-amber-400 shrink-0" />
           <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold uppercase tracking-wider text-[10px] shrink-0 border border-amber-500/30">
             Beta
           </span>
-          <span className="text-amber-200/90 text-xs font-medium">
-            You're using the Resume Editor Beta. We're actively refining the experience, so you may encounter occasional issues in some features
+          <span className="text-amber-200/90 text-[11px] sm:text-xs font-medium line-clamp-1 sm:line-clamp-none">
+            You're using the Resume Editor Beta. We're actively refining the experience!
           </span>
         </div>
       </div>
@@ -226,7 +226,7 @@ function ResumeEditorTab() {
       />
 
       {/* 3-Pane Workspace Area */}
-      <div className="flex flex-1 overflow-hidden relative z-10">
+      <div className="flex flex-1 overflow-hidden relative z-10 min-w-0">
         
         {/* Left Pane: Outline Sidebar (Hidden on mobile by default) */}
         <div className="hidden lg:block w-64 shrink-0 h-full z-10">
@@ -234,7 +234,7 @@ function ResumeEditorTab() {
         </div>
 
         {/* Center Pane: Tiptap Editor */}
-        <div className="flex-1 min-w-[320px] max-w-4xl mx-auto h-full overflow-hidden bg-brand-surface border-r border-l border-transparent lg:border-brand-border">
+        <div className="flex-1 min-w-0 max-w-4xl mx-auto h-full overflow-hidden bg-brand-surface border-r border-l border-transparent lg:border-brand-border">
           <TiptapResumeEditor 
             profile={profile} 
             onProfileChange={handleProfileChange} 

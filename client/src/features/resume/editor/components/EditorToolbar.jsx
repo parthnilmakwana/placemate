@@ -7,8 +7,8 @@ const EditorToolbar = ({ editor }) => {
   }
 
   return (
-    <div className="flex items-center gap-1.5 p-2 border-b border-brand-border bg-brand-bg/80 backdrop-blur-md sticky top-0 z-20 flex-wrap shrink-0">
-      <div className="flex items-center gap-1 border-r border-brand-border pr-2 mr-1">
+    <div className="flex items-center gap-1.5 p-1.5 sm:p-2 border-b border-brand-border bg-brand-bg/95 backdrop-blur-md sticky top-0 z-20 overflow-x-auto hide-scrollbar flex-nowrap shrink-0 max-w-full">
+      <div className="flex items-center gap-1 border-r border-brand-border pr-1.5 sm:pr-2 mr-0.5 sm:mr-1 shrink-0">
         <button
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().chain().focus().undo().run()}
@@ -27,7 +27,7 @@ const EditorToolbar = ({ editor }) => {
         </button>
       </div>
 
-      <div className="flex items-center gap-1 border-r border-brand-border pr-2 mr-1">
+      <div className="flex items-center gap-1 border-r border-brand-border pr-1.5 sm:pr-2 mr-0.5 sm:mr-1 shrink-0">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -54,7 +54,7 @@ const EditorToolbar = ({ editor }) => {
         </button>
       </div>
 
-      <div className="flex items-center gap-1 border-r border-brand-border pr-2 mr-1">
+      <div className="flex items-center gap-1 border-r border-brand-border pr-1.5 sm:pr-2 mr-0.5 sm:mr-1 shrink-0">
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`p-1.5 rounded transition-colors ${editor.isActive('bulletList') ? 'bg-brand-primary/20 text-brand-primary' : 'hover:bg-brand-surface-hover text-text-main'}`}
@@ -64,7 +64,7 @@ const EditorToolbar = ({ editor }) => {
         </button>
       </div>
 
-      <div className="flex items-center gap-1 border-r border-brand-border pr-2 mr-1">
+      <div className="flex items-center gap-1 border-r border-brand-border pr-1.5 sm:pr-2 mr-0.5 sm:mr-1 shrink-0">
         <button
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           className={`p-1.5 rounded transition-colors ${editor.isActive({ textAlign: 'left' }) ? 'bg-brand-primary/20 text-brand-primary' : 'hover:bg-brand-surface-hover text-text-main'}`}
@@ -88,7 +88,7 @@ const EditorToolbar = ({ editor }) => {
         </button>
       </div>
       
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={() => {
             const url = window.prompt('URL');
@@ -102,9 +102,9 @@ const EditorToolbar = ({ editor }) => {
         </button>
       </div>
       
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2 shrink-0">
         <button 
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-linear-to-r from-purple-500/10 to-indigo-500/10 hover:from-purple-500/20 hover:to-indigo-500/20 border border-purple-500/20 text-indigo-400 transition-all"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md bg-linear-to-r from-purple-500/10 to-indigo-500/10 hover:from-purple-500/20 hover:to-indigo-500/20 border border-purple-500/20 text-indigo-400 transition-all shrink-0"
           title="AI Formatting Assist"
         >
           <Wand2 size={14} />
