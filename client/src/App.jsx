@@ -38,7 +38,9 @@ const PortfolioBuilderLanding = lazy(
 const DashboardHome = lazy(() => import("./features/dashboard/DashboardHome"));
 const ProfileTab = lazy(() => import("./features/profile/ProfileTab"));
 const PortfolioTab = lazy(() => import("./features/portfolio/PortfolioTab"));
+const ResumeWorkspace = lazy(() => import("./features/resume/ResumeWorkspace"));
 const ResumeTab = lazy(() => import("./features/resume/ResumeTab"));
+const ResumeEditorTab = lazy(() => import("./features/resume/tabs/ResumeEditorTab"));
 const AtsChecker = lazy(() => import("./features/ats/AtsChecker"));
 const JobDashboardTab = lazy(() => import("./features/jobs/JobDashboardTab"));
 const PricingTab = lazy(() => import("./features/pricing/PricingTab"));
@@ -188,8 +190,17 @@ function App() {
                   <Route index element={<DashboardHome />} />
                   <Route path="profile" element={<ProfileTab />} />
                   <Route path="portfolio" element={<PortfolioTab />} />
-                  <Route path="resume" element={<ResumeTab />} />
-                  <Route path="ats-checker" element={<AtsChecker />} />
+                  
+                  {/* Resume Workspace with Nested Routes */}
+                  <Route path="resume" element={<ResumeWorkspace />}>
+                    <Route index element={<Navigate to="builder" replace />} />
+                    <Route path="builder" element={<ResumeTab />} />
+                    <Route path="editor" element={<ResumeEditorTab />} />
+                    <Route path="ats-checker" element={<AtsChecker />} />
+                  </Route>
+                  {/* Redirect legacy ats-checker route */}
+                  <Route path="ats-checker" element={<Navigate to="/dashboard/resume/ats-checker" replace />} />
+                  
                   <Route path="jobs" element={<JobDashboardTab />} />
                   <Route path="pricing" element={<PricingTab />} />
                   <Route path="feedback" element={<FeedbackTab />} />

@@ -55,8 +55,7 @@ function Sidebar({
 
   const primaryNavItems = [
     { id: "home", label: "Dashboard", icon: LayoutGrid },
-    { id: "resume", label: "Resume Builder", icon: FileText },
-    { id: "ats-checker", label: "ATS Checker", icon: Activity },
+    { id: "resume", label: "Resume", icon: FileText },
     { id: "portfolio", label: "Portfolio", icon: Globe },
     { id: "jobs", label: "Find Jobs", icon: Search, badge: "Beta" },
     { id: "applications", label: "Applications", icon: Layers, targetTab: "jobs", badge: "Beta" },

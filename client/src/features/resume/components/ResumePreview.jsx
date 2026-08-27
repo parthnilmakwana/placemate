@@ -27,7 +27,12 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
   const [numPages, setNumPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('all'); // 'all' | 'single'
-  const [scale, setScale] = useState(0.85);
+  const [scale, setScale] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return 0.5;
+    }
+    return 0.9;
+  });
   const containerRef = useRef(null);
   const pageRefs = useRef({});
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
@@ -61,7 +66,7 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
 
   // Calculate Fit Width Scale based on container width
   const calculateFitWidthScale = useCallback(() => {
-    if (!containerDimensions.width) return 0.85;
+    if (!containerDimensions.width) return 0.9;
     const padding = containerDimensions.width < 500 ? 24 : 48;
     const availableWidth = containerDimensions.width - padding;
     const computedScale = availableWidth / 595.28;
@@ -94,21 +99,28 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
     setScale(calculateFitPageScale());
   };
 
-  // Initial Responsive Auto-Fit on Container Load
+  const isMobileRef = useRef(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  // Responsive default scale logic: 50% for mobile view (<768px), 90% for laptop view (>=768px)
   useEffect(() => {
-    if (containerDimensions.width > 0 && containerDimensions.height > 0 && !isInitialSet.current) {
-      isInitialSet.current = true;
-      if (containerDimensions.width < 768) {
-        setScale(0.5);
-      } else {
-        setScale(calculateFitWidthScale());
+    if (containerDimensions.width > 0) {
+      const isMobile = (typeof window !== 'undefined' && window.innerWidth < 768) || containerDimensions.width < 768;
+      if (!isInitialSet.current) {
+        isInitialSet.current = true;
+        isMobileRef.current = isMobile;
+        setScale(isMobile ? 0.5 : 0.9);
+      } else if (isMobileRef.current !== isMobile) {
+        isMobileRef.current = isMobile;
+        setScale(isMobile ? 0.5 : 0.9);
       }
     }
-  }, [containerDimensions.width, containerDimensions.height, calculateFitWidthScale, calculateFitPageScale]);
+  }, [containerDimensions.width]);
 
-  const zoomIn = () => setScale(s => Math.min(s + 0.15, 2.5));
-  const zoomOut = () => setScale(s => Math.max(s - 0.15, 0.4));
-  const resetZoom = () => setScale(containerDimensions.width < 768 ? 0.5 : 1);
+  const displayPercentage = Math.round(scale * 100);
+
+  const zoomIn = () => setScale(s => Math.min(s + 0.1, 2.5));
+  const zoomOut = () => setScale(s => Math.max(s - 0.1, 0.25));
+  const resetZoom = () => setScale(1.0);
 
   // Page Navigation Handlers
   const handlePrevPage = () => {
@@ -201,18 +213,18 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
               <ZoomOut size={14} />
             </button>
             <span className="px-1.5 text-[11px] font-bold text-text-main min-w-[2.5rem] text-center">
-              {Math.round(scale * 100)}%
+              {displayPercentage}%
             </span>
             <button onClick={zoomIn} className="p-1 text-text-muted hover:text-text-main hover:bg-white/10 rounded cursor-pointer transition-colors" title="Zoom In">
               <ZoomIn size={14} />
             </button>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setScale(0.5)}
               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-                Math.round(scale * 100) === 50 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
+                displayPercentage === 50 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
               }`}
             >
               50%
@@ -220,15 +232,23 @@ const ResumePreview = ({ user, profile, settings, optimize }) => {
             <button
               onClick={() => setScale(0.75)}
               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-                Math.round(scale * 100) === 75 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
+                displayPercentage === 75 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
               }`}
             >
               75%
             </button>
             <button
+              onClick={() => setScale(0.9)}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
+                displayPercentage === 90 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
+              }`}
+            >
+              90%
+            </button>
+            <button
               onClick={resetZoom}
               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-                Math.round(scale * 100) === 100 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
+                displayPercentage === 100 ? 'bg-brand-primary text-text-main' : 'text-text-muted hover:text-text-main hover:bg-white/10'
               }`}
             >
               100%

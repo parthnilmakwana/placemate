@@ -30,7 +30,7 @@ function SettingsLayout() {
           <p className="text-xs text-text-muted mt-1">Manage your account preferences</p>
         </div>
         
-        <nav className="flex flex-col gap-1">
+        <nav className="flex md:flex-col gap-2 md:gap-1 overflow-x-auto hide-scrollbar pb-2 md:pb-0">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -38,7 +38,7 @@ function SettingsLayout() {
                 key={item.id}
                 to={item.path}
                 className={({ isActive }) => 
-                  `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer text-left
+                  `flex items-center gap-2 md:gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer text-left whitespace-nowrap
                   ${isActive 
                     ? "bg-brand-surface border border-brand-border text-text-main font-semibold shadow-sm" 
                     : "text-text-secondary hover:text-text-main hover:bg-brand-surface/50 border border-transparent"
