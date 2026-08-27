@@ -24,15 +24,15 @@ const ExperienceItemComponent = ({ node, updateAttributes, deleteNode, getPos, e
       
       {/* Drag Handle */}
       <div 
-        className="mt-1 text-text-muted cursor-grab hover:text-text-main opacity-0 group-hover:opacity-100 transition-opacity flex items-start shrink-0" 
+        className="mt-1 text-text-muted cursor-grab hover:text-text-main opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-start shrink-0" 
         contentEditable={false} 
         draggable="true" 
         data-drag-handle
       >
-        <GripVertical size={18} />
+        <GripVertical size={16} />
       </div>
 
-      <div className="flex-1 flex flex-col gap-2">
+      <div className="flex-1 flex flex-col gap-2 min-w-0">
         {/* Editable Metadata Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-brand-border/50 pb-2">
           <div className="flex flex-col gap-1 w-full max-w-sm">
@@ -53,10 +53,10 @@ const ExperienceItemComponent = ({ node, updateAttributes, deleteNode, getPos, e
           </div>
           
           <div className="flex flex-col sm:items-end gap-1 shrink-0">
-             <div className="flex items-center gap-2">
+             <div className="flex items-center gap-1.5 sm:gap-2">
                 <input 
                   type="text"
-                  className="text-xs text-text-muted bg-transparent border border-transparent hover:border-brand-border focus:border-brand-primary outline-none rounded px-1 w-20 text-center"
+                  className="text-xs text-text-muted bg-transparent border border-transparent hover:border-brand-border focus:border-brand-primary outline-none rounded px-1 w-16 sm:w-20 text-center"
                   placeholder="Start Date"
                   value={node.attrs.startDate}
                   onChange={(e) => updateAttributes({ startDate: e.target.value })}
@@ -64,7 +64,7 @@ const ExperienceItemComponent = ({ node, updateAttributes, deleteNode, getPos, e
                 <span className="text-text-muted text-xs">-</span>
                 <input 
                   type="text"
-                  className="text-xs text-text-muted bg-transparent border border-transparent hover:border-brand-border focus:border-brand-primary outline-none rounded px-1 w-20 text-center"
+                  className="text-xs text-text-muted bg-transparent border border-transparent hover:border-brand-border focus:border-brand-primary outline-none rounded px-1 w-16 sm:w-20 text-center"
                   placeholder="End Date"
                   value={node.attrs.endDate}
                   onChange={(e) => updateAttributes({ endDate: e.target.value })}
@@ -95,7 +95,7 @@ const ExperienceItemComponent = ({ node, updateAttributes, deleteNode, getPos, e
       </div>
 
       {/* Entry Options Context Menu */}
-      <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity" contentEditable={false}>
+      <div className="absolute right-1 top-1 sm:right-2 sm:top-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10" contentEditable={false}>
         <div className="relative group/entrymenu">
           <button className="p-1.5 bg-brand-surface border border-brand-border text-text-secondary hover:text-text-main rounded-md shadow-sm">
             <MoreVertical size={14} />

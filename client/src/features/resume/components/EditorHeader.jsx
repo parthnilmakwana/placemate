@@ -39,35 +39,35 @@ const EditorHeader = ({
     <div className="flex items-center justify-between px-2.5 sm:px-4 py-2 sm:py-3 bg-brand-surface border-b border-brand-border shrink-0 relative z-50 shadow-xs">
       
       {/* Left: Navigation and Title */}
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-1.5 sm:gap-4 min-w-0">
         <Link 
           to="/dashboard/resume" 
-          className="p-1.5 text-text-secondary hover:text-text-main hover:bg-brand-surface-hover rounded transition-colors"
+          className="p-1.5 text-text-secondary hover:text-text-main hover:bg-brand-surface-hover rounded transition-colors shrink-0"
           title="Back to Dashboard"
         >
           <ArrowLeft size={18} />
         </Link>
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <div className="relative">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div className="relative min-w-0">
               <button 
                 onClick={() => setShowProfilePicker(!showProfilePicker)}
-                className="flex items-center gap-1 hover:bg-brand-surface-hover px-1.5 py-1 rounded transition-colors -ml-1 sm:-ml-2 text-left"
+                className="flex items-center gap-1 hover:bg-brand-surface-hover px-1 py-1 rounded transition-colors -ml-1 sm:-ml-2 text-left max-w-full"
               >
-                <h1 className="text-xs sm:text-sm font-semibold text-text-main truncate max-w-28 xs:max-w-40 sm:max-w-xs">
+                <h1 className="text-xs sm:text-sm font-semibold text-text-main truncate max-w-[110px] min-[360px]:max-w-[135px] sm:max-w-xs">
                   {profile?.fullName ? `${profile.fullName}'s Resume` : 'Resume Editor'}
                 </h1>
-                <span className="px-1 py-0.5 rounded bg-brand-primary/10 text-brand-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shrink-0">
+                <span className="hidden min-[380px]:inline-block px-1 py-0.5 rounded bg-brand-primary/10 text-brand-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shrink-0">
                   {profile?.profileType === 'OWNER' ? 'Primary' : 'Custom'}
                 </span>
-                <span className="text-text-muted text-[10px]">▼</span>
+                <span className="text-text-muted text-[10px] shrink-0">▼</span>
               </button>
 
               {/* Profile Selector Popover Dropdown */}
               {showProfilePicker && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowProfilePicker(false)} />
-                  <div className="absolute left-0 top-full mt-2 z-50 w-64 sm:w-70 bg-brand-surface border-2 border-brand-border rounded-xl shadow-2xl p-3 flex flex-col gap-1.5 animate-fade-in ring-1 ring-black/20">
+                  <div className="absolute left-0 top-full mt-2 z-50 w-64 sm:w-70 max-w-[calc(100vw-24px)] bg-brand-surface border-2 border-brand-border rounded-xl shadow-2xl p-3 flex flex-col gap-1.5 animate-fade-in ring-1 ring-black/20">
                     <div className="px-3 py-1.5 border-b border-brand-border/60 flex items-center justify-between">
                       <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Select Profile</span>
                       <button onClick={() => setShowProfilePicker(false)} className="text-text-muted hover:text-text-main p-0.5">
@@ -131,7 +131,7 @@ const EditorHeader = ({
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         {/* Right Panel Toggles (Visible on xl desktop screens where side-by-side pane is active) */}
         <div className="hidden xl:flex items-center bg-brand-bg rounded-lg p-0.5 border border-brand-border">
           <button 
@@ -167,7 +167,7 @@ const EditorHeader = ({
             title="Select Resume Typography / Font"
           >
             <Type size={14} className="text-brand-primary" />
-            <span className="hidden xs:inline">{activeFont}</span>
+            <span className="hidden sm:inline">{activeFont}</span>
             <span className="text-text-muted text-[10px]">▼</span>
           </button>
 
@@ -175,7 +175,7 @@ const EditorHeader = ({
           {showTemplatePicker && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowTemplatePicker(false)} />
-              <div className="absolute right-0 top-full mt-2 z-50 w-64 sm:w-72 bg-brand-surface border-2 border-brand-primary/40 rounded-xl shadow-2xl p-3 sm:p-3.5 flex flex-col gap-2.5 animate-fade-in ring-1 ring-black/20">
+              <div className="absolute right-0 top-full mt-2 z-50 w-64 sm:w-72 max-w-[calc(100vw-24px)] bg-brand-surface border-2 border-brand-primary/40 rounded-xl shadow-2xl p-3 sm:p-3.5 flex flex-col gap-2.5 animate-fade-in ring-1 ring-black/20">
                 <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
                   <div className="flex items-center gap-1.5">
                     <Type size={14} className="text-brand-primary" />
@@ -220,10 +220,10 @@ const EditorHeader = ({
         <button
           onClick={handleDownload}
           disabled={isDownloading}
-          className="ml-0.5 px-2.5 sm:px-3 py-1.5 bg-brand-primary hover:bg-brand-hover disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+          className="ml-0.5 px-2 sm:px-3 py-1.5 bg-brand-primary hover:bg-brand-hover disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
         >
           {isDownloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-          <span className="hidden xs:inline">Export</span>
+          <span className="hidden sm:inline">Export</span>
         </button>
       </div>
 

@@ -45,8 +45,8 @@ const ResumeSectionComponent = ({ node, updateAttributes, editor, getPos, delete
           onChange={(e) => updateAttributes({ title: e.target.value })}
         />
 
-        {/* Section Hover Controls */}
-        <div className="opacity-0 group-hover/section:opacity-100 transition-opacity flex items-center gap-1 shrink-0 bg-brand-surface border border-brand-border rounded-md shadow-sm">
+        {/* Section Controls */}
+        <div className="opacity-100 sm:opacity-0 sm:group-hover/section:opacity-100 transition-opacity flex items-center gap-1 shrink-0 bg-brand-surface border border-brand-border rounded-md shadow-sm">
           <div className="relative group/menu">
             <button className="p-1.5 text-text-muted hover:text-text-main hover:bg-brand-surface-hover rounded transition-colors" title="Section Options">
               <MoreVertical size={16} />

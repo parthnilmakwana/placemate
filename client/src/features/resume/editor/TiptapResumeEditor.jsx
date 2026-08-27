@@ -240,11 +240,11 @@ const TiptapResumeEditor = ({ profile, onProfileChange, onSaveRequest, isSaving,
     <div className="w-full h-full flex flex-col bg-brand-surface relative overflow-hidden">
       
       {/* Active Template Style Indicator Bar (Upper Side) */}
-      <div className="px-3 sm:px-4 py-2 bg-brand-bg/95 border-b border-brand-border/60 flex items-center justify-between text-xs shrink-0 relative z-30 shadow-xs overflow-x-auto hide-scrollbar gap-2">
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <div className="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-brand-bg/95 border-b border-brand-border/60 flex items-center justify-between text-xs shrink-0 relative z-30 shadow-xs overflow-x-auto hide-scrollbar gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <Palette size={14} className="text-brand-primary" />
-          <span className="font-medium text-text-secondary hidden xs:inline">Template Style:</span>
-          <span className="px-2 py-0.5 rounded bg-brand-primary/10 text-brand-primary font-bold uppercase tracking-wider text-[10px]">
+          <span className="font-medium text-text-secondary hidden sm:inline">Template Style:</span>
+          <span className="px-1.5 sm:px-2 py-0.5 rounded bg-brand-primary/10 text-brand-primary font-bold uppercase tracking-wider text-[9px] sm:text-[10px]">
             {activeTheme}
           </span>
         </div>
@@ -253,7 +253,7 @@ const TiptapResumeEditor = ({ profile, onProfileChange, onSaveRequest, isSaving,
             <button
               key={themeId}
               onClick={() => setActiveTheme && setActiveTheme(themeId)}
-              className={`px-2 sm:px-2.5 py-1 text-[10px] font-semibold rounded-md capitalize transition-all ${
+              className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-semibold rounded-md capitalize transition-all ${
                 activeTheme === themeId 
                   ? 'bg-brand-primary text-white shadow-xs' 
                   : 'text-text-muted hover:text-text-main hover:bg-brand-surface-hover'
@@ -269,7 +269,7 @@ const TiptapResumeEditor = ({ profile, onProfileChange, onSaveRequest, isSaving,
       <EditorToolbar editor={editor} />
 
       {/* Editor Content Container with Theme Styling */}
-      <div className={`flex-1 p-3 sm:p-6 md:p-12 overflow-y-auto custom-scrollbar relative ${
+      <div className={`flex-1 px-2.5 py-3 sm:p-6 md:p-12 overflow-y-auto custom-scrollbar relative ${
         activeTheme === 'minimal' ? 'font-sans tracking-tight' :
         activeTheme === 'executive' ? 'font-serif' :
         activeTheme === 'software' ? 'font-mono' : 'font-sans'
